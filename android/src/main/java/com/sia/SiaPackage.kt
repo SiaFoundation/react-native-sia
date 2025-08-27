@@ -1,0 +1,33 @@
+package com.sia
+
+import com.facebook.react.BaseReactPackage
+import com.facebook.react.bridge.NativeModule
+import com.facebook.react.bridge.ReactApplicationContext
+import com.facebook.react.module.model.ReactModuleInfo
+import com.facebook.react.module.model.ReactModuleInfoProvider
+import java.util.HashMap
+
+class SiaPackage : BaseReactPackage() {
+  override fun getModule(name: String, reactContext: ReactApplicationContext): NativeModule? {
+    return if (name == SiaModule.NAME) {
+      SiaModule(reactContext)
+    } else {
+      null
+    }
+  }
+
+  override fun getReactModuleInfoProvider(): ReactModuleInfoProvider {
+    return ReactModuleInfoProvider {
+      val moduleInfos: MutableMap<String, ReactModuleInfo> = HashMap()
+      moduleInfos[SiaModule.NAME] = ReactModuleInfo(
+        SiaModule.NAME,
+        SiaModule.NAME,
+        false,  // canOverrideExistingModule
+        false,  // needsEagerInit
+        false,  // isCxxModule
+        true // isTurboModule
+      )
+      moduleInfos
+    }
+  }
+}

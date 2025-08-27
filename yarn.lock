@@ -10312,10 +10312,11 @@ __metadata:
     react-native-builder-bob: ^0.40.13
     react-native-monorepo-config: ^0.1.9
     react-native-safe-area-context: ^5.5.2
+    react-native-sia: "workspace:*"
   languageName: unknown
   linkType: soft
 
-"react-native-sia@workspace:.":
+"react-native-sia@workspace:*, react-native-sia@workspace:.":
   version: 0.0.0-use.local
   resolution: "react-native-sia@workspace:."
   dependencies:

@@ -1,163 +1,231 @@
-import { Text, View, StyleSheet, TextInput, Pressable } from 'react-native';
 import { useEffect, useState } from 'react';
 import {
-  Calculator,
-  type BinaryOperator,
-  SafeAddition,
-  ComputationResult,
-} from 'react-native-sia';
-
-// A Rust object
-const calculator = new Calculator();
-// A Rust object implementing the Rust trait BinaryOperator
-const addOp = new SafeAddition();
-
-// A Typescript class, implementing BinaryOperator
-class SafeMultiply implements BinaryOperator {
-  perform(lhs: bigint, rhs: bigint): bigint {
-    return lhs * rhs;
-  }
-}
-const multOp = new SafeMultiply();
+  Text,
+  View,
+  StyleSheet,
+  TextInput,
+  ScrollView,
+  Pressable,
+  Platform,
+} from 'react-native';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { getHostSettings, setLogger, clearLogger } from 'react-native-sia';
 
 export default function App() {
-  const [lhs, setLhs] = useState<string>('');
-  const [rhs, setRhs] = useState<string>('');
-  const [op, setOp] = useState<'add' | 'mult'>('add');
-  const [result, setResult] = useState<string>('');
+  const [hostSettings, setHostSettings] = useState<string | null>(null);
+  const [address, setAddress] = useState(
+    '6r4b0vj1ai55fobdvauvpg3to5bpeijl045b2q268fcj7q1vkuog.sia.host'
+  );
+  const [port, setPort] = useState('9984');
+  const [logs, setLogs] = useState<string[]>([]);
 
   useEffect(() => {
+    const logger = {
+      log(level: string, message: string) {
+        setLogs((prev) => [...prev, `[${level}] ${message}`]);
+      },
+    };
+    setLogger(logger);
+    return () => {
+      clearLogger();
+    };
+  }, []);
+
+  const handleGetHostSettings = async () => {
+    setLogs((prev) => [...prev, '[info] Requesting host settings…']);
     try {
-      const lhsStr = lhs.trim() === '' ? '0' : lhs.trim();
-      const rhsStr = rhs.trim() === '' ? '0' : rhs.trim();
-      const lhsBig = BigInt(lhsStr);
-      const rhsBig = BigInt(rhsStr);
-      const operator = op === 'add' ? addOp : multOp;
-      const computation: ComputationResult | undefined = calculator
-        .calculate(operator, lhsBig, rhsBig)
-        .lastResult();
-      const value = computation?.value;
-      setResult(value !== undefined ? value.toString() : '');
-    } catch (e) {
-      setResult('');
+      const numPort = Number.parseInt(port, 10);
+      const settings = await getHostSettings(
+        address,
+        Number.isNaN(numPort) ? 0 : numPort
+      );
+      setHostSettings(settings);
+      setLogs((prev) => [...prev, '[info] Received host settings']);
+    } catch (err: any) {
+      console.log(err);
+      setLogs((prev) => [...prev, `[error] ${String(err?.message ?? err)}`]);
     }
-  }, [lhs, rhs, op]);
+  };
+
+  const hostSettingsDisplay = hostSettings
+    ? (() => {
+        try {
+          return JSON.stringify(JSON.parse(hostSettings), null, 2);
+        } catch {
+          return hostSettings;
+        }
+      })()
+    : '—';
 
   return (
-    <View style={styles.container}>
-      <View style={styles.inputsRow}>
-        <TextInput
-          style={[styles.input, styles.inputFlex]}
-          value={lhs}
-          onChangeText={setLhs}
-          placeholder="First"
-          keyboardType="number-pad"
-        />
-        <View style={styles.spacer} />
-        <TextInput
-          style={[styles.input, styles.inputFlex]}
-          value={rhs}
-          onChangeText={setRhs}
-          placeholder="Second"
-          keyboardType="number-pad"
-        />
-      </View>
+    <SafeAreaProvider>
+      <SafeAreaView style={styles.safe}>
+        <View style={styles.container}>
+          <Text style={styles.heading}>Sia Rust SDK in React Native</Text>
 
-      <View style={styles.toggleRow}>
-        <Pressable
-          onPress={() => setOp('add')}
-          style={[
-            styles.toggleOption,
-            op === 'add' && styles.toggleOptionActive,
-          ]}
-          accessibilityRole="button"
-          accessibilityLabel="Addition"
-        >
-          <Text
-            style={[styles.toggleText, op === 'add' && styles.toggleTextActive]}
-          >
-            ＋
-          </Text>
-        </Pressable>
-        <View style={styles.spacer} />
-        <Pressable
-          onPress={() => setOp('mult')}
-          style={[
-            styles.toggleOption,
-            op === 'mult' && styles.toggleOptionActive,
-          ]}
-          accessibilityRole="button"
-          accessibilityLabel="Multiplication"
-        >
-          <Text
-            style={[
-              styles.toggleText,
-              op === 'mult' && styles.toggleTextActive,
-            ]}
-          >
-            ×
-          </Text>
-        </Pressable>
-      </View>
-      <Text>Result: {result || '—'}</Text>
-    </View>
+          <View style={styles.card}>
+            <Text style={styles.sectionTitle}>Host Settings</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Address"
+              autoCapitalize="none"
+              autoCorrect={false}
+              value={address}
+              onChangeText={setAddress}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Port"
+              keyboardType="number-pad"
+              value={port}
+              onChangeText={setPort}
+            />
+            <Pressable style={styles.button} onPress={handleGetHostSettings}>
+              <Text style={styles.buttonText}>Get Host Settings</Text>
+            </Pressable>
+
+            <View style={styles.rowBetween}>
+              <Text style={styles.subheading}>Result</Text>
+              <Pressable
+                onPress={() => setHostSettings(null)}
+                style={styles.clearButton}
+              >
+                <Text style={styles.clearButtonText}>Clear</Text>
+              </Pressable>
+            </View>
+            <ScrollView
+              style={styles.resultBox}
+              contentContainerStyle={styles.resultContent}
+            >
+              <Text style={styles.mono}>{hostSettingsDisplay}</Text>
+            </ScrollView>
+          </View>
+
+          <View style={[styles.card, styles.cardGrow]}>
+            <View style={styles.rowBetween}>
+              <Text style={styles.sectionTitle}>Logs</Text>
+              <Pressable onPress={() => setLogs([])} style={styles.clearButton}>
+                <Text style={styles.clearButtonText}>Clear</Text>
+              </Pressable>
+            </View>
+            <ScrollView
+              style={styles.logBox}
+              contentContainerStyle={styles.resultContent}
+            >
+              {logs.map((l, i) => (
+                <Text key={String(i)} style={styles.logLine}>
+                  {l}
+                </Text>
+              ))}
+            </ScrollView>
+          </View>
+        </View>
+      </SafeAreaView>
+    </SafeAreaProvider>
   );
 }
 
 const styles = StyleSheet.create({
+  safe: { flex: 1, backgroundColor: '#0b0f19' },
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    padding: 16,
+    gap: 16,
   },
-  inputsRow: {
-    width: '80%',
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 12,
+  heading: {
+    fontSize: 22,
+    fontWeight: '700',
+    color: '#e6edf3',
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#e6edf3',
+    marginBottom: 8,
+  },
+  subheading: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#9da7b3',
+    marginTop: 12,
+    marginBottom: 4,
+  },
+  card: {
+    backgroundColor: '#111827',
+    borderColor: '#1f2937',
+    borderWidth: StyleSheet.hairlineWidth,
+    borderRadius: 12,
+    padding: 12,
+    gap: 8,
+  },
+  cardGrow: {
+    flex: 1,
+    minHeight: 0,
   },
   input: {
-    borderWidth: 1,
-    borderColor: '#e5e7eb',
+    backgroundColor: '#0b1220',
+    borderColor: '#334155',
+    borderWidth: StyleSheet.hairlineWidth,
+    color: '#e6edf3',
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 10,
-    marginBottom: 0,
-    height: 44,
+    fontSize: 14,
   },
-  inputFlex: {
-    flex: 1,
+  button: {
+    backgroundColor: '#0ea5e9',
+    borderRadius: 8,
+    paddingVertical: 12,
+    alignItems: 'center',
+    marginTop: 4,
   },
-  toggleRow: {
-    width: '80%',
+  buttonText: {
+    color: '#001019',
+    fontWeight: '700',
+  },
+  resultBox: {
+    maxHeight: 140,
+    backgroundColor: '#0b1220',
+    borderColor: '#334155',
+    borderWidth: StyleSheet.hairlineWidth,
+    borderRadius: 8,
+  },
+  resultContent: {
+    padding: 12,
+  },
+  rowBetween: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 12,
+    justifyContent: 'space-between',
   },
-  spacer: {
-    width: 12,
+  mono: {
+    color: '#cbd5e1',
+    fontFamily: Platform.select({ ios: 'Menlo', android: 'monospace' }),
+    fontSize: 12,
   },
-  toggleOption: {
+  logBox: {
     flex: 1,
-    borderWidth: 1,
-    borderColor: '#e5e7eb',
+    minHeight: 0,
+    backgroundColor: '#0b1220',
+    borderColor: '#334155',
+    borderWidth: StyleSheet.hairlineWidth,
     borderRadius: 8,
-    paddingVertical: 10,
-    height: 44,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#ffffff',
   },
-  toggleOptionActive: {
-    borderColor: '#111827',
-    backgroundColor: '#f3f4f6',
+  logLine: {
+    color: '#9da7b3',
+    fontFamily: Platform.select({ ios: 'Menlo', android: 'monospace' }),
+    fontSize: 12,
+    marginBottom: 4,
   },
-  toggleText: {
-    fontSize: 18,
-    color: '#6b7280',
+  clearButton: {
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 6,
+    backgroundColor: '#1f2937',
   },
-  toggleTextActive: {
-    color: '#111827',
+  clearButtonText: {
+    color: '#cbd5e1',
+    fontSize: 12,
     fontWeight: '600',
   },
 });

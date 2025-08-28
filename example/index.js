@@ -1,8 +1,8 @@
 import { AppRegistry } from 'react-native';
 import App from './src/App';
 import { name as appName } from './app.json';
-import { uniffiInitAsync } from 'react-native-sia';
+import { initSia } from 'react-native-sia';
 
-uniffiInitAsync().then(() => {
+initSia().then(() => {
   AppRegistry.registerComponent(appName, () => App);
 });

@@ -4,34 +4,31 @@ The Sia SDK for React Native.
 
 ## Installation
 
-
 ```sh
 npm install react-native-sia
 ```
 
-
 ## Usage
 
-
 ```js
-import { multiply } from 'react-native-sia';
+import { getHostSettings } from 'react-native-sia';
 
 // ...
 
-const result = multiply(3, 7);
+const result = await getHostSettings('127.0.0.1', 9980);
 ```
 
+## Build scripts
 
-## Contributing
+- `yarn ubrn:ios`
+  - Uses UBRN to:
+    - Build the Rust crate for iOS and iOS Simulator (via Cargo).
+    - Create the XCFramework from the static libraries.
+    - Generate UniFFI bindings (TypeScript + C++ glue) and the TurboModule.
+    - Run `pod install` in the example app so Xcode picks up the framework and module.
+  - Note: because of Rust 2024 edition dependencies, this runs with nightly toolchain.
 
-- [Development workflow](CONTRIBUTING.md#development-workflow)
-- [Sending a pull request](CONTRIBUTING.md#sending-a-pull-request)
-- [Code of conduct](CODE_OF_CONDUCT.md)
-
-## License
-
-MIT
-
----
-
-Made with [create-react-native-library](https://github.com/callstack/react-native-builder-bob)
+- `yarn prepare` (react-native-builder-bob)
+  - Builds the JavaScript/TypeScript distribution for publishing:
+    - Transpiles `src/` to `lib/module` (ES/CJS).
+    - Emits type declarations to `lib/typescript`.

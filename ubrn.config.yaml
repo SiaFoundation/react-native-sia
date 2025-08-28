@@ -1,4 +1,4 @@
 ---
 rust:
-  directory: sia-sdk
+  directory: rust
   manifestPath: Cargo.toml

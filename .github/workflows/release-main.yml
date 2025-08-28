@@ -1,0 +1,33 @@
+name: Update Release PR or Release Versions and Publish
+
+on:
+  push:
+    branches:
+      - main
+
+concurrency: commits-to-main
+
+env:
+  NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout all commits
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - name: Update release pull request
+        uses: changesets/action@v1
+        with:
+          commit: 'chore: release packages'
+          version: yarn version
+          publish: yarn publish
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

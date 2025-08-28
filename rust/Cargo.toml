@@ -1,5 +1,5 @@
 [package]
-name = "rust_lib_files"
+name = "sia_lib"
 version = "0.1.0"
 edition = "2024"
 
@@ -15,9 +15,6 @@ sia_sdk = { git = "https://github.com/SiaFoundation/sia-sdk-rs", rev = "766f9bc"
 tokio= { version = "^1.47.1", features = ["rt-multi-thread", "macros", "time", "net"] }
 uniffi = "0.29.4"
 thiserror = "1.0.64"
-tracing = "0.1"
-tracing-oslog = "0.2"
-tracing-subscriber = { version = "0.3", default-features = false, features = ["registry"] }
 
 [build-dependencies]
 uniffi = { version = "0.29.4", features = ["build"] }

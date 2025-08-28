@@ -11,19 +11,19 @@ if (!rustInstalled) {
 }
 
 // Export the generated bindings to the app.
-export * from './generated/rust_lib_files';
+export * from './generated/sia_lib';
 
 // Now import the bindings so we can:
 // - intialize them
 // - export them as namespaced objects as the default export.
-import * as rust_lib_files from './generated/rust_lib_files';
+import * as sia_lib from './generated/sia_lib';
 
 // Initialize the generated bindings: mostly checksums, but also callbacks.
 // - the boolean flag ensures this loads exactly once, even if the JS code
 //   is reloaded (e.g. during development with metro).
 let initialized = false;
 if (!initialized) {
-  rust_lib_files.default.initialize();
+  sia_lib.default.initialize();
   initialized = true;
 }
 
@@ -36,5 +36,6 @@ export async function uniffiInitAsync() {
 
 // Export the crates as individually namespaced objects.
 export default {
-  rust_lib_files,
+  sia_lib,
 };
+

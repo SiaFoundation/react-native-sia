@@ -30,7 +30,7 @@ import nativeModule, {
   type UniffiForeignFutureStructVoid,
   type UniffiForeignFutureCompleteVoid,
   type UniffiVTableCallbackInterfaceJsLogger,
-} from './rust_lib_files-ffi';
+} from './sia_lib-ffi';
 import {
   type FfiConverter,
   type UniffiByteArray,
@@ -75,9 +75,7 @@ const uniffiIsDebug =
 export function clearLogger(): void {
   uniffiCaller.rustCall(
     /*caller:*/ (callStatus) => {
-      nativeModule().ubrn_uniffi_rust_lib_files_fn_func_clear_logger(
-        callStatus
-      );
+      nativeModule().ubrn_uniffi_sia_lib_fn_func_clear_logger(callStatus);
     },
     /*liftString:*/ FfiConverterString.lift
   );
@@ -92,19 +90,19 @@ export async function getHostSettings(
     return await uniffiRustCallAsync(
       /*rustCaller:*/ uniffiCaller,
       /*rustFutureFunc:*/ () => {
-        return nativeModule().ubrn_uniffi_rust_lib_files_fn_func_get_host_settings(
+        return nativeModule().ubrn_uniffi_sia_lib_fn_func_get_host_settings(
           FfiConverterString.lower(address),
           FfiConverterUInt16.lower(port)
         );
       },
       /*pollFunc:*/ nativeModule()
-        .ubrn_ffi_rust_lib_files_rust_future_poll_rust_buffer,
+        .ubrn_ffi_sia_lib_rust_future_poll_rust_buffer,
       /*cancelFunc:*/ nativeModule()
-        .ubrn_ffi_rust_lib_files_rust_future_cancel_rust_buffer,
+        .ubrn_ffi_sia_lib_rust_future_cancel_rust_buffer,
       /*completeFunc:*/ nativeModule()
-        .ubrn_ffi_rust_lib_files_rust_future_complete_rust_buffer,
+        .ubrn_ffi_sia_lib_rust_future_complete_rust_buffer,
       /*freeFunc:*/ nativeModule()
-        .ubrn_ffi_rust_lib_files_rust_future_free_rust_buffer,
+        .ubrn_ffi_sia_lib_rust_future_free_rust_buffer,
       /*liftFunc:*/ FfiConverterString.lift.bind(FfiConverterString),
       /*liftString:*/ FfiConverterString.lift,
       /*asyncOpts:*/ asyncOpts_,
@@ -119,32 +117,10 @@ export async function getHostSettings(
     throw __error;
   }
 }
-export function initLogging(): void {
-  uniffiCaller.rustCall(
-    /*caller:*/ (callStatus) => {
-      nativeModule().ubrn_uniffi_rust_lib_files_fn_func_init_logging(
-        callStatus
-      );
-    },
-    /*liftString:*/ FfiConverterString.lift
-  );
-}
-export function sdkVersion(): string {
-  return FfiConverterString.lift(
-    uniffiCaller.rustCall(
-      /*caller:*/ (callStatus) => {
-        return nativeModule().ubrn_uniffi_rust_lib_files_fn_func_sdk_version(
-          callStatus
-        );
-      },
-      /*liftString:*/ FfiConverterString.lift
-    )
-  );
-}
 export function setLogger(logger: JsLogger): void {
   uniffiCaller.rustCall(
     /*caller:*/ (callStatus) => {
-      nativeModule().ubrn_uniffi_rust_lib_files_fn_func_set_logger(
+      nativeModule().ubrn_uniffi_sia_lib_fn_func_set_logger(
         FfiConverterTypeJsLogger.lower(logger),
         callStatus
       );
@@ -295,7 +271,7 @@ export class JsLoggerImpl extends UniffiAbstractObject implements JsLogger {
   public log(level: string, message: string): void {
     uniffiCaller.rustCall(
       /*caller:*/ (callStatus) => {
-        nativeModule().ubrn_uniffi_rust_lib_files_fn_method_jslogger_log(
+        nativeModule().ubrn_uniffi_sia_lib_fn_method_jslogger_log(
           uniffiTypeJsLoggerImplObjectFactory.clonePointer(this),
           FfiConverterString.lower(level),
           FfiConverterString.lower(message),
@@ -361,7 +337,7 @@ const uniffiTypeJsLoggerImplObjectFactory: UniffiObjectFactory<JsLogger> =
         const pointer = this.pointer(obj);
         return uniffiCaller.rustCall(
           /*caller:*/ (callStatus) =>
-            nativeModule().ubrn_uniffi_rust_lib_files_fn_clone_jslogger(
+            nativeModule().ubrn_uniffi_sia_lib_fn_clone_jslogger(
               pointer,
               callStatus
             ),
@@ -372,7 +348,7 @@ const uniffiTypeJsLoggerImplObjectFactory: UniffiObjectFactory<JsLogger> =
       freePointer(pointer: UnsafeMutableRawPointer): void {
         uniffiCaller.rustCall(
           /*caller:*/ (callStatus) =>
-            nativeModule().ubrn_uniffi_rust_lib_files_fn_free_jslogger(
+            nativeModule().ubrn_uniffi_sia_lib_fn_free_jslogger(
               pointer,
               callStatus
             ),
@@ -430,7 +406,7 @@ const uniffiCallbackInterfaceJsLogger: {
     },
   },
   register: () => {
-    nativeModule().ubrn_uniffi_rust_lib_files_fn_init_callback_vtable_jslogger(
+    nativeModule().ubrn_uniffi_sia_lib_fn_init_callback_vtable_jslogger(
       uniffiCallbackInterfaceJsLogger.vtable
     );
   },
@@ -451,7 +427,7 @@ function uniffiEnsureInitialized() {
   const bindingsContractVersion = 29;
   // Get the scaffolding contract version by calling the into the dylib
   const scaffoldingContractVersion =
-    nativeModule().ubrn_ffi_rust_lib_files_uniffi_contract_version();
+    nativeModule().ubrn_ffi_sia_lib_uniffi_contract_version();
   if (bindingsContractVersion !== scaffoldingContractVersion) {
     throw new UniffiInternalError.ContractVersionMismatch(
       scaffoldingContractVersion,
@@ -459,51 +435,30 @@ function uniffiEnsureInitialized() {
     );
   }
   if (
-    nativeModule().ubrn_uniffi_rust_lib_files_checksum_func_clear_logger() !==
-    11
+    nativeModule().ubrn_uniffi_sia_lib_checksum_func_clear_logger() !== 18595
   ) {
     throw new UniffiInternalError.ApiChecksumMismatch(
-      'uniffi_rust_lib_files_checksum_func_clear_logger'
+      'uniffi_sia_lib_checksum_func_clear_logger'
     );
   }
   if (
-    nativeModule().ubrn_uniffi_rust_lib_files_checksum_func_get_host_settings() !==
-    54980
+    nativeModule().ubrn_uniffi_sia_lib_checksum_func_get_host_settings() !==
+    51400
   ) {
     throw new UniffiInternalError.ApiChecksumMismatch(
-      'uniffi_rust_lib_files_checksum_func_get_host_settings'
+      'uniffi_sia_lib_checksum_func_get_host_settings'
+    );
+  }
+  if (nativeModule().ubrn_uniffi_sia_lib_checksum_func_set_logger() !== 5304) {
+    throw new UniffiInternalError.ApiChecksumMismatch(
+      'uniffi_sia_lib_checksum_func_set_logger'
     );
   }
   if (
-    nativeModule().ubrn_uniffi_rust_lib_files_checksum_func_init_logging() !==
-    16584
+    nativeModule().ubrn_uniffi_sia_lib_checksum_method_jslogger_log() !== 50981
   ) {
     throw new UniffiInternalError.ApiChecksumMismatch(
-      'uniffi_rust_lib_files_checksum_func_init_logging'
-    );
-  }
-  if (
-    nativeModule().ubrn_uniffi_rust_lib_files_checksum_func_sdk_version() !==
-    26490
-  ) {
-    throw new UniffiInternalError.ApiChecksumMismatch(
-      'uniffi_rust_lib_files_checksum_func_sdk_version'
-    );
-  }
-  if (
-    nativeModule().ubrn_uniffi_rust_lib_files_checksum_func_set_logger() !==
-    20593
-  ) {
-    throw new UniffiInternalError.ApiChecksumMismatch(
-      'uniffi_rust_lib_files_checksum_func_set_logger'
-    );
-  }
-  if (
-    nativeModule().ubrn_uniffi_rust_lib_files_checksum_method_jslogger_log() !==
-    1039
-  ) {
-    throw new UniffiInternalError.ApiChecksumMismatch(
-      'uniffi_rust_lib_files_checksum_method_jslogger_log'
+      'uniffi_sia_lib_checksum_method_jslogger_log'
     );
   }
 

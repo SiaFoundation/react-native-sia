@@ -1,13 +1,9 @@
 uniffi::setup_scaffolding!();
 
 pub mod api;
+mod logger;
 
-use std::sync::{Arc, RwLock, OnceLock};
-
-#[uniffi::export]
-pub fn sdk_version() -> String {
-    "0.1.0".to_string()
-}
+use logger::log_to_js;
 
 #[derive(Debug, thiserror::Error, uniffi::Error)]
 pub enum SiaError {
@@ -40,56 +36,9 @@ pub async fn get_host_settings(address: String, port: u16) -> Result<String, Sia
     match res {
         Ok(result) => Ok(result),
         Err(e) => {
-            // Also push the error string to JS logger if present.
-            __log_to_js("error", e.to_string());
+            // Push the error string to JS logger.
+            log_to_js("error", e.to_string());
             Err(SiaError::Message(e.to_string()))
         }
     }
 }
-
-#[uniffi::export]
-pub fn init_logging() {
-    // Initialize os_log based tracing. Safe to call multiple times.
-    use tracing_subscriber::prelude::*;
-    let _ = tracing_subscriber::registry()
-        .with(tracing_oslog::OsLogger::new("SiaExample", "Rust"))
-        .try_init();
-    tracing::info!(target: "SiaExample", "Rust logging initialized");
-}
-
-// -------- Logger callback into Javascript --------
-#[uniffi::export(with_foreign)]
-pub trait JsLogger: Send + Sync {
-    fn log(&self, level: String, message: String);
-}
-
-static LOGGER: OnceLock<RwLock<Option<Arc<dyn JsLogger>>>> = OnceLock::new();
-
-fn log_to_js(level: &str, message: String) {
-    if let Some(lock) = LOGGER.get() {
-        if let Ok(guard) = lock.read() {
-            if let Some(logger) = &*guard {
-                // Best-effort call into JS.
-                logger.log(level.to_string(), message);
-            }
-        }
-    }
-}
-
-#[uniffi::export]
-pub fn set_logger(logger: Arc<dyn JsLogger>) {
-    let lock = LOGGER.get_or_init(|| RwLock::new(None));
-    if let Ok(mut guard) = lock.write() {
-        *guard = Some(logger);
-    }
-}
-
-#[uniffi::export]
-pub fn clear_logger() {
-    if let Some(lock) = LOGGER.get() {
-        if let Ok(mut guard) = lock.write() { *guard = None; }
-    }
-}
-
-// Re-export helper for internal modules.
-pub(crate) use log_to_js as __log_to_js;

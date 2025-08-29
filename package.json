@@ -1,6 +1,6 @@
 {
   "name": "react-native-sia",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "The Sia SDK for React Native.",
   "main": "./lib/module/public.js",
   "types": "./lib/typescript/src/public.d.ts",
@@ -62,6 +62,7 @@
     "android",
     "ios",
     "cpp",
+    "SiaFramework.xcframework",
     "*.podspec",
     "react-native.config.js",
     "!rust",

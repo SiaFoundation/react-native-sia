@@ -1,5 +1,5 @@
 ---
-'react-native-sia-example': patch
+'react-native-sia': patch
 ---
 
 Initialize versioning.

@@ -98,6 +98,7 @@
     "registry": "https://registry.npmjs.org/"
   },
   "workspaces": [
+    ".",
     "example"
   ],
   "packageManager": "yarn@3.6.1",

@@ -1,6 +1,6 @@
 {
   "name": "react-native-sia",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "The Sia SDK for React Native.",
   "main": "./lib/module/public.js",
   "types": "./lib/typescript/src/public.d.ts",
@@ -20,8 +20,8 @@
     "ubrn:clean": "yarn dlx rimraf --glob cpp android/CMakeLists.txt android/src/main/java 'android/*.cpp' ios 'src/Native*' 'src/index.*ts*' src/generated SiaFramework.xcframework",
     "example": "yarn workspace react-native-sia-example",
     "test": "jest",
-    "typecheck": "tsc",
-    "lint": "eslint \"**/*.{js,ts,tsx}\"",
+    "typecheck": "tsc -p tsconfig.build.json",
+    "lint": "eslint -c eslint.config.mjs",
     "clean": "del-cli android/build example/android/build example/android/app/build example/ios/build lib",
     "prepare": "bob build",
     "version": "changeset version && yarn install",
@@ -49,7 +49,6 @@
     "react": "19.1.0",
     "react-native": "0.81.0",
     "react-native-builder-bob": "^0.40.13",
-    "turbo": "^1.10.7",
     "typescript": "^5.8.3"
   },
   "peerDependencies": {

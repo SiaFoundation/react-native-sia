@@ -12,21 +12,61 @@ env:
 
 jobs:
   release:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     steps:
       - name: Checkout all commits
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
       - name: Setup
         uses: ./.github/actions/setup
-
-      - name: Release or update pull request
+      # If there are changesets, then we are in PR prep mode and will
+      # update the release pull request. Note that if there are no changesets
+      # this step will be skipped because no publish script is specified.
+      - name: Update release pull request
+        id: changesets
         uses: changesets/action@v1
         with:
           commit: 'chore: release packages'
           version: yarn version
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Use appropriate Xcode version
+        if: steps.changesets.outputs.hasChangesets == 'false'
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '16.2'
+      - name: Fix netrc permissions for CocoaPods
+        if: steps.changesets.outputs.hasChangesets == 'false'
+        run: |
+          if [ -f "$HOME/.netrc" ]; then
+            chmod 600 "$HOME/.netrc"
+          fi
+      - name: Install Rust toolchain (nightly + iOS targets)
+        if: steps.changesets.outputs.hasChangesets == 'false'
+        uses: dtolnay/rust-toolchain@nightly
+        with:
+          targets: aarch64-apple-ios,aarch64-apple-ios-sim
+      # If no changesets were detected in the PR prep step then we are in
+      # release/publish mode. Build artifacts and then check for and publish
+      # any new versions to NPM.
+      - name: Build iOS
+        if: steps.changesets.outputs.hasChangesets == 'false'
+        run: yarn ubrn:ios
+      # - name: Build Android
+      #   if: steps.changesets.outputs.hasChangesets == 'false'
+      #   run: yarn ubrn:android
+      # - name: Build Web
+      #   if: steps.changesets.outputs.hasChangesets == 'false'
+      #   run: yarn ubrn:ios && yarn ubrn:android
+      - name: Prepare
+        if: steps.changesets.outputs.hasChangesets == 'false'
+        run: yarn prepare
+      - name: Publish to NPM and create GitHub releases
+        id: changesets_release
+        if: steps.changesets.outputs.hasChangesets == 'false'
+        uses: changesets/action@v1
+        with:
           publish: yarn release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

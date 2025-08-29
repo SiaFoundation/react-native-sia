@@ -62,7 +62,7 @@
     "android",
     "ios",
     "cpp",
-    "SiaFramework.xcframework",
+    "SiaFramework.xcframework/**",
     "*.podspec",
     "react-native.config.js",
     "!rust",

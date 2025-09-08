@@ -138,7 +138,7 @@ impl App {
         Ok(())
     }
 
-    pub fn upload(&self, encryption_key_str: String, data_shards: u8, parity_shards: u8) -> Result<Upload, SiaError> {
+    pub async fn upload(&self, encryption_key_str: String, data_shards: u8, parity_shards: u8) -> Result<Upload, SiaError> {
         let mut encryption_key = [0u8;32];
         hex::decode_to_slice(encryption_key_str, &mut encryption_key).map_err(|e| SiaError::Message(e.to_string()))?;
         let buf = ChunkedBuffer::new();
@@ -151,6 +151,7 @@ impl App {
         let (tx, rx) = oneshot::channel();
         log_to_js("info", "inited buf".into());
         let result = tokio::spawn(async move {
+            log_to_js("info", "task started".into());
             let res = sdk.upload(inner_buf, encryption_key, data_shards, parity_shards).await.map_err(|e| SiaError::Message(e.to_string()));
             let _ = tx.send(res);
         });

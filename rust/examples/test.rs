@@ -14,7 +14,7 @@ async fn main() {
     log::info!("app created");
     app.connect().await.unwrap();
     log::info!("connected");
-    let upload = app.upload("1".repeat(64), 2, 2).unwrap();
+    let upload = app.upload("1".repeat(64), 2, 2).await.unwrap();
     log::info!("upload started");
     let buf =  vec![0u8; 1024 * 1024];
     upload.write(&buf).await.unwrap();

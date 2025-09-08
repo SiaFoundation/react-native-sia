@@ -43,6 +43,9 @@ interface NativeModuleInterface {
   ubrn_uniffi_sia_lib_fn_func_clear_logger(
     uniffi_out_err: UniffiRustCallStatus
   ): void;
+  ubrn_uniffi_sia_lib_fn_func_init_rust_log(
+    uniffi_out_err: UniffiRustCallStatus
+  ): void;
   ubrn_uniffi_sia_lib_fn_func_set_logger(
     logger: bigint,
     uniffi_out_err: UniffiRustCallStatus
@@ -192,6 +195,7 @@ interface NativeModuleInterface {
     uniffi_out_err: UniffiRustCallStatus
   ): void;
   ubrn_uniffi_sia_lib_checksum_func_clear_logger(): number;
+  ubrn_uniffi_sia_lib_checksum_func_init_rust_log(): number;
   ubrn_uniffi_sia_lib_checksum_func_set_logger(): number;
   ubrn_uniffi_sia_lib_checksum_func_upload_bullshit(): number;
   ubrn_uniffi_sia_lib_checksum_method_jslogger_log(): number;

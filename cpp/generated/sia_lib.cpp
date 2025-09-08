@@ -162,6 +162,8 @@ extern "C" {
     );
     void uniffi_sia_lib_fn_func_clear_logger(RustCallStatus *uniffi_out_err
     );
+    void uniffi_sia_lib_fn_func_init_rust_log(RustCallStatus *uniffi_out_err
+    );
     void uniffi_sia_lib_fn_func_set_logger(
         void * logger, 
         RustCallStatus *uniffi_out_err
@@ -381,6 +383,8 @@ extern "C" {
         RustCallStatus *uniffi_out_err
     );
     uint16_t uniffi_sia_lib_checksum_func_clear_logger(
+    );
+    uint16_t uniffi_sia_lib_checksum_func_init_rust_log(
     );
     uint16_t uniffi_sia_lib_checksum_func_set_logger(
     );
@@ -2255,6 +2259,14 @@ NativeSiaLib::NativeSiaLib(
             return this->cpp_uniffi_sia_lib_fn_func_clear_logger(rt, thisVal, args, count);
         }
     );
+    props["ubrn_uniffi_sia_lib_fn_func_init_rust_log"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_sia_lib_fn_func_init_rust_log"),
+        0,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_sia_lib_fn_func_init_rust_log(rt, thisVal, args, count);
+        }
+    );
     props["ubrn_uniffi_sia_lib_fn_func_set_logger"] = jsi::Function::createFromHostFunction(
         rt,
         jsi::PropNameID::forAscii(rt, "ubrn_uniffi_sia_lib_fn_func_set_logger"),
@@ -2695,6 +2707,14 @@ NativeSiaLib::NativeSiaLib(
             return this->cpp_uniffi_sia_lib_checksum_func_clear_logger(rt, thisVal, args, count);
         }
     );
+    props["ubrn_uniffi_sia_lib_checksum_func_init_rust_log"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_sia_lib_checksum_func_init_rust_log"),
+        0,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_sia_lib_checksum_func_init_rust_log(rt, thisVal, args, count);
+        }
+    );
     props["ubrn_uniffi_sia_lib_checksum_func_set_logger"] = jsi::Function::createFromHostFunction(
         rt,
         jsi::PropNameID::forAscii(rt, "ubrn_uniffi_sia_lib_checksum_func_set_logger"),
@@ -2852,6 +2872,15 @@ jsi::Value NativeSiaLib::cpp_uniffi_sia_lib_fn_method_jslogger_log(jsi::Runtime&
 jsi::Value NativeSiaLib::cpp_uniffi_sia_lib_fn_func_clear_logger(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
         RustCallStatus status = uniffi::sia_lib::Bridging<RustCallStatus>::rustSuccess(rt);
         uniffi_sia_lib_fn_func_clear_logger(&status
+        );
+        uniffi::sia_lib::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status, args[count - 1]);
+
+        
+        return jsi::Value::undefined();
+}
+jsi::Value NativeSiaLib::cpp_uniffi_sia_lib_fn_func_init_rust_log(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        RustCallStatus status = uniffi::sia_lib::Bridging<RustCallStatus>::rustSuccess(rt);
+        uniffi_sia_lib_fn_func_init_rust_log(&status
         );
         uniffi::sia_lib::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status, args[count - 1]);
 
@@ -3280,6 +3309,13 @@ jsi::Value NativeSiaLib::cpp_ffi_sia_lib_rust_future_complete_void(jsi::Runtime&
 }
 jsi::Value NativeSiaLib::cpp_uniffi_sia_lib_checksum_func_clear_logger(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
         auto value = uniffi_sia_lib_checksum_func_clear_logger(
+        );
+
+        
+        return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeSiaLib::cpp_uniffi_sia_lib_checksum_func_init_rust_log(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        auto value = uniffi_sia_lib_checksum_func_init_rust_log(
         );
 
         

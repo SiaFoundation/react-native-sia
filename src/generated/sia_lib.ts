@@ -79,6 +79,14 @@ export function clearLogger(): void {
     /*liftString:*/ FfiConverterString.lift
   );
 }
+export function initRustLog(): void {
+  uniffiCaller.rustCall(
+    /*caller:*/ (callStatus) => {
+      nativeModule().ubrn_uniffi_sia_lib_fn_func_init_rust_log(callStatus);
+    },
+    /*liftString:*/ FfiConverterString.lift
+  );
+}
 export function setLogger(logger: JsLogger): void {
   uniffiCaller.rustCall(
     /*caller:*/ (callStatus) => {
@@ -427,6 +435,13 @@ function uniffiEnsureInitialized() {
   ) {
     throw new UniffiInternalError.ApiChecksumMismatch(
       'uniffi_sia_lib_checksum_func_clear_logger'
+    );
+  }
+  if (
+    nativeModule().ubrn_uniffi_sia_lib_checksum_func_init_rust_log() !== 52180
+  ) {
+    throw new UniffiInternalError.ApiChecksumMismatch(
+      'uniffi_sia_lib_checksum_func_init_rust_log'
     );
   }
   if (nativeModule().ubrn_uniffi_sia_lib_checksum_func_set_logger() !== 5304) {

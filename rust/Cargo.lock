@@ -2186,6 +2186,7 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "indexd",
+ "log",
  "quinn",
  "rustls",
  "serde_json",

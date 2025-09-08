@@ -16,6 +16,7 @@ sia_sdk = { git="https://github.com/siafoundation/sia-sdk-rs", rev="a9c91bf5f063
 tokio= { version = "^1.47.1", features = ["rt-multi-thread", "macros", "time", "net"] }
 uniffi = "0.29.4"
 thiserror = "1.0.64"
+log = "0.4.28"
 
 [build-dependencies]
 uniffi = { version = "0.29.4", features = ["build"] }

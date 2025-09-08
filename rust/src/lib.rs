@@ -3,7 +3,6 @@ uniffi::setup_scaffolding!();
 pub mod api;
 mod logger;
 
-use logger::log_to_js;
 use sia::signing::PrivateKey;
 
 #[derive(Debug, thiserror::Error, uniffi::Error)]

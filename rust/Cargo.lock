@@ -1134,7 +1134,6 @@ dependencies = [
 [[package]]
 name = "indexd"
 version = "0.0.1"
-source = "git+https://github.com/siafoundation/sia-sdk-rs?rev=a9c91bf5f06361241ee52c1aa350e8fceeed42f1#a9c91bf5f06361241ee52c1aa350e8fceeed42f1"
 dependencies = [
  "blake2b_simd",
  "bytes",
@@ -2186,7 +2185,6 @@ checksum = "0fda2ff0d084019ba4d7c6f371c95d8fd75ce3524c3cb8fb653a3023f6323e64"
 [[package]]
 name = "sia-sdk-derive"
 version = "0.0.2"
-source = "git+https://github.com/siafoundation/sia-sdk-rs?rev=a9c91bf5f06361241ee52c1aa350e8fceeed42f1#a9c91bf5f06361241ee52c1aa350e8fceeed42f1"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2198,6 +2196,7 @@ name = "sia_lib"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "hex",
  "indexd",
  "log",
  "quinn",
@@ -2212,7 +2211,6 @@ dependencies = [
 [[package]]
 name = "sia_sdk"
 version = "0.0.2"
-source = "git+https://github.com/siafoundation/sia-sdk-rs?rev=a9c91bf5f06361241ee52c1aa350e8fceeed42f1#a9c91bf5f06361241ee52c1aa350e8fceeed42f1"
 dependencies = [
  "base64",
  "bip39",

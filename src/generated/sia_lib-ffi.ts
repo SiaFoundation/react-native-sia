@@ -23,6 +23,47 @@ interface NativeModuleInterface {
     buffer: Uint8Array,
     uniffi_out_err: UniffiRustCallStatus
   ): string;
+  ubrn_uniffi_sia_lib_fn_clone_app(
+    ptr: bigint,
+    uniffi_out_err: UniffiRustCallStatus
+  ): bigint;
+  ubrn_uniffi_sia_lib_fn_free_app(
+    ptr: bigint,
+    uniffi_out_err: UniffiRustCallStatus
+  ): void;
+  ubrn_uniffi_sia_lib_fn_constructor_app_new(
+    url: Uint8Array,
+    name: Uint8Array,
+    appSeed: Uint8Array,
+    description: Uint8Array,
+    uniffi_out_err: UniffiRustCallStatus
+  ): bigint;
+  ubrn_uniffi_sia_lib_fn_method_app_connect(ptr: bigint): bigint;
+  ubrn_uniffi_sia_lib_fn_method_app_upload(
+    ptr: bigint,
+    encryptionKeyStr: Uint8Array,
+    dataShards: number,
+    parityShards: number
+  ): bigint;
+  ubrn_uniffi_sia_lib_fn_clone_chunkedbuffer(
+    ptr: bigint,
+    uniffi_out_err: UniffiRustCallStatus
+  ): bigint;
+  ubrn_uniffi_sia_lib_fn_free_chunkedbuffer(
+    ptr: bigint,
+    uniffi_out_err: UniffiRustCallStatus
+  ): void;
+  ubrn_uniffi_sia_lib_fn_constructor_chunkedbuffer_new(
+    uniffi_out_err: UniffiRustCallStatus
+  ): bigint;
+  ubrn_uniffi_sia_lib_fn_method_chunkedbuffer_close(
+    ptr: bigint,
+    uniffi_out_err: UniffiRustCallStatus
+  ): void;
+  ubrn_uniffi_sia_lib_fn_method_chunkedbuffer_push_chunk(
+    ptr: bigint,
+    chunk: Uint8Array
+  ): bigint;
   ubrn_uniffi_sia_lib_fn_clone_jslogger(
     ptr: bigint,
     uniffi_out_err: UniffiRustCallStatus
@@ -40,6 +81,19 @@ interface NativeModuleInterface {
     message: Uint8Array,
     uniffi_out_err: UniffiRustCallStatus
   ): void;
+  ubrn_uniffi_sia_lib_fn_clone_upload(
+    ptr: bigint,
+    uniffi_out_err: UniffiRustCallStatus
+  ): bigint;
+  ubrn_uniffi_sia_lib_fn_free_upload(
+    ptr: bigint,
+    uniffi_out_err: UniffiRustCallStatus
+  ): void;
+  ubrn_uniffi_sia_lib_fn_method_upload_finish(ptr: bigint): bigint;
+  ubrn_uniffi_sia_lib_fn_method_upload_write(
+    ptr: bigint,
+    buf: Uint8Array
+  ): bigint;
   ubrn_uniffi_sia_lib_fn_func_clear_logger(
     uniffi_out_err: UniffiRustCallStatus
   ): void;
@@ -50,7 +104,6 @@ interface NativeModuleInterface {
     logger: bigint,
     uniffi_out_err: UniffiRustCallStatus
   ): void;
-  ubrn_uniffi_sia_lib_fn_func_upload_bullshit(): bigint;
   ubrn_ffi_sia_lib_rust_future_poll_u8(
     handle: bigint,
     callback: UniffiRustFutureContinuationCallback,
@@ -197,10 +250,29 @@ interface NativeModuleInterface {
   ubrn_uniffi_sia_lib_checksum_func_clear_logger(): number;
   ubrn_uniffi_sia_lib_checksum_func_init_rust_log(): number;
   ubrn_uniffi_sia_lib_checksum_func_set_logger(): number;
-  ubrn_uniffi_sia_lib_checksum_func_upload_bullshit(): number;
+  ubrn_uniffi_sia_lib_checksum_method_app_connect(): number;
+  ubrn_uniffi_sia_lib_checksum_method_app_upload(): number;
+  ubrn_uniffi_sia_lib_checksum_method_chunkedbuffer_close(): number;
+  ubrn_uniffi_sia_lib_checksum_method_chunkedbuffer_push_chunk(): number;
   ubrn_uniffi_sia_lib_checksum_method_jslogger_log(): number;
+  ubrn_uniffi_sia_lib_checksum_method_upload_finish(): number;
+  ubrn_uniffi_sia_lib_checksum_method_upload_write(): number;
+  ubrn_uniffi_sia_lib_checksum_constructor_app_new(): number;
+  ubrn_uniffi_sia_lib_checksum_constructor_chunkedbuffer_new(): number;
   ubrn_ffi_sia_lib_uniffi_contract_version(): number;
+  ubrn_uniffi_internal_fn_method_app_ffi__bless_pointer(
+    pointer: bigint,
+    uniffi_out_err: UniffiRustCallStatus
+  ): UniffiRustArcPtr;
+  ubrn_uniffi_internal_fn_method_chunkedbuffer_ffi__bless_pointer(
+    pointer: bigint,
+    uniffi_out_err: UniffiRustCallStatus
+  ): UniffiRustArcPtr;
   ubrn_uniffi_internal_fn_method_jslogger_ffi__bless_pointer(
+    pointer: bigint,
+    uniffi_out_err: UniffiRustCallStatus
+  ): UniffiRustArcPtr;
+  ubrn_uniffi_internal_fn_method_upload_ffi__bless_pointer(
     pointer: bigint,
     uniffi_out_err: UniffiRustCallStatus
   ): UniffiRustArcPtr;

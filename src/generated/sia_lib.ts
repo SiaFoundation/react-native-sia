@@ -41,10 +41,12 @@ import {
   type UniffiRustCallStatus,
   type UnsafeMutableRawPointer,
   AbstractFfiConverterByteArray,
+  FfiConverterArrayBuffer,
   FfiConverterInt32,
   FfiConverterObject,
   FfiConverterObjectWithCallbacks,
   FfiConverterUInt64,
+  FfiConverterUInt8,
   RustBuffer,
   UniffiAbstractObject,
   UniffiError,
@@ -97,32 +99,6 @@ export function setLogger(logger: JsLogger): void {
     },
     /*liftString:*/ FfiConverterString.lift
   );
-}
-export async function uploadBullshit(asyncOpts_?: {
-  signal: AbortSignal;
-}): Promise<void> {
-  const __stack = uniffiIsDebug ? new Error().stack : undefined;
-  try {
-    return await uniffiRustCallAsync(
-      /*rustCaller:*/ uniffiCaller,
-      /*rustFutureFunc:*/ () => {
-        return nativeModule().ubrn_uniffi_sia_lib_fn_func_upload_bullshit();
-      },
-      /*pollFunc:*/ nativeModule().ubrn_ffi_sia_lib_rust_future_poll_void,
-      /*cancelFunc:*/ nativeModule().ubrn_ffi_sia_lib_rust_future_cancel_void,
-      /*completeFunc:*/ nativeModule()
-        .ubrn_ffi_sia_lib_rust_future_complete_void,
-      /*freeFunc:*/ nativeModule().ubrn_ffi_sia_lib_rust_future_free_void,
-      /*liftFunc:*/ (_v) => {},
-      /*liftString:*/ FfiConverterString.lift,
-      /*asyncOpts:*/ asyncOpts_
-    );
-  } catch (__error: any) {
-    if (uniffiIsDebug && __error instanceof Error) {
-      __error.stack = __stack;
-    }
-    throw __error;
-  }
 }
 
 const stringConverter = {
@@ -247,6 +223,358 @@ const FfiConverterTypeSiaError = (() => {
   }
   return new FFIConverter();
 })();
+
+export interface AppInterface {
+  connect(asyncOpts_?: { signal: AbortSignal }) /*throws*/ : Promise<void>;
+  upload(
+    encryptionKeyStr: string,
+    dataShards: /*u8*/ number,
+    parityShards: /*u8*/ number,
+    asyncOpts_?: { signal: AbortSignal }
+  ) /*throws*/ : Promise<UploadInterface>;
+}
+
+export class App extends UniffiAbstractObject implements AppInterface {
+  readonly [uniffiTypeNameSymbol] = 'App';
+  readonly [destructorGuardSymbol]: UniffiRustArcPtr;
+  readonly [pointerLiteralSymbol]: UnsafeMutableRawPointer;
+  constructor(
+    url: string,
+    name: string,
+    appSeed: string,
+    description: string
+  ) /*throws*/ {
+    super();
+    const pointer = uniffiCaller.rustCallWithError(
+      /*liftError:*/ FfiConverterTypeSiaError.lift.bind(
+        FfiConverterTypeSiaError
+      ),
+      /*caller:*/ (callStatus) => {
+        return nativeModule().ubrn_uniffi_sia_lib_fn_constructor_app_new(
+          FfiConverterString.lower(url),
+          FfiConverterString.lower(name),
+          FfiConverterString.lower(appSeed),
+          FfiConverterString.lower(description),
+          callStatus
+        );
+      },
+      /*liftString:*/ FfiConverterString.lift
+    );
+    this[pointerLiteralSymbol] = pointer;
+    this[destructorGuardSymbol] = uniffiTypeAppObjectFactory.bless(pointer);
+  }
+
+  public async connect(asyncOpts_?: {
+    signal: AbortSignal;
+  }): Promise<void> /*throws*/ {
+    const __stack = uniffiIsDebug ? new Error().stack : undefined;
+    try {
+      return await uniffiRustCallAsync(
+        /*rustCaller:*/ uniffiCaller,
+        /*rustFutureFunc:*/ () => {
+          return nativeModule().ubrn_uniffi_sia_lib_fn_method_app_connect(
+            uniffiTypeAppObjectFactory.clonePointer(this)
+          );
+        },
+        /*pollFunc:*/ nativeModule().ubrn_ffi_sia_lib_rust_future_poll_void,
+        /*cancelFunc:*/ nativeModule().ubrn_ffi_sia_lib_rust_future_cancel_void,
+        /*completeFunc:*/ nativeModule()
+          .ubrn_ffi_sia_lib_rust_future_complete_void,
+        /*freeFunc:*/ nativeModule().ubrn_ffi_sia_lib_rust_future_free_void,
+        /*liftFunc:*/ (_v) => {},
+        /*liftString:*/ FfiConverterString.lift,
+        /*asyncOpts:*/ asyncOpts_,
+        /*errorHandler:*/ FfiConverterTypeSiaError.lift.bind(
+          FfiConverterTypeSiaError
+        )
+      );
+    } catch (__error: any) {
+      if (uniffiIsDebug && __error instanceof Error) {
+        __error.stack = __stack;
+      }
+      throw __error;
+    }
+  }
+
+  public async upload(
+    encryptionKeyStr: string,
+    dataShards: /*u8*/ number,
+    parityShards: /*u8*/ number,
+    asyncOpts_?: { signal: AbortSignal }
+  ): Promise<UploadInterface> /*throws*/ {
+    const __stack = uniffiIsDebug ? new Error().stack : undefined;
+    try {
+      return await uniffiRustCallAsync(
+        /*rustCaller:*/ uniffiCaller,
+        /*rustFutureFunc:*/ () => {
+          return nativeModule().ubrn_uniffi_sia_lib_fn_method_app_upload(
+            uniffiTypeAppObjectFactory.clonePointer(this),
+            FfiConverterString.lower(encryptionKeyStr),
+            FfiConverterUInt8.lower(dataShards),
+            FfiConverterUInt8.lower(parityShards)
+          );
+        },
+        /*pollFunc:*/ nativeModule().ubrn_ffi_sia_lib_rust_future_poll_pointer,
+        /*cancelFunc:*/ nativeModule()
+          .ubrn_ffi_sia_lib_rust_future_cancel_pointer,
+        /*completeFunc:*/ nativeModule()
+          .ubrn_ffi_sia_lib_rust_future_complete_pointer,
+        /*freeFunc:*/ nativeModule().ubrn_ffi_sia_lib_rust_future_free_pointer,
+        /*liftFunc:*/ FfiConverterTypeUpload.lift.bind(FfiConverterTypeUpload),
+        /*liftString:*/ FfiConverterString.lift,
+        /*asyncOpts:*/ asyncOpts_,
+        /*errorHandler:*/ FfiConverterTypeSiaError.lift.bind(
+          FfiConverterTypeSiaError
+        )
+      );
+    } catch (__error: any) {
+      if (uniffiIsDebug && __error instanceof Error) {
+        __error.stack = __stack;
+      }
+      throw __error;
+    }
+  }
+
+  /**
+   * {@inheritDoc uniffi-bindgen-react-native#UniffiAbstractObject.uniffiDestroy}
+   */
+  uniffiDestroy(): void {
+    const ptr = (this as any)[destructorGuardSymbol];
+    if (ptr !== undefined) {
+      const pointer = uniffiTypeAppObjectFactory.pointer(this);
+      uniffiTypeAppObjectFactory.freePointer(pointer);
+      uniffiTypeAppObjectFactory.unbless(ptr);
+      delete (this as any)[destructorGuardSymbol];
+    }
+  }
+
+  static instanceOf(obj: any): obj is App {
+    return uniffiTypeAppObjectFactory.isConcreteType(obj);
+  }
+}
+
+const uniffiTypeAppObjectFactory: UniffiObjectFactory<AppInterface> = (() => {
+  return {
+    create(pointer: UnsafeMutableRawPointer): AppInterface {
+      const instance = Object.create(App.prototype);
+      instance[pointerLiteralSymbol] = pointer;
+      instance[destructorGuardSymbol] = this.bless(pointer);
+      instance[uniffiTypeNameSymbol] = 'App';
+      return instance;
+    },
+
+    bless(p: UnsafeMutableRawPointer): UniffiRustArcPtr {
+      return uniffiCaller.rustCall(
+        /*caller:*/ (status) =>
+          nativeModule().ubrn_uniffi_internal_fn_method_app_ffi__bless_pointer(
+            p,
+            status
+          ),
+        /*liftString:*/ FfiConverterString.lift
+      );
+    },
+
+    unbless(ptr: UniffiRustArcPtr) {
+      ptr.markDestroyed();
+    },
+
+    pointer(obj: AppInterface): UnsafeMutableRawPointer {
+      if ((obj as any)[destructorGuardSymbol] === undefined) {
+        throw new UniffiInternalError.UnexpectedNullPointer();
+      }
+      return (obj as any)[pointerLiteralSymbol];
+    },
+
+    clonePointer(obj: AppInterface): UnsafeMutableRawPointer {
+      const pointer = this.pointer(obj);
+      return uniffiCaller.rustCall(
+        /*caller:*/ (callStatus) =>
+          nativeModule().ubrn_uniffi_sia_lib_fn_clone_app(pointer, callStatus),
+        /*liftString:*/ FfiConverterString.lift
+      );
+    },
+
+    freePointer(pointer: UnsafeMutableRawPointer): void {
+      uniffiCaller.rustCall(
+        /*caller:*/ (callStatus) =>
+          nativeModule().ubrn_uniffi_sia_lib_fn_free_app(pointer, callStatus),
+        /*liftString:*/ FfiConverterString.lift
+      );
+    },
+
+    isConcreteType(obj: any): obj is AppInterface {
+      return obj[destructorGuardSymbol] && obj[uniffiTypeNameSymbol] === 'App';
+    },
+  };
+})();
+// FfiConverter for AppInterface
+const FfiConverterTypeApp = new FfiConverterObject(uniffiTypeAppObjectFactory);
+
+export interface ChunkedBufferInterface {
+  close() /*throws*/ : void;
+  pushChunk(
+    chunk: ArrayBuffer,
+    asyncOpts_?: { signal: AbortSignal }
+  ) /*throws*/ : Promise<void>;
+}
+
+export class ChunkedBuffer
+  extends UniffiAbstractObject
+  implements ChunkedBufferInterface
+{
+  readonly [uniffiTypeNameSymbol] = 'ChunkedBuffer';
+  readonly [destructorGuardSymbol]: UniffiRustArcPtr;
+  readonly [pointerLiteralSymbol]: UnsafeMutableRawPointer;
+  constructor() {
+    super();
+    const pointer = uniffiCaller.rustCall(
+      /*caller:*/ (callStatus) => {
+        return nativeModule().ubrn_uniffi_sia_lib_fn_constructor_chunkedbuffer_new(
+          callStatus
+        );
+      },
+      /*liftString:*/ FfiConverterString.lift
+    );
+    this[pointerLiteralSymbol] = pointer;
+    this[destructorGuardSymbol] =
+      uniffiTypeChunkedBufferObjectFactory.bless(pointer);
+  }
+
+  public close(): void /*throws*/ {
+    uniffiCaller.rustCallWithError(
+      /*liftError:*/ FfiConverterTypeSiaError.lift.bind(
+        FfiConverterTypeSiaError
+      ),
+      /*caller:*/ (callStatus) => {
+        nativeModule().ubrn_uniffi_sia_lib_fn_method_chunkedbuffer_close(
+          uniffiTypeChunkedBufferObjectFactory.clonePointer(this),
+          callStatus
+        );
+      },
+      /*liftString:*/ FfiConverterString.lift
+    );
+  }
+
+  public async pushChunk(
+    chunk: ArrayBuffer,
+    asyncOpts_?: { signal: AbortSignal }
+  ): Promise<void> /*throws*/ {
+    const __stack = uniffiIsDebug ? new Error().stack : undefined;
+    try {
+      return await uniffiRustCallAsync(
+        /*rustCaller:*/ uniffiCaller,
+        /*rustFutureFunc:*/ () => {
+          return nativeModule().ubrn_uniffi_sia_lib_fn_method_chunkedbuffer_push_chunk(
+            uniffiTypeChunkedBufferObjectFactory.clonePointer(this),
+            FfiConverterArrayBuffer.lower(chunk)
+          );
+        },
+        /*pollFunc:*/ nativeModule().ubrn_ffi_sia_lib_rust_future_poll_void,
+        /*cancelFunc:*/ nativeModule().ubrn_ffi_sia_lib_rust_future_cancel_void,
+        /*completeFunc:*/ nativeModule()
+          .ubrn_ffi_sia_lib_rust_future_complete_void,
+        /*freeFunc:*/ nativeModule().ubrn_ffi_sia_lib_rust_future_free_void,
+        /*liftFunc:*/ (_v) => {},
+        /*liftString:*/ FfiConverterString.lift,
+        /*asyncOpts:*/ asyncOpts_,
+        /*errorHandler:*/ FfiConverterTypeSiaError.lift.bind(
+          FfiConverterTypeSiaError
+        )
+      );
+    } catch (__error: any) {
+      if (uniffiIsDebug && __error instanceof Error) {
+        __error.stack = __stack;
+      }
+      throw __error;
+    }
+  }
+
+  /**
+   * {@inheritDoc uniffi-bindgen-react-native#UniffiAbstractObject.uniffiDestroy}
+   */
+  uniffiDestroy(): void {
+    const ptr = (this as any)[destructorGuardSymbol];
+    if (ptr !== undefined) {
+      const pointer = uniffiTypeChunkedBufferObjectFactory.pointer(this);
+      uniffiTypeChunkedBufferObjectFactory.freePointer(pointer);
+      uniffiTypeChunkedBufferObjectFactory.unbless(ptr);
+      delete (this as any)[destructorGuardSymbol];
+    }
+  }
+
+  static instanceOf(obj: any): obj is ChunkedBuffer {
+    return uniffiTypeChunkedBufferObjectFactory.isConcreteType(obj);
+  }
+}
+
+const uniffiTypeChunkedBufferObjectFactory: UniffiObjectFactory<ChunkedBufferInterface> =
+  (() => {
+    return {
+      create(pointer: UnsafeMutableRawPointer): ChunkedBufferInterface {
+        const instance = Object.create(ChunkedBuffer.prototype);
+        instance[pointerLiteralSymbol] = pointer;
+        instance[destructorGuardSymbol] = this.bless(pointer);
+        instance[uniffiTypeNameSymbol] = 'ChunkedBuffer';
+        return instance;
+      },
+
+      bless(p: UnsafeMutableRawPointer): UniffiRustArcPtr {
+        return uniffiCaller.rustCall(
+          /*caller:*/ (status) =>
+            nativeModule().ubrn_uniffi_internal_fn_method_chunkedbuffer_ffi__bless_pointer(
+              p,
+              status
+            ),
+          /*liftString:*/ FfiConverterString.lift
+        );
+      },
+
+      unbless(ptr: UniffiRustArcPtr) {
+        ptr.markDestroyed();
+      },
+
+      pointer(obj: ChunkedBufferInterface): UnsafeMutableRawPointer {
+        if ((obj as any)[destructorGuardSymbol] === undefined) {
+          throw new UniffiInternalError.UnexpectedNullPointer();
+        }
+        return (obj as any)[pointerLiteralSymbol];
+      },
+
+      clonePointer(obj: ChunkedBufferInterface): UnsafeMutableRawPointer {
+        const pointer = this.pointer(obj);
+        return uniffiCaller.rustCall(
+          /*caller:*/ (callStatus) =>
+            nativeModule().ubrn_uniffi_sia_lib_fn_clone_chunkedbuffer(
+              pointer,
+              callStatus
+            ),
+          /*liftString:*/ FfiConverterString.lift
+        );
+      },
+
+      freePointer(pointer: UnsafeMutableRawPointer): void {
+        uniffiCaller.rustCall(
+          /*caller:*/ (callStatus) =>
+            nativeModule().ubrn_uniffi_sia_lib_fn_free_chunkedbuffer(
+              pointer,
+              callStatus
+            ),
+          /*liftString:*/ FfiConverterString.lift
+        );
+      },
+
+      isConcreteType(obj: any): obj is ChunkedBufferInterface {
+        return (
+          obj[destructorGuardSymbol] &&
+          obj[uniffiTypeNameSymbol] === 'ChunkedBuffer'
+        );
+      },
+    };
+  })();
+// FfiConverter for ChunkedBufferInterface
+const FfiConverterTypeChunkedBuffer = new FfiConverterObject(
+  uniffiTypeChunkedBufferObjectFactory
+);
 
 export interface JsLogger {
   log(level: string, message: string): void;
@@ -408,6 +736,177 @@ const uniffiCallbackInterfaceJsLogger: {
   },
 };
 
+export interface UploadInterface {
+  finish(asyncOpts_?: { signal: AbortSignal }) /*throws*/ : Promise<void>;
+  write(
+    buf: ArrayBuffer,
+    asyncOpts_?: { signal: AbortSignal }
+  ) /*throws*/ : Promise<void>;
+}
+
+export class Upload extends UniffiAbstractObject implements UploadInterface {
+  readonly [uniffiTypeNameSymbol] = 'Upload';
+  readonly [destructorGuardSymbol]: UniffiRustArcPtr;
+  readonly [pointerLiteralSymbol]: UnsafeMutableRawPointer;
+  // No primary constructor declared for this class.
+  private constructor(pointer: UnsafeMutableRawPointer) {
+    super();
+    this[pointerLiteralSymbol] = pointer;
+    this[destructorGuardSymbol] = uniffiTypeUploadObjectFactory.bless(pointer);
+  }
+
+  public async finish(asyncOpts_?: {
+    signal: AbortSignal;
+  }): Promise<void> /*throws*/ {
+    const __stack = uniffiIsDebug ? new Error().stack : undefined;
+    try {
+      return await uniffiRustCallAsync(
+        /*rustCaller:*/ uniffiCaller,
+        /*rustFutureFunc:*/ () => {
+          return nativeModule().ubrn_uniffi_sia_lib_fn_method_upload_finish(
+            uniffiTypeUploadObjectFactory.clonePointer(this)
+          );
+        },
+        /*pollFunc:*/ nativeModule().ubrn_ffi_sia_lib_rust_future_poll_void,
+        /*cancelFunc:*/ nativeModule().ubrn_ffi_sia_lib_rust_future_cancel_void,
+        /*completeFunc:*/ nativeModule()
+          .ubrn_ffi_sia_lib_rust_future_complete_void,
+        /*freeFunc:*/ nativeModule().ubrn_ffi_sia_lib_rust_future_free_void,
+        /*liftFunc:*/ (_v) => {},
+        /*liftString:*/ FfiConverterString.lift,
+        /*asyncOpts:*/ asyncOpts_,
+        /*errorHandler:*/ FfiConverterTypeSiaError.lift.bind(
+          FfiConverterTypeSiaError
+        )
+      );
+    } catch (__error: any) {
+      if (uniffiIsDebug && __error instanceof Error) {
+        __error.stack = __stack;
+      }
+      throw __error;
+    }
+  }
+
+  public async write(
+    buf: ArrayBuffer,
+    asyncOpts_?: { signal: AbortSignal }
+  ): Promise<void> /*throws*/ {
+    const __stack = uniffiIsDebug ? new Error().stack : undefined;
+    try {
+      return await uniffiRustCallAsync(
+        /*rustCaller:*/ uniffiCaller,
+        /*rustFutureFunc:*/ () => {
+          return nativeModule().ubrn_uniffi_sia_lib_fn_method_upload_write(
+            uniffiTypeUploadObjectFactory.clonePointer(this),
+            FfiConverterArrayBuffer.lower(buf)
+          );
+        },
+        /*pollFunc:*/ nativeModule().ubrn_ffi_sia_lib_rust_future_poll_void,
+        /*cancelFunc:*/ nativeModule().ubrn_ffi_sia_lib_rust_future_cancel_void,
+        /*completeFunc:*/ nativeModule()
+          .ubrn_ffi_sia_lib_rust_future_complete_void,
+        /*freeFunc:*/ nativeModule().ubrn_ffi_sia_lib_rust_future_free_void,
+        /*liftFunc:*/ (_v) => {},
+        /*liftString:*/ FfiConverterString.lift,
+        /*asyncOpts:*/ asyncOpts_,
+        /*errorHandler:*/ FfiConverterTypeSiaError.lift.bind(
+          FfiConverterTypeSiaError
+        )
+      );
+    } catch (__error: any) {
+      if (uniffiIsDebug && __error instanceof Error) {
+        __error.stack = __stack;
+      }
+      throw __error;
+    }
+  }
+
+  /**
+   * {@inheritDoc uniffi-bindgen-react-native#UniffiAbstractObject.uniffiDestroy}
+   */
+  uniffiDestroy(): void {
+    const ptr = (this as any)[destructorGuardSymbol];
+    if (ptr !== undefined) {
+      const pointer = uniffiTypeUploadObjectFactory.pointer(this);
+      uniffiTypeUploadObjectFactory.freePointer(pointer);
+      uniffiTypeUploadObjectFactory.unbless(ptr);
+      delete (this as any)[destructorGuardSymbol];
+    }
+  }
+
+  static instanceOf(obj: any): obj is Upload {
+    return uniffiTypeUploadObjectFactory.isConcreteType(obj);
+  }
+}
+
+const uniffiTypeUploadObjectFactory: UniffiObjectFactory<UploadInterface> =
+  (() => {
+    return {
+      create(pointer: UnsafeMutableRawPointer): UploadInterface {
+        const instance = Object.create(Upload.prototype);
+        instance[pointerLiteralSymbol] = pointer;
+        instance[destructorGuardSymbol] = this.bless(pointer);
+        instance[uniffiTypeNameSymbol] = 'Upload';
+        return instance;
+      },
+
+      bless(p: UnsafeMutableRawPointer): UniffiRustArcPtr {
+        return uniffiCaller.rustCall(
+          /*caller:*/ (status) =>
+            nativeModule().ubrn_uniffi_internal_fn_method_upload_ffi__bless_pointer(
+              p,
+              status
+            ),
+          /*liftString:*/ FfiConverterString.lift
+        );
+      },
+
+      unbless(ptr: UniffiRustArcPtr) {
+        ptr.markDestroyed();
+      },
+
+      pointer(obj: UploadInterface): UnsafeMutableRawPointer {
+        if ((obj as any)[destructorGuardSymbol] === undefined) {
+          throw new UniffiInternalError.UnexpectedNullPointer();
+        }
+        return (obj as any)[pointerLiteralSymbol];
+      },
+
+      clonePointer(obj: UploadInterface): UnsafeMutableRawPointer {
+        const pointer = this.pointer(obj);
+        return uniffiCaller.rustCall(
+          /*caller:*/ (callStatus) =>
+            nativeModule().ubrn_uniffi_sia_lib_fn_clone_upload(
+              pointer,
+              callStatus
+            ),
+          /*liftString:*/ FfiConverterString.lift
+        );
+      },
+
+      freePointer(pointer: UnsafeMutableRawPointer): void {
+        uniffiCaller.rustCall(
+          /*caller:*/ (callStatus) =>
+            nativeModule().ubrn_uniffi_sia_lib_fn_free_upload(
+              pointer,
+              callStatus
+            ),
+          /*liftString:*/ FfiConverterString.lift
+        );
+      },
+
+      isConcreteType(obj: any): obj is UploadInterface {
+        return (
+          obj[destructorGuardSymbol] && obj[uniffiTypeNameSymbol] === 'Upload'
+        );
+      },
+    };
+  })();
+// FfiConverter for UploadInterface
+const FfiConverterTypeUpload = new FfiConverterObject(
+  uniffiTypeUploadObjectFactory
+);
+
 /**
  * This should be called before anything else.
  *
@@ -450,10 +949,33 @@ function uniffiEnsureInitialized() {
     );
   }
   if (
-    nativeModule().ubrn_uniffi_sia_lib_checksum_func_upload_bullshit() !== 56449
+    nativeModule().ubrn_uniffi_sia_lib_checksum_method_app_connect() !== 9121
   ) {
     throw new UniffiInternalError.ApiChecksumMismatch(
-      'uniffi_sia_lib_checksum_func_upload_bullshit'
+      'uniffi_sia_lib_checksum_method_app_connect'
+    );
+  }
+  if (
+    nativeModule().ubrn_uniffi_sia_lib_checksum_method_app_upload() !== 35808
+  ) {
+    throw new UniffiInternalError.ApiChecksumMismatch(
+      'uniffi_sia_lib_checksum_method_app_upload'
+    );
+  }
+  if (
+    nativeModule().ubrn_uniffi_sia_lib_checksum_method_chunkedbuffer_close() !==
+    13598
+  ) {
+    throw new UniffiInternalError.ApiChecksumMismatch(
+      'uniffi_sia_lib_checksum_method_chunkedbuffer_close'
+    );
+  }
+  if (
+    nativeModule().ubrn_uniffi_sia_lib_checksum_method_chunkedbuffer_push_chunk() !==
+    32188
+  ) {
+    throw new UniffiInternalError.ApiChecksumMismatch(
+      'uniffi_sia_lib_checksum_method_chunkedbuffer_push_chunk'
     );
   }
   if (
@@ -463,6 +985,35 @@ function uniffiEnsureInitialized() {
       'uniffi_sia_lib_checksum_method_jslogger_log'
     );
   }
+  if (
+    nativeModule().ubrn_uniffi_sia_lib_checksum_method_upload_finish() !== 58456
+  ) {
+    throw new UniffiInternalError.ApiChecksumMismatch(
+      'uniffi_sia_lib_checksum_method_upload_finish'
+    );
+  }
+  if (
+    nativeModule().ubrn_uniffi_sia_lib_checksum_method_upload_write() !== 41569
+  ) {
+    throw new UniffiInternalError.ApiChecksumMismatch(
+      'uniffi_sia_lib_checksum_method_upload_write'
+    );
+  }
+  if (
+    nativeModule().ubrn_uniffi_sia_lib_checksum_constructor_app_new() !== 12416
+  ) {
+    throw new UniffiInternalError.ApiChecksumMismatch(
+      'uniffi_sia_lib_checksum_constructor_app_new'
+    );
+  }
+  if (
+    nativeModule().ubrn_uniffi_sia_lib_checksum_constructor_chunkedbuffer_new() !==
+    45974
+  ) {
+    throw new UniffiInternalError.ApiChecksumMismatch(
+      'uniffi_sia_lib_checksum_constructor_chunkedbuffer_new'
+    );
+  }
 
   uniffiCallbackInterfaceJsLogger.register();
 }
@@ -470,7 +1021,10 @@ function uniffiEnsureInitialized() {
 export default Object.freeze({
   initialize: uniffiEnsureInitialized,
   converters: {
+    FfiConverterTypeApp,
+    FfiConverterTypeChunkedBuffer,
     FfiConverterTypeJsLogger,
     FfiConverterTypeSiaError,
+    FfiConverterTypeUpload,
   },
 });

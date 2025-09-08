@@ -11,19 +11,19 @@ if (!rustInstalled) {
 }
 
 // Export the generated bindings to the app.
-export * from './generated/sia_lib';
+export * from './generated/indexd_ffi';
 
 // Now import the bindings so we can:
 // - intialize them
 // - export them as namespaced objects as the default export.
-import * as sia_lib from './generated/sia_lib';
+import * as indexd_ffi from './generated/indexd_ffi';
 
 // Initialize the generated bindings: mostly checksums, but also callbacks.
 // - the boolean flag ensures this loads exactly once, even if the JS code
 //   is reloaded (e.g. during development with metro).
 let initialized = false;
 if (!initialized) {
-  sia_lib.default.initialize();
+  indexd_ffi.default.initialize();
   initialized = true;
 }
 
@@ -36,6 +36,6 @@ export async function uniffiInitAsync() {
 
 // Export the crates as individually namespaced objects.
 export default {
-  sia_lib,
+  indexd_ffi,
 };
 

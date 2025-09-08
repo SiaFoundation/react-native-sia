@@ -1,61 +1,63 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   Text,
   View,
   StyleSheet,
-  TextInput,
   ScrollView,
   Pressable,
   Platform,
 } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import { getHostSettings, setLogger, clearLogger } from 'react-native-sia';
+import { App, setLogger, clearLogger } from 'react-native-sia';
 
-export default function App() {
-  const [hostSettings, setHostSettings] = useState<string | null>(null);
-  const [address, setAddress] = useState(
-    '6r4b0vj1ai55fobdvauvpg3to5bpeijl045b2q268fcj7q1vkuog.sia.host'
-  );
-  const [port, setPort] = useState('9984');
+const appSeed = '1'.repeat(64);
+const app = new App('https://app.indexd.zeus.sia.dev', 'Test', appSeed, 'Test');
+
+export default function AppComponent() {
   const [logs, setLogs] = useState<string[]>([]);
+  const logger = useMemo(
+    () => ({
+      log(level: string, message: string) {
+        setLogs((prev) => [...prev, `[rust][${level}] ${message}`]);
+      },
+      client(message: string) {
+        setLogs((prev) => [...prev, `[client][info] ${message}`]);
+      },
+    }),
+    []
+  );
 
   useEffect(() => {
-    const logger = {
-      log(level: string, message: string) {
-        setLogs((prev) => [...prev, `[${level}] ${message}`]);
-      },
-    };
-    setLogger(logger);
+    (async () => {
+      setLogger(logger);
+      logger.client('App mounted');
+      await app.connect();
+      logger.client('App connected');
+    })();
     return () => {
       clearLogger();
     };
-  }, []);
+  }, [logger]);
 
-  const handleGetHostSettings = async () => {
-    setLogs((prev) => [...prev, '[info] Requesting host settings…']);
-    try {
-      const numPort = Number.parseInt(port, 10);
-      const settings = await getHostSettings(
-        address,
-        Number.isNaN(numPort) ? 0 : numPort
-      );
-      setHostSettings(settings);
-      setLogs((prev) => [...prev, '[info] Received host settings']);
-    } catch (err: any) {
-      console.log(err);
-      setLogs((prev) => [...prev, `[error] ${String(err?.message ?? err)}`]);
+  const [controller, setController] = useState<AbortController | null>();
+  const handleUpload = async () => {
+    logger.client('Uploading');
+    const c = new AbortController();
+    const upload = await app.upload(appSeed, 1, 1, {
+      signal: c.signal,
+    });
+    setController(c);
+
+    for (let i = 0; i < 10; i++) {
+      logger.client(`Writing chunk ${i}...`);
+      await upload.write(new Uint8Array(1024).buffer);
+      logger.client(`Chunk ${i} written`);
     }
-  };
 
-  const hostSettingsDisplay = hostSettings
-    ? (() => {
-        try {
-          return JSON.stringify(JSON.parse(hostSettings), null, 2);
-        } catch {
-          return hostSettings;
-        }
-      })()
-    : '—';
+    logger.client('Finishing upload...');
+    await upload.finish();
+    logger.client('Upload finished');
+  };
 
   return (
     <SafeAreaProvider>
@@ -64,41 +66,21 @@ export default function App() {
           <Text style={styles.heading}>Sia Rust SDK in React Native</Text>
 
           <View style={styles.card}>
-            <Text style={styles.sectionTitle}>Host Settings</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Address"
-              autoCapitalize="none"
-              autoCorrect={false}
-              value={address}
-              onChangeText={setAddress}
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="Port"
-              keyboardType="number-pad"
-              value={port}
-              onChangeText={setPort}
-            />
-            <Pressable style={styles.button} onPress={handleGetHostSettings}>
-              <Text style={styles.buttonText}>Get Host Settings</Text>
+            <Text style={styles.sectionTitle}>Upload</Text>
+            <Pressable style={styles.button} onPress={handleUpload}>
+              <Text style={styles.buttonText}>Upload Bullshit</Text>
             </Pressable>
-
-            <View style={styles.rowBetween}>
-              <Text style={styles.subheading}>Result</Text>
-              <Pressable
-                onPress={() => setHostSettings(null)}
-                style={styles.clearButton}
-              >
-                <Text style={styles.clearButtonText}>Clear</Text>
-              </Pressable>
-            </View>
-            <ScrollView
-              style={styles.resultBox}
-              contentContainerStyle={styles.resultContent}
+            <Pressable
+              style={[styles.button, !controller && styles.buttonDisabled]}
+              disabled={!controller}
+              onPress={async () => {
+                controller?.abort();
+                logger.client('Aborting upload');
+                setController(null);
+              }}
             >
-              <Text style={styles.mono}>{hostSettingsDisplay}</Text>
-            </ScrollView>
+              <Text style={styles.buttonText}>Abort</Text>
+            </Pressable>
           </View>
 
           <View style={[styles.card, styles.cardGrow]}>
@@ -178,6 +160,9 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     alignItems: 'center',
     marginTop: 4,
+  },
+  buttonDisabled: {
+    backgroundColor: '#334155',
   },
   buttonText: {
     color: '#001019',

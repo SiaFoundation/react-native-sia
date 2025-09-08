@@ -24,7 +24,7 @@ pub async fn upload_random(test: [u8;32], app_key: PrivateKey) -> Result<(), Sia
     .connected(client_crypto).await.map_err(|e| SiaError::Message(e.to_string()))?;
 
     let reader = Cursor::new(test);
-    let slabs = sdk.upload(reader,[0u8;32], 1, 1).await.map_err(|e| SiaError::Message(e.to_string()))?;
+    let slabs = sdk.upload(reader,[1u8;32], 1, 1).await.map_err(|e| SiaError::Message(e.to_string()))?;
     log_to_js("info", format!("file uploaded {}", slabs[0].id).into());
     Ok(())
 }

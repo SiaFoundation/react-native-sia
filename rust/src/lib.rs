@@ -1,6 +1,5 @@
 uniffi::setup_scaffolding!();
 
-pub mod api;
 mod logger;
 
 use std::sync::{Arc, Mutex};
@@ -109,6 +108,10 @@ impl App {
     }
 
     pub async fn connect(&self) -> Result<(), SiaError> {
+        if rustls::crypto::CryptoProvider::get_default().is_none() {
+            rustls::crypto::ring::default_provider()
+                .install_default().unwrap();
+    }
         let client_crypto = rustls::ClientConfig::builder()
         .dangerous()
         .with_custom_certificate_verifier(SkipServerVerification::new())
@@ -129,12 +132,12 @@ impl App {
     pub async fn upload(&self, encryption_key_str: String, data_shards: u8, parity_shards: u8) -> Result<Upload, SiaError> {
         let mut encryption_key = [0u8;32];
         hex::decode_to_slice(encryption_key_str, &mut encryption_key).map_err(|e| SiaError::Message(e.to_string()))?;
-
         let buf = ChunkedBuffer::new();
         let sdk = {
             let sdk_lock = self.sdk.lock().unwrap();
             sdk_lock.as_ref().ok_or_else(|| SiaError::Message("SDK not connected".into()))?.clone()
         };
+        log_to_js("info", "starting upload".into());
         let inner_buf = buf.clone();
         let (tx, rx) = oneshot::channel();
         Ok(Upload {

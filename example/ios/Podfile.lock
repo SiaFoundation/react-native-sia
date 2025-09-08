@@ -2310,7 +2310,7 @@ PODS:
     - React-perflogger (= 0.81.0)
     - React-utils (= 0.81.0)
     - SocketRocket
-  - Sia (0.0.4):
+  - Sia (0.0.5):
     - boost
     - DoubleConversion
     - fast_float
@@ -2647,7 +2647,7 @@ SPEC CHECKSUMS:
   ReactAppDependencyProvider: c91900fa724baee992f01c05eeb4c9e01a807f78
   ReactCodegen: a55799cae416c387aeaae3aabc1bc0289ac19cee
   ReactCommon: 116d6ee71679243698620d8cd9a9042541e44aa6
-  Sia: a725673bdbf75b99ee22cdf401a820cb0fdadd18
+  Sia: edcd519df7cb80dbcf470a863bbc69cb7d9ba558
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
   uniffi-bindgen-react-native: 125eae9e3a0cf34bf8f3d4b0ceed517df7cc0733
   Yoga: 00013dd9cde63a2d98e8002fcc4f5ddb66c10782

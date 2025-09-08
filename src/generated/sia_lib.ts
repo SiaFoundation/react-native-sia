@@ -44,7 +44,6 @@ import {
   FfiConverterInt32,
   FfiConverterObject,
   FfiConverterObjectWithCallbacks,
-  FfiConverterUInt16,
   FfiConverterUInt64,
   RustBuffer,
   UniffiAbstractObject,
@@ -80,43 +79,6 @@ export function clearLogger(): void {
     /*liftString:*/ FfiConverterString.lift
   );
 }
-export async function getHostSettings(
-  address: string,
-  port: /*u16*/ number,
-  asyncOpts_?: { signal: AbortSignal }
-): Promise<string> /*throws*/ {
-  const __stack = uniffiIsDebug ? new Error().stack : undefined;
-  try {
-    return await uniffiRustCallAsync(
-      /*rustCaller:*/ uniffiCaller,
-      /*rustFutureFunc:*/ () => {
-        return nativeModule().ubrn_uniffi_sia_lib_fn_func_get_host_settings(
-          FfiConverterString.lower(address),
-          FfiConverterUInt16.lower(port)
-        );
-      },
-      /*pollFunc:*/ nativeModule()
-        .ubrn_ffi_sia_lib_rust_future_poll_rust_buffer,
-      /*cancelFunc:*/ nativeModule()
-        .ubrn_ffi_sia_lib_rust_future_cancel_rust_buffer,
-      /*completeFunc:*/ nativeModule()
-        .ubrn_ffi_sia_lib_rust_future_complete_rust_buffer,
-      /*freeFunc:*/ nativeModule()
-        .ubrn_ffi_sia_lib_rust_future_free_rust_buffer,
-      /*liftFunc:*/ FfiConverterString.lift.bind(FfiConverterString),
-      /*liftString:*/ FfiConverterString.lift,
-      /*asyncOpts:*/ asyncOpts_,
-      /*errorHandler:*/ FfiConverterTypeSiaError.lift.bind(
-        FfiConverterTypeSiaError
-      )
-    );
-  } catch (__error: any) {
-    if (uniffiIsDebug && __error instanceof Error) {
-      __error.stack = __stack;
-    }
-    throw __error;
-  }
-}
 export function setLogger(logger: JsLogger): void {
   uniffiCaller.rustCall(
     /*caller:*/ (callStatus) => {
@@ -127,6 +89,32 @@ export function setLogger(logger: JsLogger): void {
     },
     /*liftString:*/ FfiConverterString.lift
   );
+}
+export async function uploadBullshit(asyncOpts_?: {
+  signal: AbortSignal;
+}): Promise<void> {
+  const __stack = uniffiIsDebug ? new Error().stack : undefined;
+  try {
+    return await uniffiRustCallAsync(
+      /*rustCaller:*/ uniffiCaller,
+      /*rustFutureFunc:*/ () => {
+        return nativeModule().ubrn_uniffi_sia_lib_fn_func_upload_bullshit();
+      },
+      /*pollFunc:*/ nativeModule().ubrn_ffi_sia_lib_rust_future_poll_void,
+      /*cancelFunc:*/ nativeModule().ubrn_ffi_sia_lib_rust_future_cancel_void,
+      /*completeFunc:*/ nativeModule()
+        .ubrn_ffi_sia_lib_rust_future_complete_void,
+      /*freeFunc:*/ nativeModule().ubrn_ffi_sia_lib_rust_future_free_void,
+      /*liftFunc:*/ (_v) => {},
+      /*liftString:*/ FfiConverterString.lift,
+      /*asyncOpts:*/ asyncOpts_
+    );
+  } catch (__error: any) {
+    if (uniffiIsDebug && __error instanceof Error) {
+      __error.stack = __stack;
+    }
+    throw __error;
+  }
 }
 
 const stringConverter = {
@@ -441,17 +429,16 @@ function uniffiEnsureInitialized() {
       'uniffi_sia_lib_checksum_func_clear_logger'
     );
   }
-  if (
-    nativeModule().ubrn_uniffi_sia_lib_checksum_func_get_host_settings() !==
-    51400
-  ) {
-    throw new UniffiInternalError.ApiChecksumMismatch(
-      'uniffi_sia_lib_checksum_func_get_host_settings'
-    );
-  }
   if (nativeModule().ubrn_uniffi_sia_lib_checksum_func_set_logger() !== 5304) {
     throw new UniffiInternalError.ApiChecksumMismatch(
       'uniffi_sia_lib_checksum_func_set_logger'
+    );
+  }
+  if (
+    nativeModule().ubrn_uniffi_sia_lib_checksum_func_upload_bullshit() !== 56449
+  ) {
+    throw new UniffiInternalError.ApiChecksumMismatch(
+      'uniffi_sia_lib_checksum_func_upload_bullshit'
     );
   }
   if (

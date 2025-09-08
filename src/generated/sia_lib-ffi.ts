@@ -43,14 +43,11 @@ interface NativeModuleInterface {
   ubrn_uniffi_sia_lib_fn_func_clear_logger(
     uniffi_out_err: UniffiRustCallStatus
   ): void;
-  ubrn_uniffi_sia_lib_fn_func_get_host_settings(
-    address: Uint8Array,
-    port: number
-  ): bigint;
   ubrn_uniffi_sia_lib_fn_func_set_logger(
     logger: bigint,
     uniffi_out_err: UniffiRustCallStatus
   ): void;
+  ubrn_uniffi_sia_lib_fn_func_upload_bullshit(): bigint;
   ubrn_ffi_sia_lib_rust_future_poll_u8(
     handle: bigint,
     callback: UniffiRustFutureContinuationCallback,
@@ -195,8 +192,8 @@ interface NativeModuleInterface {
     uniffi_out_err: UniffiRustCallStatus
   ): void;
   ubrn_uniffi_sia_lib_checksum_func_clear_logger(): number;
-  ubrn_uniffi_sia_lib_checksum_func_get_host_settings(): number;
   ubrn_uniffi_sia_lib_checksum_func_set_logger(): number;
+  ubrn_uniffi_sia_lib_checksum_func_upload_bullshit(): number;
   ubrn_uniffi_sia_lib_checksum_method_jslogger_log(): number;
   ubrn_ffi_sia_lib_uniffi_contract_version(): number;
   ubrn_uniffi_internal_fn_method_jslogger_ffi__bless_pointer(

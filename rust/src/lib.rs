@@ -4,6 +4,7 @@ pub mod api;
 mod logger;
 
 use logger::log_to_js;
+use sia::signing::PrivateKey;
 
 #[derive(Debug, thiserror::Error, uniffi::Error)]
 pub enum SiaError {
@@ -18,11 +19,13 @@ impl From<anyhow::Error> for SiaError {
 }
 
 #[uniffi::export]
-pub async fn get_host_settings(address: String, port: u16) -> Result<String, SiaError> {
+pub async fn upload_bullshit() {
+    let sk = PrivateKey::from_seed(&[0u8; 32]);
+
     // Ensure a Tokio runtime is available when called from JS.
     // If we're already inside a runtime, use it; otherwise, create one on the fly.
-    let fut = api::simple::get_host_settings(&address, port);
-    let res = if tokio::runtime::Handle::try_current().is_ok() {
+    let fut = api::simple::upload_random([1u8;32], sk);
+    if tokio::runtime::Handle::try_current().is_ok() {
         fut.await
     } else {
         match tokio::runtime::Builder::new_current_thread()
@@ -30,15 +33,7 @@ pub async fn get_host_settings(address: String, port: u16) -> Result<String, Sia
             .build()
         {
             Ok(rt) => rt.block_on(fut),
-            Err(e) => Err(anyhow::anyhow!(e)),
+            Err(_) => (),
         }
     };
-    match res {
-        Ok(result) => Ok(result),
-        Err(e) => {
-            // Push the error string to JS logger.
-            log_to_js("error", e.to_string());
-            Err(SiaError::Message(e.to_string()))
-        }
-    }
 }

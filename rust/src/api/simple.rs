@@ -1,108 +1,23 @@
-use std::sync::Arc;
+use std::{io::Cursor, sync::Arc};
 
-use anyhow::{Error, Context};
-use sia::{encoding_async::{AsyncDecoder, AsyncEncoder, EncodingError, Result as EncodingResult}, rhp};
-use quinn::{crypto::rustls::QuicClientConfig, RecvStream, SendStream};
-use std::net::ToSocketAddrs;
-use sia::rhp::RPCSettings;
+use indexd::SDK;
+use sia::signing::PrivateKey;
 use crate::logger::log_to_js;
 
-struct QUICStream {
-    send: SendStream,
-    recv: RecvStream,
-}
-
-impl AsyncDecoder for QUICStream {
-    async fn read_exact(&mut self, buf: &mut [u8]) -> EncodingResult<()> {
-        self.recv.read_exact(buf).await.map_err(|e| {
-            EncodingError::IOError(e.to_string())
-        })
-    }
-}
-
-impl AsyncEncoder for QUICStream {
-    async fn write_all(&mut self, buf: &[u8]) -> EncodingResult<()> {
-        self.send.write_all(buf).await.map_err(|e| {
-            EncodingError::IOError(e.to_string())
-        })
-    }
-}
-
-pub async fn get_host_settings(address: &str, port: u16) -> Result<String, Error> {
-    log_to_js("info", format!("get_host_settings: start address={} port={}", address, port));
+pub async fn upload_random(test: [u8;32], app_key: PrivateKey)  {
     if rustls::crypto::CryptoProvider::get_default().is_none() {
             rustls::crypto::ring::default_provider()
                 .install_default().unwrap();
     }
-    log_to_js("debug", "CryptoProvider installed".to_string());
-    let mut client_crypto = rustls::ClientConfig::builder()
+    let client_crypto = rustls::ClientConfig::builder()
         .dangerous()
         .with_custom_certificate_verifier(SkipServerVerification::new())
         .with_no_client_auth();
+    let sdk = SDK::connect("https://app.indexd.zeus.sia.dev", app_key, "Test".into(), "Test".into(), "https://foo.bar".parse().unwrap()).await.unwrap().connected(client_crypto).await.unwrap();
 
-    client_crypto.alpn_protocols = vec![b"sia/rhp4".to_vec()];
-    log_to_js("debug", "Configured ALPN for sia/rhp4".to_string());
-
-    let client_config = QuicClientConfig::try_from(client_crypto)?;
-    let client_config =
-        quinn::ClientConfig::new(Arc::new(client_config));
-    log_to_js("debug", "QUIC client config ready".to_string());
-
-    log_to_js("debug", "Creating QUIC endpoint (IPv6)".to_string());
-    let mut endpoint = match quinn::Endpoint::client((std::net::Ipv6Addr::UNSPECIFIED, 0).into()) {
-        Ok(ep) => ep,
-        Err(e) => {
-            log_to_js("warn", format!("IPv6 endpoint failed: {}. Retrying IPv4…", e));
-            quinn::Endpoint::client((std::net::Ipv4Addr::UNSPECIFIED, 0).into())
-                .map_err(|e| rhp::Error::Transport(e.to_string()))?
-        }
-    };
-    log_to_js("debug", "QUIC endpoint created".to_string());
-    endpoint.set_default_client_config(client_config);
-    log_to_js("debug", format!("Resolving addresses for {}:{}", address, port));
-    let addrs = (address, port)
-        .to_socket_addrs()
-        .context("DNS resolution failed")?
-        .collect::<Vec<_>>();
-    log_to_js("debug", format!("Resolved addresses: {:?}", addrs));
-    let addr = addrs[0];
-
-    let conn = endpoint.connect(addr, address)
-        .map_err(|e| {
-            log_to_js("error", format!("QUIC connect error (init): {}", e));
-            rhp::Error::Transport(e.to_string())
-        })?
-        .await
-        .map_err(|e| {
-            log_to_js("error", format!("QUIC connect error (await): {}", e));
-            rhp::Error::Transport(e.to_string())
-        })?;
-    log_to_js("info", format!("Connected to {}", addr));
-
-    let (send, recv) = conn.open_bi().await.map_err(|e| {
-        log_to_js("error", format!("open_bi failed: {}", e));
-        anyhow::anyhow!(e)
-    })?;
-    log_to_js("debug", "Opened bidirectional stream".to_string());
-    let stream = QUICStream { send, recv };
-
-    let settings = RPCSettings::send_request(stream)
-        .await
-        .map_err(|e| {
-            log_to_js("error", format!("RPCSettings::send_request failed: {}", e));
-            e
-        })?
-        .complete()
-        .await
-        .map_err(|e| {
-            log_to_js("error", format!("RPC complete failed: {}", e));
-            e
-        })?;
-    log_to_js("debug", "RPC complete, serializing".to_string());
-
-    let str = serde_json::to_string(&settings.settings)?;
-    log_to_js("info", format!("Done ({} bytes)", str.len()));
-    Ok(str)
+    let reader = Cursor::new(test);
+    let slabs = sdk.upload(reader,[0u8;32], 1, 1).await.unwrap();
+    log_to_js("info", format!("file uploaded {}", slabs[0].id).into());
 }
 
 #[derive(Debug)]

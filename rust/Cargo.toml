@@ -11,8 +11,8 @@ anyhow = "1.0.99"
 quinn = "0.11.8"
 rustls = { version = "0.23.31", default-features = false, features = ["ring"] }
 serde_json = "1.0.142"
-indexd = { path = "/Users/n8maninger/Projects/github.com/SiaFoundation/sia-rs/indexd" }
-sia_sdk = { path = "/Users/n8maninger/Projects/github.com/SiaFoundation/sia-rs/sia_sdk" }
+indexd = { git="https://github.com/siafoundation/sia-sdk-rs", rev="459e46ec454be8a3960d427948146ddbf0a94be0" }
+sia_sdk = { git="https://github.com/siafoundation/sia-sdk-rs", rev="459e46ec454be8a3960d427948146ddbf0a94be0" }
 tokio= { version = "^1.47.1", features = ["rt-multi-thread", "macros", "time", "net", "rt"] }
 uniffi = { version = "0.29.4", features = ["tokio"] }
 thiserror = "1.0.64"

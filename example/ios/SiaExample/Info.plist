@@ -33,6 +33,10 @@
 	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string></string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Allow access to your photo library to select images for upload.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Allow adding images to your photo library if needed.</string>
 	<key>RCTNewArchEnabled</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>

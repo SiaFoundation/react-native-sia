@@ -1,231 +1,161 @@
-import { useEffect, useState } from 'react';
-import {
-  Text,
-  View,
-  StyleSheet,
-  TextInput,
-  ScrollView,
-  Pressable,
-  Platform,
-} from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, Platform, StatusBar } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import { getHostSettings, setLogger, clearLogger } from 'react-native-sia';
+import { ToastProvider } from './Toast';
+import { type UploadedItem } from './Upload';
+import { type FeedStackParamList } from './navigation/types';
+import HomeScreen from './screens/HomeScreen';
+import PhotoDetailScreen from './screens/PhotoDetailScreen';
+import SettingsHomeScreen, {
+  type SettingsStackParamList,
+} from './screens/SettingsHomeScreen';
+import HostsScreen from './screens/HostsScreen';
+import HostDetailScreen from './screens/HostDetailScreen';
+import IndexerScreen from './screens/IndexerScreen';
+import { HomeIcon, SettingsIcon, ListIcon } from 'lucide-react-native';
+import { SettingsProvider, useSettings } from './settingsContext';
+import { LogView } from './LogView';
 
-export default function App() {
-  const [hostSettings, setHostSettings] = useState<string | null>(null);
-  const [address, setAddress] = useState(
-    '6r4b0vj1ai55fobdvauvpg3to5bpeijl045b2q268fcj7q1vkuog.sia.host'
+const FeedStack = createNativeStackNavigator<FeedStackParamList>();
+const SettingsStack = createNativeStackNavigator<SettingsStackParamList>();
+const Tab = createBottomTabNavigator();
+
+function HomeTabIcon({ color, size }: { color: string; size: number }) {
+  return <HomeIcon color={color} size={size} />;
+}
+
+function SettingsTabIcon({ color, size }: { color: string; size: number }) {
+  return <SettingsIcon color={color} size={size} />;
+}
+
+function LogsTabIcon({ color, size }: { color: string; size: number }) {
+  return <ListIcon color={color} size={size} />;
+}
+
+function LogsTabScreen() {
+  const { logs } = useSettings();
+  return <LogView logs={logs} />;
+}
+
+function FeedStackNavigator({
+  uploads,
+  setUploads,
+}: {
+  uploads: UploadedItem[];
+  setUploads: React.Dispatch<React.SetStateAction<UploadedItem[]>>;
+}) {
+  return (
+    <FeedStack.Navigator>
+      <FeedStack.Screen name="Home" options={{ headerShown: false }}>
+        {() => <HomeScreen uploads={uploads} setUploads={setUploads} />}
+      </FeedStack.Screen>
+      <FeedStack.Screen
+        name="PhotoDetail"
+        component={PhotoDetailScreen}
+        options={{ title: 'Photo' }}
+      />
+    </FeedStack.Navigator>
   );
-  const [port, setPort] = useState('9984');
-  const [logs, setLogs] = useState<string[]>([]);
+}
 
-  useEffect(() => {
-    const logger = {
-      log(level: string, message: string) {
-        setLogs((prev) => [...prev, `[${level}] ${message}`]);
-      },
-    };
-    setLogger(logger);
-    return () => {
-      clearLogger();
-    };
-  }, []);
+function SettingsStackNavigator() {
+  return (
+    <SettingsStack.Navigator>
+      <SettingsStack.Screen
+        name="SettingsHome"
+        component={SettingsHomeScreen}
+        options={{ title: 'Settings' }}
+      />
+      <SettingsStack.Screen
+        name="Hosts"
+        component={HostsScreen}
+        options={{ title: 'Hosts' }}
+      />
+      <SettingsStack.Screen
+        name="HostDetail"
+        component={HostDetailScreen}
+        options={{ title: 'Host' }}
+      />
+      <SettingsStack.Screen
+        name="Indexer"
+        component={IndexerScreen}
+        options={{ title: 'Indexer' }}
+      />
+    </SettingsStack.Navigator>
+  );
+}
 
-  const handleGetHostSettings = async () => {
-    setLogs((prev) => [...prev, '[info] Requesting host settings…']);
-    try {
-      const numPort = Number.parseInt(port, 10);
-      const settings = await getHostSettings(
-        address,
-        Number.isNaN(numPort) ? 0 : numPort
-      );
-      setHostSettings(settings);
-      setLogs((prev) => [...prev, '[info] Received host settings']);
-    } catch (err: any) {
-      console.log(err);
-      setLogs((prev) => [...prev, `[error] ${String(err?.message ?? err)}`]);
-    }
-  };
-
-  const hostSettingsDisplay = hostSettings
-    ? (() => {
-        try {
-          return JSON.stringify(JSON.parse(hostSettings), null, 2);
-        } catch {
-          return hostSettings;
-        }
-      })()
-    : '—';
+export default function AppComponent() {
+  const [uploads, setUploads] = useState<UploadedItem[]>([]);
 
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.safe}>
-        <View style={styles.container}>
-          <Text style={styles.heading}>Sia Rust SDK in React Native</Text>
-
-          <View style={styles.card}>
-            <Text style={styles.sectionTitle}>Host Settings</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Address"
-              autoCapitalize="none"
-              autoCorrect={false}
-              value={address}
-              onChangeText={setAddress}
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="Port"
-              keyboardType="number-pad"
-              value={port}
-              onChangeText={setPort}
-            />
-            <Pressable style={styles.button} onPress={handleGetHostSettings}>
-              <Text style={styles.buttonText}>Get Host Settings</Text>
-            </Pressable>
-
-            <View style={styles.rowBetween}>
-              <Text style={styles.subheading}>Result</Text>
-              <Pressable
-                onPress={() => setHostSettings(null)}
-                style={styles.clearButton}
+        <StatusBar
+          barStyle={Platform.select({
+            ios: 'dark-content',
+            android: 'dark-content',
+            default: 'dark-content',
+          })}
+        />
+        <SettingsProvider>
+          <ToastProvider>
+            <NavigationContainer>
+              <Tab.Navigator
+                screenOptions={{
+                  headerShown: false,
+                  tabBarStyle: {
+                    height: 49,
+                    paddingBottom: 4,
+                    paddingTop: 4,
+                  },
+                  tabBarLabelStyle: { marginBottom: 0 },
+                  tabBarItemStyle: { paddingVertical: 0 },
+                }}
               >
-                <Text style={styles.clearButtonText}>Clear</Text>
-              </Pressable>
-            </View>
-            <ScrollView
-              style={styles.resultBox}
-              contentContainerStyle={styles.resultContent}
-            >
-              <Text style={styles.mono}>{hostSettingsDisplay}</Text>
-            </ScrollView>
-          </View>
-
-          <View style={[styles.card, styles.cardGrow]}>
-            <View style={styles.rowBetween}>
-              <Text style={styles.sectionTitle}>Logs</Text>
-              <Pressable onPress={() => setLogs([])} style={styles.clearButton}>
-                <Text style={styles.clearButtonText}>Clear</Text>
-              </Pressable>
-            </View>
-            <ScrollView
-              style={styles.logBox}
-              contentContainerStyle={styles.resultContent}
-            >
-              {logs.map((l, i) => (
-                <Text key={String(i)} style={styles.logLine}>
-                  {l}
-                </Text>
-              ))}
-            </ScrollView>
-          </View>
-        </View>
+                <Tab.Screen
+                  name="FeedTab"
+                  options={{
+                    tabBarLabel: 'Home',
+                    tabBarIcon: HomeTabIcon,
+                  }}
+                >
+                  {() => (
+                    <FeedStackNavigator
+                      uploads={uploads}
+                      setUploads={setUploads}
+                    />
+                  )}
+                </Tab.Screen>
+                <Tab.Screen
+                  name="LogsTab"
+                  options={{
+                    tabBarLabel: 'Logs',
+                    tabBarIcon: LogsTabIcon,
+                  }}
+                  component={LogsTabScreen}
+                />
+                <Tab.Screen
+                  name="SettingsTab"
+                  options={{
+                    tabBarLabel: 'Settings',
+                    tabBarIcon: SettingsTabIcon,
+                  }}
+                >
+                  {() => <SettingsStackNavigator />}
+                </Tab.Screen>
+              </Tab.Navigator>
+            </NavigationContainer>
+          </ToastProvider>
+        </SettingsProvider>
       </SafeAreaView>
     </SafeAreaProvider>
   );
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: '#0b0f19' },
-  container: {
-    flex: 1,
-    padding: 16,
-    gap: 16,
-  },
-  heading: {
-    fontSize: 22,
-    fontWeight: '700',
-    color: '#e6edf3',
-  },
-  sectionTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#e6edf3',
-    marginBottom: 8,
-  },
-  subheading: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#9da7b3',
-    marginTop: 12,
-    marginBottom: 4,
-  },
-  card: {
-    backgroundColor: '#111827',
-    borderColor: '#1f2937',
-    borderWidth: StyleSheet.hairlineWidth,
-    borderRadius: 12,
-    padding: 12,
-    gap: 8,
-  },
-  cardGrow: {
-    flex: 1,
-    minHeight: 0,
-  },
-  input: {
-    backgroundColor: '#0b1220',
-    borderColor: '#334155',
-    borderWidth: StyleSheet.hairlineWidth,
-    color: '#e6edf3',
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    fontSize: 14,
-  },
-  button: {
-    backgroundColor: '#0ea5e9',
-    borderRadius: 8,
-    paddingVertical: 12,
-    alignItems: 'center',
-    marginTop: 4,
-  },
-  buttonText: {
-    color: '#001019',
-    fontWeight: '700',
-  },
-  resultBox: {
-    maxHeight: 140,
-    backgroundColor: '#0b1220',
-    borderColor: '#334155',
-    borderWidth: StyleSheet.hairlineWidth,
-    borderRadius: 8,
-  },
-  resultContent: {
-    padding: 12,
-  },
-  rowBetween: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  mono: {
-    color: '#cbd5e1',
-    fontFamily: Platform.select({ ios: 'Menlo', android: 'monospace' }),
-    fontSize: 12,
-  },
-  logBox: {
-    flex: 1,
-    minHeight: 0,
-    backgroundColor: '#0b1220',
-    borderColor: '#334155',
-    borderWidth: StyleSheet.hairlineWidth,
-    borderRadius: 8,
-  },
-  logLine: {
-    color: '#9da7b3',
-    fontFamily: Platform.select({ ios: 'Menlo', android: 'monospace' }),
-    fontSize: 12,
-    marginBottom: 4,
-  },
-  clearButton: {
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 6,
-    backgroundColor: '#1f2937',
-  },
-  clearButtonText: {
-    color: '#cbd5e1',
-    fontSize: 12,
-    fontWeight: '600',
-  },
+  safe: { flex: 1, backgroundColor: '#ffffff' },
 });

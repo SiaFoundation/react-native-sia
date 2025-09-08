@@ -143,6 +143,48 @@ extern "C" {
         UniffiCallbackInterfaceJsLoggerMethod0 log;
         UniffiCallbackInterfaceFree uniffi_free;
     } UniffiVTableCallbackInterfaceJsLogger;
+    void * uniffi_sia_lib_fn_clone_app(
+        void * ptr, 
+        RustCallStatus *uniffi_out_err
+    );
+    void uniffi_sia_lib_fn_free_app(
+        void * ptr, 
+        RustCallStatus *uniffi_out_err
+    );
+    void * uniffi_sia_lib_fn_constructor_app_new(
+        RustBuffer url, 
+        RustBuffer name, 
+        RustBuffer app_seed, 
+        RustBuffer description, 
+        RustCallStatus *uniffi_out_err
+    );
+    /*handle*/ uint64_t uniffi_sia_lib_fn_method_app_connect(
+        void * ptr
+    );
+    /*handle*/ uint64_t uniffi_sia_lib_fn_method_app_upload(
+        void * ptr, 
+        RustBuffer encryption_key_str, 
+        uint8_t data_shards, 
+        uint8_t parity_shards
+    );
+    void * uniffi_sia_lib_fn_clone_chunkedbuffer(
+        void * ptr, 
+        RustCallStatus *uniffi_out_err
+    );
+    void uniffi_sia_lib_fn_free_chunkedbuffer(
+        void * ptr, 
+        RustCallStatus *uniffi_out_err
+    );
+    void * uniffi_sia_lib_fn_constructor_chunkedbuffer_new(RustCallStatus *uniffi_out_err
+    );
+    void uniffi_sia_lib_fn_method_chunkedbuffer_close(
+        void * ptr, 
+        RustCallStatus *uniffi_out_err
+    );
+    /*handle*/ uint64_t uniffi_sia_lib_fn_method_chunkedbuffer_push_chunk(
+        void * ptr, 
+        RustBuffer chunk
+    );
     void * uniffi_sia_lib_fn_clone_jslogger(
         void * ptr, 
         RustCallStatus *uniffi_out_err
@@ -160,11 +202,24 @@ extern "C" {
         RustBuffer message, 
         RustCallStatus *uniffi_out_err
     );
+    void * uniffi_sia_lib_fn_clone_upload(
+        void * ptr, 
+        RustCallStatus *uniffi_out_err
+    );
+    void uniffi_sia_lib_fn_free_upload(
+        void * ptr, 
+        RustCallStatus *uniffi_out_err
+    );
+    /*handle*/ uint64_t uniffi_sia_lib_fn_method_upload_finish(
+        void * ptr
+    );
+    /*handle*/ uint64_t uniffi_sia_lib_fn_method_upload_write(
+        void * ptr, 
+        RustBuffer buf
+    );
     void uniffi_sia_lib_fn_func_clear_logger(RustCallStatus *uniffi_out_err
     );
-    /*handle*/ uint64_t uniffi_sia_lib_fn_func_get_host_settings(
-        RustBuffer address, 
-        uint16_t port
+    void uniffi_sia_lib_fn_func_init_rust_log(RustCallStatus *uniffi_out_err
     );
     void uniffi_sia_lib_fn_func_set_logger(
         void * logger, 
@@ -384,11 +439,27 @@ extern "C" {
     );
     uint16_t uniffi_sia_lib_checksum_func_clear_logger(
     );
-    uint16_t uniffi_sia_lib_checksum_func_get_host_settings(
+    uint16_t uniffi_sia_lib_checksum_func_init_rust_log(
     );
     uint16_t uniffi_sia_lib_checksum_func_set_logger(
     );
+    uint16_t uniffi_sia_lib_checksum_method_app_connect(
+    );
+    uint16_t uniffi_sia_lib_checksum_method_app_upload(
+    );
+    uint16_t uniffi_sia_lib_checksum_method_chunkedbuffer_close(
+    );
+    uint16_t uniffi_sia_lib_checksum_method_chunkedbuffer_push_chunk(
+    );
     uint16_t uniffi_sia_lib_checksum_method_jslogger_log(
+    );
+    uint16_t uniffi_sia_lib_checksum_method_upload_finish(
+    );
+    uint16_t uniffi_sia_lib_checksum_method_upload_write(
+    );
+    uint16_t uniffi_sia_lib_checksum_constructor_app_new(
+    );
+    uint16_t uniffi_sia_lib_checksum_constructor_chunkedbuffer_new(
     );
     uint32_t ffi_sia_lib_uniffi_contract_version(
     );
@@ -2217,6 +2288,86 @@ NativeSiaLib::NativeSiaLib(
             return this->cpp_uniffi_internal_fn_func_ffi__arraybuffer_to_string(rt, thisVal, args, count);
         }
     );
+    props["ubrn_uniffi_sia_lib_fn_clone_app"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_sia_lib_fn_clone_app"),
+        1,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_sia_lib_fn_clone_app(rt, thisVal, args, count);
+        }
+    );
+    props["ubrn_uniffi_sia_lib_fn_free_app"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_sia_lib_fn_free_app"),
+        1,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_sia_lib_fn_free_app(rt, thisVal, args, count);
+        }
+    );
+    props["ubrn_uniffi_sia_lib_fn_constructor_app_new"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_sia_lib_fn_constructor_app_new"),
+        4,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_sia_lib_fn_constructor_app_new(rt, thisVal, args, count);
+        }
+    );
+    props["ubrn_uniffi_sia_lib_fn_method_app_connect"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_sia_lib_fn_method_app_connect"),
+        1,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_sia_lib_fn_method_app_connect(rt, thisVal, args, count);
+        }
+    );
+    props["ubrn_uniffi_sia_lib_fn_method_app_upload"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_sia_lib_fn_method_app_upload"),
+        4,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_sia_lib_fn_method_app_upload(rt, thisVal, args, count);
+        }
+    );
+    props["ubrn_uniffi_sia_lib_fn_clone_chunkedbuffer"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_sia_lib_fn_clone_chunkedbuffer"),
+        1,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_sia_lib_fn_clone_chunkedbuffer(rt, thisVal, args, count);
+        }
+    );
+    props["ubrn_uniffi_sia_lib_fn_free_chunkedbuffer"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_sia_lib_fn_free_chunkedbuffer"),
+        1,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_sia_lib_fn_free_chunkedbuffer(rt, thisVal, args, count);
+        }
+    );
+    props["ubrn_uniffi_sia_lib_fn_constructor_chunkedbuffer_new"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_sia_lib_fn_constructor_chunkedbuffer_new"),
+        0,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_sia_lib_fn_constructor_chunkedbuffer_new(rt, thisVal, args, count);
+        }
+    );
+    props["ubrn_uniffi_sia_lib_fn_method_chunkedbuffer_close"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_sia_lib_fn_method_chunkedbuffer_close"),
+        1,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_sia_lib_fn_method_chunkedbuffer_close(rt, thisVal, args, count);
+        }
+    );
+    props["ubrn_uniffi_sia_lib_fn_method_chunkedbuffer_push_chunk"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_sia_lib_fn_method_chunkedbuffer_push_chunk"),
+        2,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_sia_lib_fn_method_chunkedbuffer_push_chunk(rt, thisVal, args, count);
+        }
+    );
     props["ubrn_uniffi_sia_lib_fn_clone_jslogger"] = jsi::Function::createFromHostFunction(
         rt,
         jsi::PropNameID::forAscii(rt, "ubrn_uniffi_sia_lib_fn_clone_jslogger"),
@@ -2249,6 +2400,38 @@ NativeSiaLib::NativeSiaLib(
             return this->cpp_uniffi_sia_lib_fn_method_jslogger_log(rt, thisVal, args, count);
         }
     );
+    props["ubrn_uniffi_sia_lib_fn_clone_upload"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_sia_lib_fn_clone_upload"),
+        1,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_sia_lib_fn_clone_upload(rt, thisVal, args, count);
+        }
+    );
+    props["ubrn_uniffi_sia_lib_fn_free_upload"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_sia_lib_fn_free_upload"),
+        1,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_sia_lib_fn_free_upload(rt, thisVal, args, count);
+        }
+    );
+    props["ubrn_uniffi_sia_lib_fn_method_upload_finish"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_sia_lib_fn_method_upload_finish"),
+        1,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_sia_lib_fn_method_upload_finish(rt, thisVal, args, count);
+        }
+    );
+    props["ubrn_uniffi_sia_lib_fn_method_upload_write"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_sia_lib_fn_method_upload_write"),
+        2,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_sia_lib_fn_method_upload_write(rt, thisVal, args, count);
+        }
+    );
     props["ubrn_uniffi_sia_lib_fn_func_clear_logger"] = jsi::Function::createFromHostFunction(
         rt,
         jsi::PropNameID::forAscii(rt, "ubrn_uniffi_sia_lib_fn_func_clear_logger"),
@@ -2257,12 +2440,12 @@ NativeSiaLib::NativeSiaLib(
             return this->cpp_uniffi_sia_lib_fn_func_clear_logger(rt, thisVal, args, count);
         }
     );
-    props["ubrn_uniffi_sia_lib_fn_func_get_host_settings"] = jsi::Function::createFromHostFunction(
+    props["ubrn_uniffi_sia_lib_fn_func_init_rust_log"] = jsi::Function::createFromHostFunction(
         rt,
-        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_sia_lib_fn_func_get_host_settings"),
-        2,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_sia_lib_fn_func_init_rust_log"),
+        0,
         [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
-            return this->cpp_uniffi_sia_lib_fn_func_get_host_settings(rt, thisVal, args, count);
+            return this->cpp_uniffi_sia_lib_fn_func_init_rust_log(rt, thisVal, args, count);
         }
     );
     props["ubrn_uniffi_sia_lib_fn_func_set_logger"] = jsi::Function::createFromHostFunction(
@@ -2697,12 +2880,12 @@ NativeSiaLib::NativeSiaLib(
             return this->cpp_uniffi_sia_lib_checksum_func_clear_logger(rt, thisVal, args, count);
         }
     );
-    props["ubrn_uniffi_sia_lib_checksum_func_get_host_settings"] = jsi::Function::createFromHostFunction(
+    props["ubrn_uniffi_sia_lib_checksum_func_init_rust_log"] = jsi::Function::createFromHostFunction(
         rt,
-        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_sia_lib_checksum_func_get_host_settings"),
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_sia_lib_checksum_func_init_rust_log"),
         0,
         [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
-            return this->cpp_uniffi_sia_lib_checksum_func_get_host_settings(rt, thisVal, args, count);
+            return this->cpp_uniffi_sia_lib_checksum_func_init_rust_log(rt, thisVal, args, count);
         }
     );
     props["ubrn_uniffi_sia_lib_checksum_func_set_logger"] = jsi::Function::createFromHostFunction(
@@ -2713,12 +2896,76 @@ NativeSiaLib::NativeSiaLib(
             return this->cpp_uniffi_sia_lib_checksum_func_set_logger(rt, thisVal, args, count);
         }
     );
+    props["ubrn_uniffi_sia_lib_checksum_method_app_connect"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_sia_lib_checksum_method_app_connect"),
+        0,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_sia_lib_checksum_method_app_connect(rt, thisVal, args, count);
+        }
+    );
+    props["ubrn_uniffi_sia_lib_checksum_method_app_upload"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_sia_lib_checksum_method_app_upload"),
+        0,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_sia_lib_checksum_method_app_upload(rt, thisVal, args, count);
+        }
+    );
+    props["ubrn_uniffi_sia_lib_checksum_method_chunkedbuffer_close"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_sia_lib_checksum_method_chunkedbuffer_close"),
+        0,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_sia_lib_checksum_method_chunkedbuffer_close(rt, thisVal, args, count);
+        }
+    );
+    props["ubrn_uniffi_sia_lib_checksum_method_chunkedbuffer_push_chunk"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_sia_lib_checksum_method_chunkedbuffer_push_chunk"),
+        0,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_sia_lib_checksum_method_chunkedbuffer_push_chunk(rt, thisVal, args, count);
+        }
+    );
     props["ubrn_uniffi_sia_lib_checksum_method_jslogger_log"] = jsi::Function::createFromHostFunction(
         rt,
         jsi::PropNameID::forAscii(rt, "ubrn_uniffi_sia_lib_checksum_method_jslogger_log"),
         0,
         [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
             return this->cpp_uniffi_sia_lib_checksum_method_jslogger_log(rt, thisVal, args, count);
+        }
+    );
+    props["ubrn_uniffi_sia_lib_checksum_method_upload_finish"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_sia_lib_checksum_method_upload_finish"),
+        0,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_sia_lib_checksum_method_upload_finish(rt, thisVal, args, count);
+        }
+    );
+    props["ubrn_uniffi_sia_lib_checksum_method_upload_write"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_sia_lib_checksum_method_upload_write"),
+        0,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_sia_lib_checksum_method_upload_write(rt, thisVal, args, count);
+        }
+    );
+    props["ubrn_uniffi_sia_lib_checksum_constructor_app_new"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_sia_lib_checksum_constructor_app_new"),
+        0,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_sia_lib_checksum_constructor_app_new(rt, thisVal, args, count);
+        }
+    );
+    props["ubrn_uniffi_sia_lib_checksum_constructor_chunkedbuffer_new"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_sia_lib_checksum_constructor_chunkedbuffer_new"),
+        0,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_sia_lib_checksum_constructor_chunkedbuffer_new(rt, thisVal, args, count);
         }
     );
     props["ubrn_ffi_sia_lib_uniffi_contract_version"] = jsi::Function::createFromHostFunction(
@@ -2729,12 +2976,36 @@ NativeSiaLib::NativeSiaLib(
             return this->cpp_ffi_sia_lib_uniffi_contract_version(rt, thisVal, args, count);
         }
     );
+    props["ubrn_uniffi_internal_fn_method_app_ffi__bless_pointer"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_internal_fn_method_app_ffi__bless_pointer"),
+        1,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_internal_fn_method_app_ffi__bless_pointer(rt, thisVal, args, count);
+        }
+    );
+    props["ubrn_uniffi_internal_fn_method_chunkedbuffer_ffi__bless_pointer"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_internal_fn_method_chunkedbuffer_ffi__bless_pointer"),
+        1,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_internal_fn_method_chunkedbuffer_ffi__bless_pointer(rt, thisVal, args, count);
+        }
+    );
     props["ubrn_uniffi_internal_fn_method_jslogger_ffi__bless_pointer"] = jsi::Function::createFromHostFunction(
         rt,
         jsi::PropNameID::forAscii(rt, "ubrn_uniffi_internal_fn_method_jslogger_ffi__bless_pointer"),
         1,
         [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
             return this->cpp_uniffi_internal_fn_method_jslogger_ffi__bless_pointer(rt, thisVal, args, count);
+        }
+    );
+    props["ubrn_uniffi_internal_fn_method_upload_ffi__bless_pointer"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_internal_fn_method_upload_ffi__bless_pointer"),
+        1,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_internal_fn_method_upload_ffi__bless_pointer(rt, thisVal, args, count);
         }
     );
 }
@@ -2791,6 +3062,26 @@ jsi::Value NativeSiaLib::cpp_uniffi_internal_fn_func_ffi__string_to_arraybuffer(
 
 jsi::Value NativeSiaLib::cpp_uniffi_internal_fn_func_ffi__arraybuffer_to_string(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
     return uniffi_jsi::Bridging<std::string>::arraybuffer_to_string(rt, args[0]);
+}jsi::Value NativeSiaLib::cpp_uniffi_internal_fn_method_app_ffi__bless_pointer(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+    auto pointer = uniffi_jsi::Bridging<uint64_t>::fromJs(rt, callInvoker, args[0]);
+    auto static destructor = [](uint64_t p) {
+        auto pointer = reinterpret_cast<void *>(static_cast<uintptr_t>(p));
+        RustCallStatus status = {0};
+        uniffi_sia_lib_fn_free_app(pointer, &status);
+    };
+    auto ptrObj = std::make_shared<uniffi_jsi::DestructibleObject>(pointer, destructor);
+    auto obj = jsi::Object::createFromHostObject(rt, ptrObj);
+    return jsi::Value(rt, obj);
+}jsi::Value NativeSiaLib::cpp_uniffi_internal_fn_method_chunkedbuffer_ffi__bless_pointer(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+    auto pointer = uniffi_jsi::Bridging<uint64_t>::fromJs(rt, callInvoker, args[0]);
+    auto static destructor = [](uint64_t p) {
+        auto pointer = reinterpret_cast<void *>(static_cast<uintptr_t>(p));
+        RustCallStatus status = {0};
+        uniffi_sia_lib_fn_free_chunkedbuffer(pointer, &status);
+    };
+    auto ptrObj = std::make_shared<uniffi_jsi::DestructibleObject>(pointer, destructor);
+    auto obj = jsi::Object::createFromHostObject(rt, ptrObj);
+    return jsi::Value(rt, obj);
 }jsi::Value NativeSiaLib::cpp_uniffi_internal_fn_method_jslogger_ffi__bless_pointer(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
     auto pointer = uniffi_jsi::Bridging<uint64_t>::fromJs(rt, callInvoker, args[0]);
     auto static destructor = [](uint64_t p) {
@@ -2801,9 +3092,109 @@ jsi::Value NativeSiaLib::cpp_uniffi_internal_fn_func_ffi__arraybuffer_to_string(
     auto ptrObj = std::make_shared<uniffi_jsi::DestructibleObject>(pointer, destructor);
     auto obj = jsi::Object::createFromHostObject(rt, ptrObj);
     return jsi::Value(rt, obj);
+}jsi::Value NativeSiaLib::cpp_uniffi_internal_fn_method_upload_ffi__bless_pointer(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+    auto pointer = uniffi_jsi::Bridging<uint64_t>::fromJs(rt, callInvoker, args[0]);
+    auto static destructor = [](uint64_t p) {
+        auto pointer = reinterpret_cast<void *>(static_cast<uintptr_t>(p));
+        RustCallStatus status = {0};
+        uniffi_sia_lib_fn_free_upload(pointer, &status);
+    };
+    auto ptrObj = std::make_shared<uniffi_jsi::DestructibleObject>(pointer, destructor);
+    auto obj = jsi::Object::createFromHostObject(rt, ptrObj);
+    return jsi::Value(rt, obj);
 }
 
 // Methods calling directly into the uniffi generated C API of the Rust crate.
+jsi::Value NativeSiaLib::cpp_uniffi_sia_lib_fn_clone_app(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        RustCallStatus status = uniffi::sia_lib::Bridging<RustCallStatus>::rustSuccess(rt);
+        auto value = uniffi_sia_lib_fn_clone_app(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), 
+            &status
+        );
+        uniffi::sia_lib::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status, args[count - 1]);
+
+        
+        return uniffi_jsi::Bridging<void *>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeSiaLib::cpp_uniffi_sia_lib_fn_free_app(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        RustCallStatus status = uniffi::sia_lib::Bridging<RustCallStatus>::rustSuccess(rt);
+        uniffi_sia_lib_fn_free_app(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), 
+            &status
+        );
+        uniffi::sia_lib::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status, args[count - 1]);
+
+        
+        return jsi::Value::undefined();
+}
+jsi::Value NativeSiaLib::cpp_uniffi_sia_lib_fn_constructor_app_new(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        RustCallStatus status = uniffi::sia_lib::Bridging<RustCallStatus>::rustSuccess(rt);
+        auto value = uniffi_sia_lib_fn_constructor_app_new(uniffi::sia_lib::Bridging<RustBuffer>::fromJs(rt, callInvoker, args[0]), uniffi::sia_lib::Bridging<RustBuffer>::fromJs(rt, callInvoker, args[1]), uniffi::sia_lib::Bridging<RustBuffer>::fromJs(rt, callInvoker, args[2]), uniffi::sia_lib::Bridging<RustBuffer>::fromJs(rt, callInvoker, args[3]), 
+            &status
+        );
+        uniffi::sia_lib::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status, args[count - 1]);
+
+        
+        return uniffi_jsi::Bridging<void *>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeSiaLib::cpp_uniffi_sia_lib_fn_method_app_connect(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        auto value = uniffi_sia_lib_fn_method_app_connect(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0])
+        );
+
+        
+        return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeSiaLib::cpp_uniffi_sia_lib_fn_method_app_upload(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        auto value = uniffi_sia_lib_fn_method_app_upload(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), uniffi::sia_lib::Bridging<RustBuffer>::fromJs(rt, callInvoker, args[1]), uniffi_jsi::Bridging<uint8_t>::fromJs(rt, callInvoker, args[2]), uniffi_jsi::Bridging<uint8_t>::fromJs(rt, callInvoker, args[3])
+        );
+
+        
+        return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeSiaLib::cpp_uniffi_sia_lib_fn_clone_chunkedbuffer(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        RustCallStatus status = uniffi::sia_lib::Bridging<RustCallStatus>::rustSuccess(rt);
+        auto value = uniffi_sia_lib_fn_clone_chunkedbuffer(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), 
+            &status
+        );
+        uniffi::sia_lib::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status, args[count - 1]);
+
+        
+        return uniffi_jsi::Bridging<void *>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeSiaLib::cpp_uniffi_sia_lib_fn_free_chunkedbuffer(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        RustCallStatus status = uniffi::sia_lib::Bridging<RustCallStatus>::rustSuccess(rt);
+        uniffi_sia_lib_fn_free_chunkedbuffer(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), 
+            &status
+        );
+        uniffi::sia_lib::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status, args[count - 1]);
+
+        
+        return jsi::Value::undefined();
+}
+jsi::Value NativeSiaLib::cpp_uniffi_sia_lib_fn_constructor_chunkedbuffer_new(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        RustCallStatus status = uniffi::sia_lib::Bridging<RustCallStatus>::rustSuccess(rt);
+        auto value = uniffi_sia_lib_fn_constructor_chunkedbuffer_new(&status
+        );
+        uniffi::sia_lib::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status, args[count - 1]);
+
+        
+        return uniffi_jsi::Bridging<void *>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeSiaLib::cpp_uniffi_sia_lib_fn_method_chunkedbuffer_close(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        RustCallStatus status = uniffi::sia_lib::Bridging<RustCallStatus>::rustSuccess(rt);
+        uniffi_sia_lib_fn_method_chunkedbuffer_close(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), 
+            &status
+        );
+        uniffi::sia_lib::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status, args[count - 1]);
+
+        
+        return jsi::Value::undefined();
+}
+jsi::Value NativeSiaLib::cpp_uniffi_sia_lib_fn_method_chunkedbuffer_push_chunk(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        auto value = uniffi_sia_lib_fn_method_chunkedbuffer_push_chunk(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), uniffi::sia_lib::Bridging<RustBuffer>::fromJs(rt, callInvoker, args[1])
+        );
+
+        
+        return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker, value);
+}
 jsi::Value NativeSiaLib::cpp_uniffi_sia_lib_fn_clone_jslogger(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
         RustCallStatus status = uniffi::sia_lib::Bridging<RustCallStatus>::rustSuccess(rt);
         auto value = uniffi_sia_lib_fn_clone_jslogger(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), 
@@ -2851,6 +3242,40 @@ jsi::Value NativeSiaLib::cpp_uniffi_sia_lib_fn_method_jslogger_log(jsi::Runtime&
         
         return jsi::Value::undefined();
 }
+jsi::Value NativeSiaLib::cpp_uniffi_sia_lib_fn_clone_upload(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        RustCallStatus status = uniffi::sia_lib::Bridging<RustCallStatus>::rustSuccess(rt);
+        auto value = uniffi_sia_lib_fn_clone_upload(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), 
+            &status
+        );
+        uniffi::sia_lib::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status, args[count - 1]);
+
+        
+        return uniffi_jsi::Bridging<void *>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeSiaLib::cpp_uniffi_sia_lib_fn_free_upload(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        RustCallStatus status = uniffi::sia_lib::Bridging<RustCallStatus>::rustSuccess(rt);
+        uniffi_sia_lib_fn_free_upload(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), 
+            &status
+        );
+        uniffi::sia_lib::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status, args[count - 1]);
+
+        
+        return jsi::Value::undefined();
+}
+jsi::Value NativeSiaLib::cpp_uniffi_sia_lib_fn_method_upload_finish(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        auto value = uniffi_sia_lib_fn_method_upload_finish(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0])
+        );
+
+        
+        return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeSiaLib::cpp_uniffi_sia_lib_fn_method_upload_write(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        auto value = uniffi_sia_lib_fn_method_upload_write(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), uniffi::sia_lib::Bridging<RustBuffer>::fromJs(rt, callInvoker, args[1])
+        );
+
+        
+        return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker, value);
+}
 jsi::Value NativeSiaLib::cpp_uniffi_sia_lib_fn_func_clear_logger(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
         RustCallStatus status = uniffi::sia_lib::Bridging<RustCallStatus>::rustSuccess(rt);
         uniffi_sia_lib_fn_func_clear_logger(&status
@@ -2860,12 +3285,14 @@ jsi::Value NativeSiaLib::cpp_uniffi_sia_lib_fn_func_clear_logger(jsi::Runtime& r
         
         return jsi::Value::undefined();
 }
-jsi::Value NativeSiaLib::cpp_uniffi_sia_lib_fn_func_get_host_settings(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
-        auto value = uniffi_sia_lib_fn_func_get_host_settings(uniffi::sia_lib::Bridging<RustBuffer>::fromJs(rt, callInvoker, args[0]), uniffi_jsi::Bridging<uint16_t>::fromJs(rt, callInvoker, args[1])
+jsi::Value NativeSiaLib::cpp_uniffi_sia_lib_fn_func_init_rust_log(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        RustCallStatus status = uniffi::sia_lib::Bridging<RustCallStatus>::rustSuccess(rt);
+        uniffi_sia_lib_fn_func_init_rust_log(&status
         );
+        uniffi::sia_lib::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status, args[count - 1]);
 
         
-        return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker, value);
+        return jsi::Value::undefined();
 }
 jsi::Value NativeSiaLib::cpp_uniffi_sia_lib_fn_func_set_logger(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
         RustCallStatus status = uniffi::sia_lib::Bridging<RustCallStatus>::rustSuccess(rt);
@@ -3287,8 +3714,8 @@ jsi::Value NativeSiaLib::cpp_uniffi_sia_lib_checksum_func_clear_logger(jsi::Runt
         
         return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
-jsi::Value NativeSiaLib::cpp_uniffi_sia_lib_checksum_func_get_host_settings(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
-        auto value = uniffi_sia_lib_checksum_func_get_host_settings(
+jsi::Value NativeSiaLib::cpp_uniffi_sia_lib_checksum_func_init_rust_log(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        auto value = uniffi_sia_lib_checksum_func_init_rust_log(
         );
 
         
@@ -3301,8 +3728,64 @@ jsi::Value NativeSiaLib::cpp_uniffi_sia_lib_checksum_func_set_logger(jsi::Runtim
         
         return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
+jsi::Value NativeSiaLib::cpp_uniffi_sia_lib_checksum_method_app_connect(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        auto value = uniffi_sia_lib_checksum_method_app_connect(
+        );
+
+        
+        return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeSiaLib::cpp_uniffi_sia_lib_checksum_method_app_upload(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        auto value = uniffi_sia_lib_checksum_method_app_upload(
+        );
+
+        
+        return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeSiaLib::cpp_uniffi_sia_lib_checksum_method_chunkedbuffer_close(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        auto value = uniffi_sia_lib_checksum_method_chunkedbuffer_close(
+        );
+
+        
+        return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeSiaLib::cpp_uniffi_sia_lib_checksum_method_chunkedbuffer_push_chunk(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        auto value = uniffi_sia_lib_checksum_method_chunkedbuffer_push_chunk(
+        );
+
+        
+        return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
 jsi::Value NativeSiaLib::cpp_uniffi_sia_lib_checksum_method_jslogger_log(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
         auto value = uniffi_sia_lib_checksum_method_jslogger_log(
+        );
+
+        
+        return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeSiaLib::cpp_uniffi_sia_lib_checksum_method_upload_finish(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        auto value = uniffi_sia_lib_checksum_method_upload_finish(
+        );
+
+        
+        return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeSiaLib::cpp_uniffi_sia_lib_checksum_method_upload_write(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        auto value = uniffi_sia_lib_checksum_method_upload_write(
+        );
+
+        
+        return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeSiaLib::cpp_uniffi_sia_lib_checksum_constructor_app_new(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        auto value = uniffi_sia_lib_checksum_constructor_app_new(
+        );
+
+        
+        return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeSiaLib::cpp_uniffi_sia_lib_checksum_constructor_chunkedbuffer_new(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        auto value = uniffi_sia_lib_checksum_constructor_chunkedbuffer_new(
         );
 
         

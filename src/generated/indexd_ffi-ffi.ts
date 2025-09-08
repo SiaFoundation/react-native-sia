@@ -23,195 +23,271 @@ interface NativeModuleInterface {
     buffer: Uint8Array,
     uniffi_out_err: UniffiRustCallStatus
   ): string;
-  ubrn_uniffi_sia_lib_fn_clone_jslogger(
+  ubrn_uniffi_indexd_ffi_fn_clone_download(
     ptr: bigint,
     uniffi_out_err: UniffiRustCallStatus
   ): bigint;
-  ubrn_uniffi_sia_lib_fn_free_jslogger(
+  ubrn_uniffi_indexd_ffi_fn_free_download(
     ptr: bigint,
     uniffi_out_err: UniffiRustCallStatus
   ): void;
-  ubrn_uniffi_sia_lib_fn_init_callback_vtable_jslogger(
-    vtable: UniffiVTableCallbackInterfaceJsLogger
-  ): void;
-  ubrn_uniffi_sia_lib_fn_method_jslogger_log(
+  ubrn_uniffi_indexd_ffi_fn_method_download_params(
     ptr: bigint,
-    level: Uint8Array,
-    message: Uint8Array,
-    uniffi_out_err: UniffiRustCallStatus
-  ): void;
-  ubrn_uniffi_sia_lib_fn_func_clear_logger(
-    uniffi_out_err: UniffiRustCallStatus
-  ): void;
-  ubrn_uniffi_sia_lib_fn_func_get_host_settings(
-    address: Uint8Array,
-    port: number
-  ): bigint;
-  ubrn_uniffi_sia_lib_fn_func_set_logger(
-    logger: bigint,
-    uniffi_out_err: UniffiRustCallStatus
-  ): void;
-  ubrn_ffi_sia_lib_rust_future_poll_u8(
-    handle: bigint,
-    callback: UniffiRustFutureContinuationCallback,
-    callbackData: bigint
-  ): void;
-  ubrn_ffi_sia_lib_rust_future_cancel_u8(handle: bigint): void;
-  ubrn_ffi_sia_lib_rust_future_free_u8(handle: bigint): void;
-  ubrn_ffi_sia_lib_rust_future_complete_u8(
-    handle: bigint,
-    uniffi_out_err: UniffiRustCallStatus
-  ): number;
-  ubrn_ffi_sia_lib_rust_future_poll_i8(
-    handle: bigint,
-    callback: UniffiRustFutureContinuationCallback,
-    callbackData: bigint
-  ): void;
-  ubrn_ffi_sia_lib_rust_future_cancel_i8(handle: bigint): void;
-  ubrn_ffi_sia_lib_rust_future_free_i8(handle: bigint): void;
-  ubrn_ffi_sia_lib_rust_future_complete_i8(
-    handle: bigint,
-    uniffi_out_err: UniffiRustCallStatus
-  ): number;
-  ubrn_ffi_sia_lib_rust_future_poll_u16(
-    handle: bigint,
-    callback: UniffiRustFutureContinuationCallback,
-    callbackData: bigint
-  ): void;
-  ubrn_ffi_sia_lib_rust_future_cancel_u16(handle: bigint): void;
-  ubrn_ffi_sia_lib_rust_future_free_u16(handle: bigint): void;
-  ubrn_ffi_sia_lib_rust_future_complete_u16(
-    handle: bigint,
-    uniffi_out_err: UniffiRustCallStatus
-  ): number;
-  ubrn_ffi_sia_lib_rust_future_poll_i16(
-    handle: bigint,
-    callback: UniffiRustFutureContinuationCallback,
-    callbackData: bigint
-  ): void;
-  ubrn_ffi_sia_lib_rust_future_cancel_i16(handle: bigint): void;
-  ubrn_ffi_sia_lib_rust_future_free_i16(handle: bigint): void;
-  ubrn_ffi_sia_lib_rust_future_complete_i16(
-    handle: bigint,
-    uniffi_out_err: UniffiRustCallStatus
-  ): number;
-  ubrn_ffi_sia_lib_rust_future_poll_u32(
-    handle: bigint,
-    callback: UniffiRustFutureContinuationCallback,
-    callbackData: bigint
-  ): void;
-  ubrn_ffi_sia_lib_rust_future_cancel_u32(handle: bigint): void;
-  ubrn_ffi_sia_lib_rust_future_free_u32(handle: bigint): void;
-  ubrn_ffi_sia_lib_rust_future_complete_u32(
-    handle: bigint,
-    uniffi_out_err: UniffiRustCallStatus
-  ): number;
-  ubrn_ffi_sia_lib_rust_future_poll_i32(
-    handle: bigint,
-    callback: UniffiRustFutureContinuationCallback,
-    callbackData: bigint
-  ): void;
-  ubrn_ffi_sia_lib_rust_future_cancel_i32(handle: bigint): void;
-  ubrn_ffi_sia_lib_rust_future_free_i32(handle: bigint): void;
-  ubrn_ffi_sia_lib_rust_future_complete_i32(
-    handle: bigint,
-    uniffi_out_err: UniffiRustCallStatus
-  ): number;
-  ubrn_ffi_sia_lib_rust_future_poll_u64(
-    handle: bigint,
-    callback: UniffiRustFutureContinuationCallback,
-    callbackData: bigint
-  ): void;
-  ubrn_ffi_sia_lib_rust_future_cancel_u64(handle: bigint): void;
-  ubrn_ffi_sia_lib_rust_future_free_u64(handle: bigint): void;
-  ubrn_ffi_sia_lib_rust_future_complete_u64(
-    handle: bigint,
     uniffi_out_err: UniffiRustCallStatus
   ): bigint;
-  ubrn_ffi_sia_lib_rust_future_poll_i64(
-    handle: bigint,
-    callback: UniffiRustFutureContinuationCallback,
-    callbackData: bigint
-  ): void;
-  ubrn_ffi_sia_lib_rust_future_cancel_i64(handle: bigint): void;
-  ubrn_ffi_sia_lib_rust_future_free_i64(handle: bigint): void;
-  ubrn_ffi_sia_lib_rust_future_complete_i64(
-    handle: bigint,
+  ubrn_uniffi_indexd_ffi_fn_method_download_read_chunk(ptr: bigint): bigint;
+  ubrn_uniffi_indexd_ffi_fn_method_download_rem(
+    ptr: bigint,
     uniffi_out_err: UniffiRustCallStatus
   ): bigint;
-  ubrn_ffi_sia_lib_rust_future_poll_f32(
+  ubrn_uniffi_indexd_ffi_fn_method_download_update(
+    ptr: bigint,
+    n: bigint,
+    uniffi_out_err: UniffiRustCallStatus
+  ): void;
+  ubrn_uniffi_indexd_ffi_fn_clone_downloadstate(
+    ptr: bigint,
+    uniffi_out_err: UniffiRustCallStatus
+  ): bigint;
+  ubrn_uniffi_indexd_ffi_fn_free_downloadstate(
+    ptr: bigint,
+    uniffi_out_err: UniffiRustCallStatus
+  ): void;
+  ubrn_uniffi_indexd_ffi_fn_clone_sdk(
+    ptr: bigint,
+    uniffi_out_err: UniffiRustCallStatus
+  ): bigint;
+  ubrn_uniffi_indexd_ffi_fn_free_sdk(
+    ptr: bigint,
+    uniffi_out_err: UniffiRustCallStatus
+  ): void;
+  ubrn_uniffi_indexd_ffi_fn_constructor_sdk_new(
+    indexerUrl: Uint8Array,
+    appSeed: Uint8Array,
+    uniffi_out_err: UniffiRustCallStatus
+  ): bigint;
+  ubrn_uniffi_indexd_ffi_fn_method_sdk_connect(ptr: bigint): bigint;
+  ubrn_uniffi_indexd_ffi_fn_method_sdk_download(
+    ptr: bigint,
+    slabs: Uint8Array
+  ): bigint;
+  ubrn_uniffi_indexd_ffi_fn_method_sdk_download_range(
+    ptr: bigint,
+    slabs: Uint8Array,
+    offset: bigint,
+    length: bigint
+  ): bigint;
+  ubrn_uniffi_indexd_ffi_fn_method_sdk_hosts(ptr: bigint): bigint;
+  ubrn_uniffi_indexd_ffi_fn_method_sdk_request_app_connection(
+    ptr: bigint,
+    meta: Uint8Array
+  ): bigint;
+  ubrn_uniffi_indexd_ffi_fn_method_sdk_upload(
+    ptr: bigint,
+    encryptionKey: Uint8Array,
+    dataShards: number,
+    parityShards: number
+  ): bigint;
+  ubrn_uniffi_indexd_ffi_fn_method_sdk_wait_for_connect(
+    ptr: bigint,
+    resp: Uint8Array
+  ): bigint;
+  ubrn_uniffi_indexd_ffi_fn_clone_upload(
+    ptr: bigint,
+    uniffi_out_err: UniffiRustCallStatus
+  ): bigint;
+  ubrn_uniffi_indexd_ffi_fn_free_upload(
+    ptr: bigint,
+    uniffi_out_err: UniffiRustCallStatus
+  ): void;
+  ubrn_uniffi_indexd_ffi_fn_method_upload_finalize(ptr: bigint): bigint;
+  ubrn_uniffi_indexd_ffi_fn_method_upload_write(
+    ptr: bigint,
+    buf: Uint8Array
+  ): bigint;
+  ubrn_ffi_indexd_ffi_rust_future_poll_u8(
     handle: bigint,
     callback: UniffiRustFutureContinuationCallback,
     callbackData: bigint
   ): void;
-  ubrn_ffi_sia_lib_rust_future_cancel_f32(handle: bigint): void;
-  ubrn_ffi_sia_lib_rust_future_free_f32(handle: bigint): void;
-  ubrn_ffi_sia_lib_rust_future_complete_f32(
+  ubrn_ffi_indexd_ffi_rust_future_cancel_u8(handle: bigint): void;
+  ubrn_ffi_indexd_ffi_rust_future_free_u8(handle: bigint): void;
+  ubrn_ffi_indexd_ffi_rust_future_complete_u8(
     handle: bigint,
     uniffi_out_err: UniffiRustCallStatus
   ): number;
-  ubrn_ffi_sia_lib_rust_future_poll_f64(
+  ubrn_ffi_indexd_ffi_rust_future_poll_i8(
     handle: bigint,
     callback: UniffiRustFutureContinuationCallback,
     callbackData: bigint
   ): void;
-  ubrn_ffi_sia_lib_rust_future_cancel_f64(handle: bigint): void;
-  ubrn_ffi_sia_lib_rust_future_free_f64(handle: bigint): void;
-  ubrn_ffi_sia_lib_rust_future_complete_f64(
+  ubrn_ffi_indexd_ffi_rust_future_cancel_i8(handle: bigint): void;
+  ubrn_ffi_indexd_ffi_rust_future_free_i8(handle: bigint): void;
+  ubrn_ffi_indexd_ffi_rust_future_complete_i8(
     handle: bigint,
     uniffi_out_err: UniffiRustCallStatus
   ): number;
-  ubrn_ffi_sia_lib_rust_future_poll_pointer(
+  ubrn_ffi_indexd_ffi_rust_future_poll_u16(
     handle: bigint,
     callback: UniffiRustFutureContinuationCallback,
     callbackData: bigint
   ): void;
-  ubrn_ffi_sia_lib_rust_future_cancel_pointer(handle: bigint): void;
-  ubrn_ffi_sia_lib_rust_future_free_pointer(handle: bigint): void;
-  ubrn_ffi_sia_lib_rust_future_complete_pointer(
+  ubrn_ffi_indexd_ffi_rust_future_cancel_u16(handle: bigint): void;
+  ubrn_ffi_indexd_ffi_rust_future_free_u16(handle: bigint): void;
+  ubrn_ffi_indexd_ffi_rust_future_complete_u16(
+    handle: bigint,
+    uniffi_out_err: UniffiRustCallStatus
+  ): number;
+  ubrn_ffi_indexd_ffi_rust_future_poll_i16(
+    handle: bigint,
+    callback: UniffiRustFutureContinuationCallback,
+    callbackData: bigint
+  ): void;
+  ubrn_ffi_indexd_ffi_rust_future_cancel_i16(handle: bigint): void;
+  ubrn_ffi_indexd_ffi_rust_future_free_i16(handle: bigint): void;
+  ubrn_ffi_indexd_ffi_rust_future_complete_i16(
+    handle: bigint,
+    uniffi_out_err: UniffiRustCallStatus
+  ): number;
+  ubrn_ffi_indexd_ffi_rust_future_poll_u32(
+    handle: bigint,
+    callback: UniffiRustFutureContinuationCallback,
+    callbackData: bigint
+  ): void;
+  ubrn_ffi_indexd_ffi_rust_future_cancel_u32(handle: bigint): void;
+  ubrn_ffi_indexd_ffi_rust_future_free_u32(handle: bigint): void;
+  ubrn_ffi_indexd_ffi_rust_future_complete_u32(
+    handle: bigint,
+    uniffi_out_err: UniffiRustCallStatus
+  ): number;
+  ubrn_ffi_indexd_ffi_rust_future_poll_i32(
+    handle: bigint,
+    callback: UniffiRustFutureContinuationCallback,
+    callbackData: bigint
+  ): void;
+  ubrn_ffi_indexd_ffi_rust_future_cancel_i32(handle: bigint): void;
+  ubrn_ffi_indexd_ffi_rust_future_free_i32(handle: bigint): void;
+  ubrn_ffi_indexd_ffi_rust_future_complete_i32(
+    handle: bigint,
+    uniffi_out_err: UniffiRustCallStatus
+  ): number;
+  ubrn_ffi_indexd_ffi_rust_future_poll_u64(
+    handle: bigint,
+    callback: UniffiRustFutureContinuationCallback,
+    callbackData: bigint
+  ): void;
+  ubrn_ffi_indexd_ffi_rust_future_cancel_u64(handle: bigint): void;
+  ubrn_ffi_indexd_ffi_rust_future_free_u64(handle: bigint): void;
+  ubrn_ffi_indexd_ffi_rust_future_complete_u64(
     handle: bigint,
     uniffi_out_err: UniffiRustCallStatus
   ): bigint;
-  ubrn_ffi_sia_lib_rust_future_poll_rust_buffer(
+  ubrn_ffi_indexd_ffi_rust_future_poll_i64(
     handle: bigint,
     callback: UniffiRustFutureContinuationCallback,
     callbackData: bigint
   ): void;
-  ubrn_ffi_sia_lib_rust_future_cancel_rust_buffer(handle: bigint): void;
-  ubrn_ffi_sia_lib_rust_future_free_rust_buffer(handle: bigint): void;
-  ubrn_ffi_sia_lib_rust_future_complete_rust_buffer(
+  ubrn_ffi_indexd_ffi_rust_future_cancel_i64(handle: bigint): void;
+  ubrn_ffi_indexd_ffi_rust_future_free_i64(handle: bigint): void;
+  ubrn_ffi_indexd_ffi_rust_future_complete_i64(
+    handle: bigint,
+    uniffi_out_err: UniffiRustCallStatus
+  ): bigint;
+  ubrn_ffi_indexd_ffi_rust_future_poll_f32(
+    handle: bigint,
+    callback: UniffiRustFutureContinuationCallback,
+    callbackData: bigint
+  ): void;
+  ubrn_ffi_indexd_ffi_rust_future_cancel_f32(handle: bigint): void;
+  ubrn_ffi_indexd_ffi_rust_future_free_f32(handle: bigint): void;
+  ubrn_ffi_indexd_ffi_rust_future_complete_f32(
+    handle: bigint,
+    uniffi_out_err: UniffiRustCallStatus
+  ): number;
+  ubrn_ffi_indexd_ffi_rust_future_poll_f64(
+    handle: bigint,
+    callback: UniffiRustFutureContinuationCallback,
+    callbackData: bigint
+  ): void;
+  ubrn_ffi_indexd_ffi_rust_future_cancel_f64(handle: bigint): void;
+  ubrn_ffi_indexd_ffi_rust_future_free_f64(handle: bigint): void;
+  ubrn_ffi_indexd_ffi_rust_future_complete_f64(
+    handle: bigint,
+    uniffi_out_err: UniffiRustCallStatus
+  ): number;
+  ubrn_ffi_indexd_ffi_rust_future_poll_pointer(
+    handle: bigint,
+    callback: UniffiRustFutureContinuationCallback,
+    callbackData: bigint
+  ): void;
+  ubrn_ffi_indexd_ffi_rust_future_cancel_pointer(handle: bigint): void;
+  ubrn_ffi_indexd_ffi_rust_future_free_pointer(handle: bigint): void;
+  ubrn_ffi_indexd_ffi_rust_future_complete_pointer(
+    handle: bigint,
+    uniffi_out_err: UniffiRustCallStatus
+  ): bigint;
+  ubrn_ffi_indexd_ffi_rust_future_poll_rust_buffer(
+    handle: bigint,
+    callback: UniffiRustFutureContinuationCallback,
+    callbackData: bigint
+  ): void;
+  ubrn_ffi_indexd_ffi_rust_future_cancel_rust_buffer(handle: bigint): void;
+  ubrn_ffi_indexd_ffi_rust_future_free_rust_buffer(handle: bigint): void;
+  ubrn_ffi_indexd_ffi_rust_future_complete_rust_buffer(
     handle: bigint,
     uniffi_out_err: UniffiRustCallStatus
   ): Uint8Array;
-  ubrn_ffi_sia_lib_rust_future_poll_void(
+  ubrn_ffi_indexd_ffi_rust_future_poll_void(
     handle: bigint,
     callback: UniffiRustFutureContinuationCallback,
     callbackData: bigint
   ): void;
-  ubrn_ffi_sia_lib_rust_future_cancel_void(handle: bigint): void;
-  ubrn_ffi_sia_lib_rust_future_free_void(handle: bigint): void;
-  ubrn_ffi_sia_lib_rust_future_complete_void(
+  ubrn_ffi_indexd_ffi_rust_future_cancel_void(handle: bigint): void;
+  ubrn_ffi_indexd_ffi_rust_future_free_void(handle: bigint): void;
+  ubrn_ffi_indexd_ffi_rust_future_complete_void(
     handle: bigint,
     uniffi_out_err: UniffiRustCallStatus
   ): void;
-  ubrn_uniffi_sia_lib_checksum_func_clear_logger(): number;
-  ubrn_uniffi_sia_lib_checksum_func_get_host_settings(): number;
-  ubrn_uniffi_sia_lib_checksum_func_set_logger(): number;
-  ubrn_uniffi_sia_lib_checksum_method_jslogger_log(): number;
-  ubrn_ffi_sia_lib_uniffi_contract_version(): number;
-  ubrn_uniffi_internal_fn_method_jslogger_ffi__bless_pointer(
+  ubrn_uniffi_indexd_ffi_checksum_method_download_params(): number;
+  ubrn_uniffi_indexd_ffi_checksum_method_download_read_chunk(): number;
+  ubrn_uniffi_indexd_ffi_checksum_method_download_rem(): number;
+  ubrn_uniffi_indexd_ffi_checksum_method_download_update(): number;
+  ubrn_uniffi_indexd_ffi_checksum_method_sdk_connect(): number;
+  ubrn_uniffi_indexd_ffi_checksum_method_sdk_download(): number;
+  ubrn_uniffi_indexd_ffi_checksum_method_sdk_download_range(): number;
+  ubrn_uniffi_indexd_ffi_checksum_method_sdk_hosts(): number;
+  ubrn_uniffi_indexd_ffi_checksum_method_sdk_request_app_connection(): number;
+  ubrn_uniffi_indexd_ffi_checksum_method_sdk_upload(): number;
+  ubrn_uniffi_indexd_ffi_checksum_method_sdk_wait_for_connect(): number;
+  ubrn_uniffi_indexd_ffi_checksum_method_upload_finalize(): number;
+  ubrn_uniffi_indexd_ffi_checksum_method_upload_write(): number;
+  ubrn_uniffi_indexd_ffi_checksum_constructor_sdk_new(): number;
+  ubrn_ffi_indexd_ffi_uniffi_contract_version(): number;
+  ubrn_uniffi_internal_fn_method_download_ffi__bless_pointer(
+    pointer: bigint,
+    uniffi_out_err: UniffiRustCallStatus
+  ): UniffiRustArcPtr;
+  ubrn_uniffi_internal_fn_method_downloadstate_ffi__bless_pointer(
+    pointer: bigint,
+    uniffi_out_err: UniffiRustCallStatus
+  ): UniffiRustArcPtr;
+  ubrn_uniffi_internal_fn_method_sdk_ffi__bless_pointer(
+    pointer: bigint,
+    uniffi_out_err: UniffiRustCallStatus
+  ): UniffiRustArcPtr;
+  ubrn_uniffi_internal_fn_method_upload_ffi__bless_pointer(
     pointer: bigint,
     uniffi_out_err: UniffiRustCallStatus
   ): UniffiRustArcPtr;
 }
 
-// Casting globalThis to any allows us to look for `NativeSiaLib`
+// Casting globalThis to any allows us to look for `NativeIndexdFfi`
 // if it was added via JSI.
 //
-// We use a getter here rather than simply `globalThis.NativeSiaLib` so that
+// We use a getter here rather than simply `globalThis.NativeIndexdFfi` so that
 // if/when the startup sequence isn't just so, an empty value isn't inadvertantly cached.
 const getter: () => NativeModuleInterface = () =>
-  (globalThis as any).NativeSiaLib;
+  (globalThis as any).NativeIndexdFfi;
 export default getter;
 
 // Structs and function types for calling back into Typescript from Rust.
@@ -328,15 +404,6 @@ export type UniffiForeignFutureCompleteVoid = (
   callbackData: bigint,
   result: UniffiForeignFutureStructVoid
 ) => void;
-type UniffiCallbackInterfaceJsLoggerMethod0 = (
-  uniffiHandle: bigint,
-  level: Uint8Array,
-  message: Uint8Array
-) => UniffiResult<void>;
-export type UniffiVTableCallbackInterfaceJsLogger = {
-  log: UniffiCallbackInterfaceJsLoggerMethod0;
-  uniffiFree: UniffiCallbackInterfaceFree;
-};
 
 // UniffiRustFutureContinuationCallback is generated as part of the component interface's
 // ffi_definitions. However, we need it in the runtime.

@@ -97,9 +97,15 @@ jobs:
         uses: ./.github/actions/setup
 
       - name: Use appropriate Xcode version
-        uses: maxim-lobanov/setup-xcode@v1.6.0
+        uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: ${{ env.XCODE_VERSION }}
+          xcode-version: '16.2'
+
+      - name: Fix netrc permissions for CocoaPods
+        run: |
+          if [ -f "$HOME/.netrc" ]; then
+            chmod 600 "$HOME/.netrc"
+          fi
 
       - name: Install cocoapods
         run: |
@@ -107,6 +113,17 @@ jobs:
           bundle install
           bundle exec pod repo update --verbose
           bundle exec pod install --project-directory=ios
+
+      - name: Install Rust toolchain (nightly + iOS targets)
+        uses: dtolnay/rust-toolchain@nightly
+        with:
+          targets: aarch64-apple-ios,aarch64-apple-ios-sim
+
+      - name: Checkout SDK
+        run: yarn ubrn:checkout
+
+      - name: Build iOS
+        run: yarn ubrn:ios
 
       - name: Build example for iOS
         run: |

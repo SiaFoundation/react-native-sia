@@ -47,9 +47,22 @@ jobs:
         uses: dtolnay/rust-toolchain@nightly
         with:
           targets: aarch64-apple-ios,aarch64-apple-ios-sim
+      - name: Install bindgen CLI
+        if: steps.changesets.outputs.hasChangesets == 'false'
+        run: cargo install --force --locked bindgen-cli
+      - name: Configure bindgen for iOS SDK
+        if: steps.changesets.outputs.hasChangesets == 'false'
+        run: |
+          SDKROOT=$(xcrun --sdk iphoneos --show-sdk-path)
+          echo "SDKROOT=$SDKROOT" >> $GITHUB_ENV
+          echo "BINDGEN_EXTRA_CLANG_ARGS=-isysroot $SDKROOT" >> $GITHUB_ENV
+          echo "LIBCLANG_PATH=$(xcode-select -p)/Toolchains/XcodeDefault.xctoolchain/usr/lib" >> $GITHUB_ENV
       # If no changesets were detected in the PR prep step then we are in
       # release/publish mode. Build artifacts and then check for and publish
       # any new versions to NPM.
+      - name: Checkout SDK
+        if: steps.changesets.outputs.hasChangesets == 'false'
+        run: yarn ubrn:checkout
       - name: Build iOS
         if: steps.changesets.outputs.hasChangesets == 'false'
         run: yarn ubrn:ios

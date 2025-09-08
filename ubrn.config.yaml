@@ -1,4 +1,5 @@
 ---
 rust:
-  directory: rust
-  manifestPath: Cargo.toml
+  repo: https://github.com/SiaFoundation/sia-sdk-rs
+  branch: nate/woah
+  manifestPath: indexd_ffi/Cargo.toml

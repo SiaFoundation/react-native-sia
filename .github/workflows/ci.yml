@@ -108,6 +108,12 @@ jobs:
           bundle exec pod repo update --verbose
           bundle exec pod install --project-directory=ios
 
+      - name: Checkout SDK
+        run: yarn ubrn:checkout
+
+      - name: Build iOS
+        run: yarn ubrn:ios
+
       - name: Build example for iOS
         run: |
           yarn build:ios

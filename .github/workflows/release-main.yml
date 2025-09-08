@@ -50,6 +50,9 @@ jobs:
       # If no changesets were detected in the PR prep step then we are in
       # release/publish mode. Build artifacts and then check for and publish
       # any new versions to NPM.
+      - name: Checkout SDK
+        if: steps.changesets.outputs.hasChangesets == 'false'
+        run: yarn ubrn:checkout
       - name: Build iOS
         if: steps.changesets.outputs.hasChangesets == 'false'
         run: yarn ubrn:ios

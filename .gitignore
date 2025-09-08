@@ -86,7 +86,7 @@ android/generated
 nitrogen/
 
 # From uniffi-bindgen-react-native
-# rust_modules/
+rust_modules/
 *.a
 
 # Environment variables

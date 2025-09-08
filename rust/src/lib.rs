@@ -2,7 +2,7 @@ uniffi::setup_scaffolding!();
 
 mod logger;
 
-use std::sync::{Arc, Mutex};
+use std::{sync::{Arc, Mutex}, task::Waker};
 
 use indexd::{ConnectedState, PinnedSlab, SDK};
 use sia::{rhp::SECTOR_SIZE, signing::PrivateKey};
@@ -25,6 +25,7 @@ impl From<anyhow::Error> for SiaError {
 struct ChunkedBufferInner {
     buffer: Vec<u8>,
     closed: bool,
+    waker: Option<Waker>,
 }
 
 #[derive(uniffi::Object, Clone)]
@@ -40,6 +41,7 @@ impl ChunkedBuffer {
             inner: Arc::new(Mutex::new(ChunkedBufferInner {
                 buffer: Vec::with_capacity(SECTOR_SIZE),
                 closed: false,
+                waker: None,
             })),
         }
     }
@@ -47,6 +49,9 @@ impl ChunkedBuffer {
     pub fn close(&self) -> Result<(), SiaError> {
         let mut inner = self.inner.lock().map_err(|e| SiaError::Message(e.to_string()))?;
         inner.closed = true;
+        if let Some(waker) = inner.waker.take() {
+            waker.wake();
+        }
         Ok(())
     }
 
@@ -56,6 +61,9 @@ impl ChunkedBuffer {
             return Err(SiaError::Message("Buffer is closed".into()));
         }
         inner.buffer.extend_from_slice(&chunk);
+        if let Some(waker) = inner.waker.take() {
+            waker.wake();
+        }
         Ok(())
     }
 }
@@ -63,20 +71,21 @@ impl ChunkedBuffer {
 impl AsyncRead for ChunkedBuffer {
     fn poll_read(
         self: std::pin::Pin<&mut Self>,
-        _cx: &mut std::task::Context<'_>,
+        cx: &mut std::task::Context<'_>,
         buf: &mut tokio::io::ReadBuf<'_>,
     ) -> std::task::Poll<std::io::Result<()>> {
         let mut inner = self.inner.lock().map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, e.to_string()))?;
         if inner.buffer.is_empty() && !inner.closed {
+            inner.waker = Some(cx.waker().clone());
             return std::task::Poll::Pending;
         } else if inner.buffer.is_empty() && inner.closed {
             return std::task::Poll::Ready(Ok(()));
         }
-
         let to_read = std::cmp::min(buf.remaining(), inner.buffer.len());
         buf.put_slice(&inner.buffer[..to_read]);
         inner.buffer.drain(..to_read);
         log_to_js("debug", format!("ChunkedBuffer read: {}", to_read));
+        log::debug!("ChunkedBuffer read: {}", to_read);
         std::task::Poll::Ready(Ok(()))
     }
 }
@@ -164,14 +173,19 @@ impl Upload {
         if self.result.is_finished() {
             return Err(SiaError::Message("Upload already completed".into()));
         }
-        self.reader.push_chunk(buf.to_vec()).await
+        self.reader.push_chunk(buf.to_vec()).await?;
+        log_to_js("info", format!("pushed chunk"));
+        log::info!("pushed chunk");
+        Ok(())
     }
 
     pub async fn finish(&self) -> Result<(), SiaError> {
+        log::debug!("finishing upload");
         self.reader.close()?;
         let rx = self.rx.lock().await.take().unwrap();
         let slabs = rx.await.map_err(|e| SiaError::Message(e.to_string()))??;
         log_to_js("info", format!("file uploaded {}", slabs[0].id).into());
+        log::info!("file uploaded {}", slabs[0].id);
         Ok(())
     }
 }

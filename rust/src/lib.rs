@@ -149,12 +149,15 @@ impl App {
         log_to_js("info", "starting upload".into());
         let inner_buf = buf.clone();
         let (tx, rx) = oneshot::channel();
+        log_to_js("info", "inited buf".into());
+        let result = tokio::spawn(async move {
+            let res = sdk.upload(inner_buf, encryption_key, data_shards, parity_shards).await.map_err(|e| SiaError::Message(e.to_string()));
+            let _ = tx.send(res);
+        });
+        log_to_js("info", "spawned upload task".into());
         Ok(Upload {
             reader: buf.clone(),
-            result: tokio::spawn(async move {
-                let res = sdk.upload(inner_buf, encryption_key, data_shards, parity_shards).await.map_err(|e| SiaError::Message(e.to_string()));
-                let _ = tx.send(res);
-            }),
+            result,
             rx: tokio::sync::Mutex::new(Some(rx)),
         })
     }

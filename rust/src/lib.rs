@@ -138,7 +138,7 @@ impl App {
         Ok(())
     }
 
-    pub async fn upload(&self, encryption_key_str: String, data_shards: u8, parity_shards: u8) -> Result<Upload, SiaError> {
+    pub fn upload(&self, encryption_key_str: String, data_shards: u8, parity_shards: u8) -> Result<Upload, SiaError> {
         let mut encryption_key = [0u8;32];
         hex::decode_to_slice(encryption_key_str, &mut encryption_key).map_err(|e| SiaError::Message(e.to_string()))?;
         let buf = ChunkedBuffer::new();

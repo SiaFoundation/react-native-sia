@@ -2,9 +2,10 @@ use std::{io::Cursor, sync::Arc};
 
 use indexd::SDK;
 use sia::signing::PrivateKey;
-use crate::logger::log_to_js;
+use crate::{logger::log_to_js, SiaError};
 
-pub async fn upload_random(test: [u8;32], app_key: PrivateKey)  {
+
+pub async fn upload_random(test: [u8;32], app_key: PrivateKey) -> Result<(), SiaError> {
     if rustls::crypto::CryptoProvider::get_default().is_none() {
             rustls::crypto::ring::default_provider()
                 .install_default().unwrap();
@@ -13,11 +14,19 @@ pub async fn upload_random(test: [u8;32], app_key: PrivateKey)  {
         .dangerous()
         .with_custom_certificate_verifier(SkipServerVerification::new())
         .with_no_client_auth();
-    let sdk = SDK::connect("https://app.indexd.zeus.sia.dev", app_key, "Test".into(), "Test".into(), "https://foo.bar".parse().unwrap()).await.unwrap().connected(client_crypto).await.unwrap();
+    let sdk = SDK::connect(
+        "https://app.indexd.zeus.sia.dev", 
+        app_key, 
+        "Test".into(), 
+        "Test".into(), 
+        "https://foo.bar".parse().unwrap()
+    ).await.map_err(|e| SiaError::Message(e.to_string()))?
+    .connected(client_crypto).await.map_err(|e| SiaError::Message(e.to_string()))?;
 
     let reader = Cursor::new(test);
-    let slabs = sdk.upload(reader,[0u8;32], 1, 1).await.unwrap();
+    let slabs = sdk.upload(reader,[0u8;32], 1, 1).await.map_err(|e| SiaError::Message(e.to_string()))?;
     log_to_js("info", format!("file uploaded {}", slabs[0].id).into());
+    Ok(())
 }
 
 #[derive(Debug)]

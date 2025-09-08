@@ -14,7 +14,7 @@ serde_json = "1.0.142"
 indexd = { git="https://github.com/siafoundation/sia-sdk-rs", rev="a9c91bf5f06361241ee52c1aa350e8fceeed42f1" }
 sia_sdk = { git="https://github.com/siafoundation/sia-sdk-rs", rev="a9c91bf5f06361241ee52c1aa350e8fceeed42f1" }
 tokio= { version = "^1.47.1", features = ["rt-multi-thread", "macros", "time", "net"] }
-uniffi = "0.29.4"
+uniffi = { version = "0.29.4", features = ["tokio"] }
 thiserror = "1.0.64"
 log = "0.4.28"
 

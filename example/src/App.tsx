@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   Text,
   View,
@@ -8,55 +8,93 @@ import {
   Platform,
 } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import { App, setLogger, clearLogger } from 'react-native-sia';
+import { App, setLogCallback } from 'react-native-sia';
 
-const appSeed = '1'.repeat(64);
-const app = new App('https://app.indexd.zeus.sia.dev', 'Test', appSeed, 'Test');
+const appSeed = new Uint8Array(32).fill(1);
 
 export default function AppComponent() {
   const [logs, setLogs] = useState<string[]>([]);
-  const logger = useMemo(
-    () => ({
-      log(level: string, message: string) {
-        setLogs((prev) => [...prev, `[rust][${level}] ${message}`]);
-      },
-      client(message: string) {
-        setLogs((prev) => [...prev, `[client][info] ${message}`]);
-      },
-    }),
+  const [app, setApp] = useState<App | null>(null);
+
+  const logClient = useCallback((message: string) => {
+    setLogs((prev) => [...prev, `[client][info] ${message}`]);
+  }, []);
+
+  useEffect(
+    () =>
+      setLogCallback({
+        debug: (message: string) => {
+          setLogs((prev) => [...prev, `[rust][debug] ${message}`]);
+        },
+        info: (message: string) => {
+          setLogs((prev) => [...prev, `[rust][info] ${message}`]);
+        },
+        warn: (message: string) => {
+          setLogs((prev) => [...prev, `[rust][warn] ${message}`]);
+        },
+        error: (message: string) => {
+          setLogs((prev) => [...prev, `[rust][error] ${message}`]);
+        },
+      }),
     []
   );
 
   useEffect(() => {
     (async () => {
-      setLogger(logger);
-      logger.client('App mounted');
-      await app.connect();
-      logger.client('App connected');
+      logClient('Creating app...');
+      try {
+        const _app = new App(
+          'https://app.indexd.zeus.sia.dev',
+          'Test',
+          appSeed.buffer,
+          'Test'
+        );
+        logClient('Connecting to app...');
+        // // if more than 5 seconds abort the connection
+        // const controller = new AbortController();
+        // setTimeout(() => {
+        //   logClient('Aborting connection');
+        //   controller.abort();
+        // }, 5000);
+        await _app.connect();
+        // await _app.connect({
+        //   signal: controller.signal,
+        // });
+        setApp(_app);
+        logClient('App connected');
+      } catch (error) {
+        logClient('Error creating app');
+        logClient(error as string);
+      }
     })();
-    return () => {
-      clearLogger();
-    };
-  }, [logger]);
+  }, [logClient]);
 
   const [controller, setController] = useState<AbortController | null>();
-  const handleUpload = async () => {
-    logger.client('Uploading');
+  const handleUpload = () => {
+    if (!app) return;
     const c = new AbortController();
-    const upload = await app.upload(appSeed, 1, 1, {
-      signal: c.signal,
-    });
     setController(c);
-
-    for (let i = 0; i < 10; i++) {
-      logger.client(`Writing chunk ${i}...`);
-      await upload.write(new Uint8Array(1024).buffer);
-      logger.client(`Chunk ${i} written`);
-    }
-
-    logger.client('Finishing upload...');
-    await upload.finish();
-    logger.client('Upload finished');
+    logClient('starting upload...');
+    // Detach from the press handler so UI stays responsive.
+    (async () => {
+      try {
+        const upload = await app.upload(appSeed.buffer, 1, 1, {
+          signal: c.signal,
+        });
+        for (let i = 0; i < 10; i++) {
+          logClient(`Writing chunk ${i}...`);
+          await upload.write(new Uint8Array(1024).buffer);
+          logClient(`Chunk ${i} written`);
+          // Yield to the JS event loop to keep UI responsive.
+          await new Promise<void>((r) => setImmediate(r));
+        }
+        logClient('Finishing upload...');
+        await upload.finish();
+        logClient('Upload finished');
+      } catch (e) {
+        logClient(`Upload error: ${String(e)}`);
+      }
+    })();
   };
 
   return (
@@ -75,7 +113,7 @@ export default function AppComponent() {
               disabled={!controller}
               onPress={async () => {
                 controller?.abort();
-                logger.client('Aborting upload');
+                logClient('Aborting upload');
                 setController(null);
               }}
             >

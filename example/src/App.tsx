@@ -20,28 +20,8 @@ export default function AppComponent() {
     setLogs((prev) => [...prev, `[client][info] ${message}`]);
   }, []);
 
-  useEffect(
-    () =>
-      setLogCallback({
-        debug: (message: string) => {
-          setLogs((prev) => [...prev, `[rust][debug] ${message}`]);
-        },
-        info: (message: string) => {
-          setLogs((prev) => [...prev, `[rust][info] ${message}`]);
-        },
-        warn: (message: string) => {
-          setLogs((prev) => [...prev, `[rust][warn] ${message}`]);
-        },
-        error: (message: string) => {
-          setLogs((prev) => [...prev, `[rust][error] ${message}`]);
-        },
-      }),
-    []
-  );
-
   useEffect(() => {
     (async () => {
-      logClient('Creating app...');
       try {
         const _app = new App(
           'https://app.indexd.zeus.sia.dev',
@@ -78,12 +58,12 @@ export default function AppComponent() {
     // Detach from the press handler so UI stays responsive.
     (async () => {
       try {
-        const upload = await app.upload(appSeed.buffer, 1, 1, {
+        const upload = await app.upload(appSeed.buffer, 10, 20, {
           signal: c.signal,
         });
-        for (let i = 0; i < 10; i++) {
+        for (let i = 0; i < 15; i++) {
           logClient(`Writing chunk ${i}...`);
-          await upload.write(new Uint8Array(1024).buffer);
+          await upload.write(new Uint8Array(4194304).buffer);
           logClient(`Chunk ${i} written`);
           // Yield to the JS event loop to keep UI responsive.
           await new Promise<void>((r) => setImmediate(r));

@@ -1,5 +1,11 @@
 # react-native-sia
 
+## 0.2.0
+
+### Minor Changes
+
+- Switch to building main sdk branch.
+
 ## 0.1.0
 
 ### Minor Changes

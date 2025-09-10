@@ -1,5 +1,5 @@
 ---
 rust:
   repo: https://github.com/SiaFoundation/sia-sdk-rs
-  branch: nate/woah
+  branch: master
   manifestPath: indexd_ffi/Cargo.toml

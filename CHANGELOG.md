@@ -1,5 +1,11 @@
 # react-native-sia
 
+## 0.1.0
+
+### Minor Changes
+
+- bd408f0: Initial version with full sdk.
+
 ## 0.0.5
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # react-native-sia
 
+## 0.5.0
+
+### Minor Changes
+
+- Update sdk.
+
 ## 0.4.0
 
 ### Minor Changes

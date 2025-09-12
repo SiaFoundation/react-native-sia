@@ -1,5 +1,12 @@
 # react-native-sia-example
 
+## 0.0.17
+
+### Patch Changes
+
+- Updated dependencies
+  - react-native-sia@0.6.5
+
 ## 0.0.16
 
 ### Patch Changes

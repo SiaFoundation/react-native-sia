@@ -1,5 +1,11 @@
 # react-native-sia
 
+## 0.6.4
+
+### Patch Changes
+
+- Update SDK.
+
 ## 0.6.3
 
 ### Patch Changes

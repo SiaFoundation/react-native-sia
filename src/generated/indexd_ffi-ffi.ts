@@ -23,6 +23,19 @@ interface NativeModuleInterface {
     buffer: Uint8Array,
     uniffi_out_err: UniffiRustCallStatus
   ): string;
+  ubrn_uniffi_indexd_ffi_fn_clone_appkey(
+    ptr: bigint,
+    uniffi_out_err: UniffiRustCallStatus
+  ): bigint;
+  ubrn_uniffi_indexd_ffi_fn_free_appkey(
+    ptr: bigint,
+    uniffi_out_err: UniffiRustCallStatus
+  ): void;
+  ubrn_uniffi_indexd_ffi_fn_constructor_appkey_new(
+    recoveryPhrase: Uint8Array,
+    appId: Uint8Array,
+    uniffi_out_err: UniffiRustCallStatus
+  ): bigint;
   ubrn_uniffi_indexd_ffi_fn_clone_download(
     ptr: bigint,
     uniffi_out_err: UniffiRustCallStatus
@@ -45,6 +58,30 @@ interface NativeModuleInterface {
     n: bigint,
     uniffi_out_err: UniffiRustCallStatus
   ): void;
+  ubrn_uniffi_indexd_ffi_fn_clone_downloadshared(
+    ptr: bigint,
+    uniffi_out_err: UniffiRustCallStatus
+  ): bigint;
+  ubrn_uniffi_indexd_ffi_fn_free_downloadshared(
+    ptr: bigint,
+    uniffi_out_err: UniffiRustCallStatus
+  ): void;
+  ubrn_uniffi_indexd_ffi_fn_method_downloadshared_params(
+    ptr: bigint,
+    uniffi_out_err: UniffiRustCallStatus
+  ): bigint;
+  ubrn_uniffi_indexd_ffi_fn_method_downloadshared_read_chunk(
+    ptr: bigint
+  ): bigint;
+  ubrn_uniffi_indexd_ffi_fn_method_downloadshared_rem(
+    ptr: bigint,
+    uniffi_out_err: UniffiRustCallStatus
+  ): bigint;
+  ubrn_uniffi_indexd_ffi_fn_method_downloadshared_update(
+    ptr: bigint,
+    n: bigint,
+    uniffi_out_err: UniffiRustCallStatus
+  ): void;
   ubrn_uniffi_indexd_ffi_fn_clone_downloadstate(
     ptr: bigint,
     uniffi_out_err: UniffiRustCallStatus
@@ -53,6 +90,100 @@ interface NativeModuleInterface {
     ptr: bigint,
     uniffi_out_err: UniffiRustCallStatus
   ): void;
+  ubrn_uniffi_indexd_ffi_fn_clone_encryptionkey(
+    ptr: bigint,
+    uniffi_out_err: UniffiRustCallStatus
+  ): bigint;
+  ubrn_uniffi_indexd_ffi_fn_free_encryptionkey(
+    ptr: bigint,
+    uniffi_out_err: UniffiRustCallStatus
+  ): void;
+  ubrn_uniffi_indexd_ffi_fn_constructor_encryptionkey_parse(
+    str: Uint8Array,
+    uniffi_out_err: UniffiRustCallStatus
+  ): bigint;
+  ubrn_uniffi_indexd_ffi_fn_method_encryptionkey_export(
+    ptr: bigint,
+    uniffi_out_err: UniffiRustCallStatus
+  ): Uint8Array;
+  ubrn_uniffi_indexd_ffi_fn_clone_logger(
+    ptr: bigint,
+    uniffi_out_err: UniffiRustCallStatus
+  ): bigint;
+  ubrn_uniffi_indexd_ffi_fn_free_logger(
+    ptr: bigint,
+    uniffi_out_err: UniffiRustCallStatus
+  ): void;
+  ubrn_uniffi_indexd_ffi_fn_init_callback_vtable_logger(
+    vtable: UniffiVTableCallbackInterfaceLogger
+  ): void;
+  ubrn_uniffi_indexd_ffi_fn_method_logger_info(
+    ptr: bigint,
+    msg: Uint8Array,
+    uniffi_out_err: UniffiRustCallStatus
+  ): void;
+  ubrn_uniffi_indexd_ffi_fn_method_logger_warn(
+    ptr: bigint,
+    msg: Uint8Array,
+    uniffi_out_err: UniffiRustCallStatus
+  ): void;
+  ubrn_uniffi_indexd_ffi_fn_method_logger_error(
+    ptr: bigint,
+    msg: Uint8Array,
+    uniffi_out_err: UniffiRustCallStatus
+  ): void;
+  ubrn_uniffi_indexd_ffi_fn_method_logger_debug(
+    ptr: bigint,
+    msg: Uint8Array,
+    uniffi_out_err: UniffiRustCallStatus
+  ): void;
+  ubrn_uniffi_indexd_ffi_fn_clone_object(
+    ptr: bigint,
+    uniffi_out_err: UniffiRustCallStatus
+  ): bigint;
+  ubrn_uniffi_indexd_ffi_fn_free_object(
+    ptr: bigint,
+    uniffi_out_err: UniffiRustCallStatus
+  ): void;
+  ubrn_uniffi_indexd_ffi_fn_constructor_object_open(
+    appKey: bigint,
+    sealed: Uint8Array,
+    uniffi_out_err: UniffiRustCallStatus
+  ): bigint;
+  ubrn_uniffi_indexd_ffi_fn_method_object_created_at(
+    ptr: bigint,
+    uniffi_out_err: UniffiRustCallStatus
+  ): Uint8Array;
+  ubrn_uniffi_indexd_ffi_fn_method_object_id(
+    ptr: bigint,
+    uniffi_out_err: UniffiRustCallStatus
+  ): Uint8Array;
+  ubrn_uniffi_indexd_ffi_fn_method_object_metadata(
+    ptr: bigint,
+    uniffi_out_err: UniffiRustCallStatus
+  ): Uint8Array;
+  ubrn_uniffi_indexd_ffi_fn_method_object_seal(
+    ptr: bigint,
+    appKey: bigint,
+    uniffi_out_err: UniffiRustCallStatus
+  ): Uint8Array;
+  ubrn_uniffi_indexd_ffi_fn_method_object_size(
+    ptr: bigint,
+    uniffi_out_err: UniffiRustCallStatus
+  ): bigint;
+  ubrn_uniffi_indexd_ffi_fn_method_object_slabs(
+    ptr: bigint,
+    uniffi_out_err: UniffiRustCallStatus
+  ): Uint8Array;
+  ubrn_uniffi_indexd_ffi_fn_method_object_update_metadata(
+    ptr: bigint,
+    metadata: Uint8Array,
+    uniffi_out_err: UniffiRustCallStatus
+  ): void;
+  ubrn_uniffi_indexd_ffi_fn_method_object_updated_at(
+    ptr: bigint,
+    uniffi_out_err: UniffiRustCallStatus
+  ): Uint8Array;
   ubrn_uniffi_indexd_ffi_fn_clone_sdk(
     ptr: bigint,
     uniffi_out_err: UniffiRustCallStatus
@@ -63,30 +194,69 @@ interface NativeModuleInterface {
   ): void;
   ubrn_uniffi_indexd_ffi_fn_constructor_sdk_new(
     indexerUrl: Uint8Array,
-    appSeed: Uint8Array,
+    appKey: bigint,
     uniffi_out_err: UniffiRustCallStatus
   ): bigint;
+  ubrn_uniffi_indexd_ffi_fn_method_sdk_account(ptr: bigint): bigint;
   ubrn_uniffi_indexd_ffi_fn_method_sdk_connect(ptr: bigint): bigint;
+  ubrn_uniffi_indexd_ffi_fn_method_sdk_delete_object(
+    ptr: bigint,
+    key: Uint8Array
+  ): bigint;
   ubrn_uniffi_indexd_ffi_fn_method_sdk_download(
     ptr: bigint,
-    slabs: Uint8Array
+    object: bigint,
+    options: Uint8Array
   ): bigint;
-  ubrn_uniffi_indexd_ffi_fn_method_sdk_download_range(
+  ubrn_uniffi_indexd_ffi_fn_method_sdk_download_shared(
     ptr: bigint,
-    slabs: Uint8Array,
-    offset: bigint,
-    length: bigint
+    shareUrl: Uint8Array,
+    options: Uint8Array
   ): bigint;
   ubrn_uniffi_indexd_ffi_fn_method_sdk_hosts(ptr: bigint): bigint;
+  ubrn_uniffi_indexd_ffi_fn_method_sdk_object(
+    ptr: bigint,
+    key: Uint8Array
+  ): bigint;
+  ubrn_uniffi_indexd_ffi_fn_method_sdk_object_share_url(
+    ptr: bigint,
+    objectKey: Uint8Array,
+    encryptionKey: Uint8Array,
+    validUntil: Uint8Array,
+    uniffi_out_err: UniffiRustCallStatus
+  ): Uint8Array;
+  ubrn_uniffi_indexd_ffi_fn_method_sdk_objects(
+    ptr: bigint,
+    cursor: Uint8Array,
+    limit: number
+  ): bigint;
+  ubrn_uniffi_indexd_ffi_fn_method_sdk_pin_slab(
+    ptr: bigint,
+    slabPinParams: Uint8Array
+  ): bigint;
   ubrn_uniffi_indexd_ffi_fn_method_sdk_request_app_connection(
     ptr: bigint,
     meta: Uint8Array
   ): bigint;
+  ubrn_uniffi_indexd_ffi_fn_method_sdk_save_object(
+    ptr: bigint,
+    object: bigint
+  ): bigint;
+  ubrn_uniffi_indexd_ffi_fn_method_sdk_shared_object_metadata(
+    ptr: bigint,
+    shareUrl: Uint8Array
+  ): bigint;
+  ubrn_uniffi_indexd_ffi_fn_method_sdk_slab(
+    ptr: bigint,
+    slabId: Uint8Array
+  ): bigint;
+  ubrn_uniffi_indexd_ffi_fn_method_sdk_unpin_slab(
+    ptr: bigint,
+    slabId: Uint8Array
+  ): bigint;
   ubrn_uniffi_indexd_ffi_fn_method_sdk_upload(
     ptr: bigint,
-    encryptionKey: Uint8Array,
-    dataShards: number,
-    parityShards: number
+    options: Uint8Array
   ): bigint;
   ubrn_uniffi_indexd_ffi_fn_method_sdk_wait_for_connect(
     ptr: bigint,
@@ -105,6 +275,37 @@ interface NativeModuleInterface {
     ptr: bigint,
     buf: Uint8Array
   ): bigint;
+  ubrn_uniffi_indexd_ffi_fn_clone_uploadprogresscallback(
+    ptr: bigint,
+    uniffi_out_err: UniffiRustCallStatus
+  ): bigint;
+  ubrn_uniffi_indexd_ffi_fn_free_uploadprogresscallback(
+    ptr: bigint,
+    uniffi_out_err: UniffiRustCallStatus
+  ): void;
+  ubrn_uniffi_indexd_ffi_fn_init_callback_vtable_uploadprogresscallback(
+    vtable: UniffiVTableCallbackInterfaceUploadProgressCallback
+  ): void;
+  ubrn_uniffi_indexd_ffi_fn_method_uploadprogresscallback_progress(
+    ptr: bigint,
+    uploaded: bigint,
+    encodedSize: bigint,
+    uniffi_out_err: UniffiRustCallStatus
+  ): void;
+  ubrn_uniffi_indexd_ffi_fn_func_encoded_size(
+    size: bigint,
+    dataShards: number,
+    parityShards: number,
+    uniffi_out_err: UniffiRustCallStatus
+  ): bigint;
+  ubrn_uniffi_indexd_ffi_fn_func_generate_recovery_phrase(
+    uniffi_out_err: UniffiRustCallStatus
+  ): Uint8Array;
+  ubrn_uniffi_indexd_ffi_fn_func_set_logger(
+    logger: bigint,
+    level: Uint8Array,
+    uniffi_out_err: UniffiRustCallStatus
+  ): void;
   ubrn_ffi_indexd_ffi_rust_future_poll_u8(
     handle: bigint,
     callback: UniffiRustFutureContinuationCallback,
@@ -248,26 +449,80 @@ interface NativeModuleInterface {
     handle: bigint,
     uniffi_out_err: UniffiRustCallStatus
   ): void;
+  ubrn_uniffi_indexd_ffi_checksum_func_encoded_size(): number;
+  ubrn_uniffi_indexd_ffi_checksum_func_generate_recovery_phrase(): number;
+  ubrn_uniffi_indexd_ffi_checksum_func_set_logger(): number;
   ubrn_uniffi_indexd_ffi_checksum_method_download_params(): number;
   ubrn_uniffi_indexd_ffi_checksum_method_download_read_chunk(): number;
   ubrn_uniffi_indexd_ffi_checksum_method_download_rem(): number;
   ubrn_uniffi_indexd_ffi_checksum_method_download_update(): number;
+  ubrn_uniffi_indexd_ffi_checksum_method_downloadshared_params(): number;
+  ubrn_uniffi_indexd_ffi_checksum_method_downloadshared_read_chunk(): number;
+  ubrn_uniffi_indexd_ffi_checksum_method_downloadshared_rem(): number;
+  ubrn_uniffi_indexd_ffi_checksum_method_downloadshared_update(): number;
+  ubrn_uniffi_indexd_ffi_checksum_method_encryptionkey_export(): number;
+  ubrn_uniffi_indexd_ffi_checksum_method_logger_info(): number;
+  ubrn_uniffi_indexd_ffi_checksum_method_logger_warn(): number;
+  ubrn_uniffi_indexd_ffi_checksum_method_logger_error(): number;
+  ubrn_uniffi_indexd_ffi_checksum_method_logger_debug(): number;
+  ubrn_uniffi_indexd_ffi_checksum_method_object_created_at(): number;
+  ubrn_uniffi_indexd_ffi_checksum_method_object_id(): number;
+  ubrn_uniffi_indexd_ffi_checksum_method_object_metadata(): number;
+  ubrn_uniffi_indexd_ffi_checksum_method_object_seal(): number;
+  ubrn_uniffi_indexd_ffi_checksum_method_object_size(): number;
+  ubrn_uniffi_indexd_ffi_checksum_method_object_slabs(): number;
+  ubrn_uniffi_indexd_ffi_checksum_method_object_update_metadata(): number;
+  ubrn_uniffi_indexd_ffi_checksum_method_object_updated_at(): number;
+  ubrn_uniffi_indexd_ffi_checksum_method_sdk_account(): number;
   ubrn_uniffi_indexd_ffi_checksum_method_sdk_connect(): number;
+  ubrn_uniffi_indexd_ffi_checksum_method_sdk_delete_object(): number;
   ubrn_uniffi_indexd_ffi_checksum_method_sdk_download(): number;
-  ubrn_uniffi_indexd_ffi_checksum_method_sdk_download_range(): number;
+  ubrn_uniffi_indexd_ffi_checksum_method_sdk_download_shared(): number;
   ubrn_uniffi_indexd_ffi_checksum_method_sdk_hosts(): number;
+  ubrn_uniffi_indexd_ffi_checksum_method_sdk_object(): number;
+  ubrn_uniffi_indexd_ffi_checksum_method_sdk_object_share_url(): number;
+  ubrn_uniffi_indexd_ffi_checksum_method_sdk_objects(): number;
+  ubrn_uniffi_indexd_ffi_checksum_method_sdk_pin_slab(): number;
   ubrn_uniffi_indexd_ffi_checksum_method_sdk_request_app_connection(): number;
+  ubrn_uniffi_indexd_ffi_checksum_method_sdk_save_object(): number;
+  ubrn_uniffi_indexd_ffi_checksum_method_sdk_shared_object_metadata(): number;
+  ubrn_uniffi_indexd_ffi_checksum_method_sdk_slab(): number;
+  ubrn_uniffi_indexd_ffi_checksum_method_sdk_unpin_slab(): number;
   ubrn_uniffi_indexd_ffi_checksum_method_sdk_upload(): number;
   ubrn_uniffi_indexd_ffi_checksum_method_sdk_wait_for_connect(): number;
   ubrn_uniffi_indexd_ffi_checksum_method_upload_finalize(): number;
   ubrn_uniffi_indexd_ffi_checksum_method_upload_write(): number;
+  ubrn_uniffi_indexd_ffi_checksum_method_uploadprogresscallback_progress(): number;
+  ubrn_uniffi_indexd_ffi_checksum_constructor_appkey_new(): number;
+  ubrn_uniffi_indexd_ffi_checksum_constructor_encryptionkey_parse(): number;
+  ubrn_uniffi_indexd_ffi_checksum_constructor_object_open(): number;
   ubrn_uniffi_indexd_ffi_checksum_constructor_sdk_new(): number;
   ubrn_ffi_indexd_ffi_uniffi_contract_version(): number;
+  ubrn_uniffi_internal_fn_method_appkey_ffi__bless_pointer(
+    pointer: bigint,
+    uniffi_out_err: UniffiRustCallStatus
+  ): UniffiRustArcPtr;
   ubrn_uniffi_internal_fn_method_download_ffi__bless_pointer(
     pointer: bigint,
     uniffi_out_err: UniffiRustCallStatus
   ): UniffiRustArcPtr;
+  ubrn_uniffi_internal_fn_method_downloadshared_ffi__bless_pointer(
+    pointer: bigint,
+    uniffi_out_err: UniffiRustCallStatus
+  ): UniffiRustArcPtr;
   ubrn_uniffi_internal_fn_method_downloadstate_ffi__bless_pointer(
+    pointer: bigint,
+    uniffi_out_err: UniffiRustCallStatus
+  ): UniffiRustArcPtr;
+  ubrn_uniffi_internal_fn_method_encryptionkey_ffi__bless_pointer(
+    pointer: bigint,
+    uniffi_out_err: UniffiRustCallStatus
+  ): UniffiRustArcPtr;
+  ubrn_uniffi_internal_fn_method_logger_ffi__bless_pointer(
+    pointer: bigint,
+    uniffi_out_err: UniffiRustCallStatus
+  ): UniffiRustArcPtr;
+  ubrn_uniffi_internal_fn_method_object_ffi__bless_pointer(
     pointer: bigint,
     uniffi_out_err: UniffiRustCallStatus
   ): UniffiRustArcPtr;
@@ -276,6 +531,10 @@ interface NativeModuleInterface {
     uniffi_out_err: UniffiRustCallStatus
   ): UniffiRustArcPtr;
   ubrn_uniffi_internal_fn_method_upload_ffi__bless_pointer(
+    pointer: bigint,
+    uniffi_out_err: UniffiRustCallStatus
+  ): UniffiRustArcPtr;
+  ubrn_uniffi_internal_fn_method_uploadprogresscallback_ffi__bless_pointer(
     pointer: bigint,
     uniffi_out_err: UniffiRustCallStatus
   ): UniffiRustArcPtr;
@@ -404,6 +663,38 @@ export type UniffiForeignFutureCompleteVoid = (
   callbackData: bigint,
   result: UniffiForeignFutureStructVoid
 ) => void;
+type UniffiCallbackInterfaceLoggerMethod0 = (
+  uniffiHandle: bigint,
+  msg: Uint8Array
+) => UniffiResult<void>;
+type UniffiCallbackInterfaceLoggerMethod1 = (
+  uniffiHandle: bigint,
+  msg: Uint8Array
+) => UniffiResult<void>;
+type UniffiCallbackInterfaceLoggerMethod2 = (
+  uniffiHandle: bigint,
+  msg: Uint8Array
+) => UniffiResult<void>;
+type UniffiCallbackInterfaceLoggerMethod3 = (
+  uniffiHandle: bigint,
+  msg: Uint8Array
+) => UniffiResult<void>;
+type UniffiCallbackInterfaceUploadProgressCallbackMethod0 = (
+  uniffiHandle: bigint,
+  uploaded: bigint,
+  encodedSize: bigint
+) => UniffiResult<void>;
+export type UniffiVTableCallbackInterfaceLogger = {
+  info: UniffiCallbackInterfaceLoggerMethod0;
+  warn: UniffiCallbackInterfaceLoggerMethod1;
+  error: UniffiCallbackInterfaceLoggerMethod2;
+  debug: UniffiCallbackInterfaceLoggerMethod3;
+  uniffiFree: UniffiCallbackInterfaceFree;
+};
+export type UniffiVTableCallbackInterfaceUploadProgressCallback = {
+  progress: UniffiCallbackInterfaceUploadProgressCallbackMethod0;
+  uniffiFree: UniffiCallbackInterfaceFree;
+};
 
 // UniffiRustFutureContinuationCallback is generated as part of the component interface's
 // ffi_definitions. However, we need it in the runtime.

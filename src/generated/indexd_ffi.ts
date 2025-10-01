@@ -29,12 +29,18 @@ import nativeModule, {
   type UniffiForeignFutureCompleteRustBuffer,
   type UniffiForeignFutureStructVoid,
   type UniffiForeignFutureCompleteVoid,
+  type UniffiVTableCallbackInterfaceLogger,
+  type UniffiVTableCallbackInterfaceUploadProgressCallback,
 } from './indexd_ffi-ffi';
 import {
   type FfiConverter,
   type UniffiByteArray,
+  type UniffiHandle,
   type UniffiObjectFactory,
+  type UniffiReferenceHolder,
   type UniffiRustArcPtr,
+  type UniffiRustCallStatus,
+  type UniffiTimestamp,
   type UnsafeMutableRawPointer,
   AbstractFfiConverterByteArray,
   FfiConverterArray,
@@ -43,7 +49,9 @@ import {
   FfiConverterFloat64,
   FfiConverterInt32,
   FfiConverterObject,
+  FfiConverterObjectWithCallbacks,
   FfiConverterOptional,
+  FfiConverterTimestamp,
   FfiConverterUInt32,
   FfiConverterUInt64,
   FfiConverterUInt8,
@@ -51,12 +59,14 @@ import {
   UniffiAbstractObject,
   UniffiError,
   UniffiInternalError,
+  UniffiResult,
   UniffiRustCaller,
   destructorGuardSymbol,
   pointerLiteralSymbol,
   uniffiCreateFfiConverterString,
   uniffiCreateRecord,
   uniffiRustCallAsync,
+  uniffiTraitInterfaceCall,
   uniffiTypeNameSymbol,
   variantOrdinalSymbol,
 } from 'uniffi-bindgen-react-native';
@@ -71,6 +81,138 @@ const uniffiIsDebug =
   process?.env?.NODE_ENV !== 'production' ||
   false;
 // Public interface members begin here.
+
+/**
+ * Calculates the encoded size of data given the original size and erasure coding parameters.
+ */
+export function encodedSize(
+  size: /*u64*/ bigint,
+  dataShards: /*u8*/ number,
+  parityShards: /*u8*/ number
+): /*u64*/ bigint {
+  return FfiConverterUInt64.lift(
+    uniffiCaller.rustCall(
+      /*caller:*/ (callStatus) => {
+        return nativeModule().ubrn_uniffi_indexd_ffi_fn_func_encoded_size(
+          FfiConverterUInt64.lower(size),
+          FfiConverterUInt8.lower(dataShards),
+          FfiConverterUInt8.lower(parityShards),
+          callStatus
+        );
+      },
+      /*liftString:*/ FfiConverterString.lift
+    )
+  );
+}
+/**
+ * Generates a new BIP-32 12-word recovery phrase.
+ */
+export function generateRecoveryPhrase(): string {
+  return FfiConverterString.lift(
+    uniffiCaller.rustCall(
+      /*caller:*/ (callStatus) => {
+        return nativeModule().ubrn_uniffi_indexd_ffi_fn_func_generate_recovery_phrase(
+          callStatus
+        );
+      },
+      /*liftString:*/ FfiConverterString.lift
+    )
+  );
+}
+/**
+ * Sets a foreign logger to receive log messages from the SDK.
+ */
+export function setLogger(logger: Logger, level: string): void {
+  uniffiCaller.rustCall(
+    /*caller:*/ (callStatus) => {
+      nativeModule().ubrn_uniffi_indexd_ffi_fn_func_set_logger(
+        FfiConverterTypeLogger.lower(logger),
+        FfiConverterString.lower(level),
+        callStatus
+      );
+    },
+    /*liftString:*/ FfiConverterString.lift
+  );
+}
+
+/**
+ * An account registered on the indexer.
+ */
+export type Account = {
+  accountKey: string;
+  serviceAccount: boolean;
+  maxPinnedData: /*u64*/ bigint;
+  pinnedData: /*u64*/ bigint;
+  description: string;
+  logoUrl: string | undefined;
+  serviceUrl: string | undefined;
+};
+
+/**
+ * Generated factory for {@link Account} record objects.
+ */
+export const Account = (() => {
+  const defaults = () => ({});
+  const create = (() => {
+    return uniffiCreateRecord<Account, ReturnType<typeof defaults>>(defaults);
+  })();
+  return Object.freeze({
+    /**
+     * Create a frozen instance of {@link Account}, with defaults specified
+     * in Rust, in the {@link indexd_ffi} crate.
+     */
+    create,
+
+    /**
+     * Create a frozen instance of {@link Account}, with defaults specified
+     * in Rust, in the {@link indexd_ffi} crate.
+     */
+    new: create,
+
+    /**
+     * Defaults specified in the {@link indexd_ffi} crate.
+     */
+    defaults: () => Object.freeze(defaults()) as Partial<Account>,
+  });
+})();
+
+const FfiConverterTypeAccount = (() => {
+  type TypeName = Account;
+  class FFIConverter extends AbstractFfiConverterByteArray<TypeName> {
+    read(from: RustBuffer): TypeName {
+      return {
+        accountKey: FfiConverterString.read(from),
+        serviceAccount: FfiConverterBool.read(from),
+        maxPinnedData: FfiConverterUInt64.read(from),
+        pinnedData: FfiConverterUInt64.read(from),
+        description: FfiConverterString.read(from),
+        logoUrl: FfiConverterOptionalString.read(from),
+        serviceUrl: FfiConverterOptionalString.read(from),
+      };
+    }
+    write(value: TypeName, into: RustBuffer): void {
+      FfiConverterString.write(value.accountKey, into);
+      FfiConverterBool.write(value.serviceAccount, into);
+      FfiConverterUInt64.write(value.maxPinnedData, into);
+      FfiConverterUInt64.write(value.pinnedData, into);
+      FfiConverterString.write(value.description, into);
+      FfiConverterOptionalString.write(value.logoUrl, into);
+      FfiConverterOptionalString.write(value.serviceUrl, into);
+    }
+    allocationSize(value: TypeName): number {
+      return (
+        FfiConverterString.allocationSize(value.accountKey) +
+        FfiConverterBool.allocationSize(value.serviceAccount) +
+        FfiConverterUInt64.allocationSize(value.maxPinnedData) +
+        FfiConverterUInt64.allocationSize(value.pinnedData) +
+        FfiConverterString.allocationSize(value.description) +
+        FfiConverterOptionalString.allocationSize(value.logoUrl) +
+        FfiConverterOptionalString.allocationSize(value.serviceUrl)
+      );
+    }
+  }
+  return new FFIConverter();
+})();
 
 /**
  * Metadata about an application connecting to the indexer.
@@ -137,6 +279,71 @@ const FfiConverterTypeAppMeta = (() => {
         FfiConverterString.allocationSize(value.serviceUrl) +
         FfiConverterOptionalString.allocationSize(value.logoUrl) +
         FfiConverterOptionalString.allocationSize(value.callbackUrl)
+      );
+    }
+  }
+  return new FFIConverter();
+})();
+
+/**
+ * Provides options for a download operation.
+ */
+export type DownloadOptions = {
+  maxInflight: /*u8*/ number;
+  offset: /*u64*/ bigint;
+  length: /*u64*/ bigint | undefined;
+};
+
+/**
+ * Generated factory for {@link DownloadOptions} record objects.
+ */
+export const DownloadOptions = (() => {
+  const defaults = () => ({});
+  const create = (() => {
+    return uniffiCreateRecord<DownloadOptions, ReturnType<typeof defaults>>(
+      defaults
+    );
+  })();
+  return Object.freeze({
+    /**
+     * Create a frozen instance of {@link DownloadOptions}, with defaults specified
+     * in Rust, in the {@link indexd_ffi} crate.
+     */
+    create,
+
+    /**
+     * Create a frozen instance of {@link DownloadOptions}, with defaults specified
+     * in Rust, in the {@link indexd_ffi} crate.
+     */
+    new: create,
+
+    /**
+     * Defaults specified in the {@link indexd_ffi} crate.
+     */
+    defaults: () => Object.freeze(defaults()) as Partial<DownloadOptions>,
+  });
+})();
+
+const FfiConverterTypeDownloadOptions = (() => {
+  type TypeName = DownloadOptions;
+  class FFIConverter extends AbstractFfiConverterByteArray<TypeName> {
+    read(from: RustBuffer): TypeName {
+      return {
+        maxInflight: FfiConverterUInt8.read(from),
+        offset: FfiConverterUInt64.read(from),
+        length: FfiConverterOptionalUInt64.read(from),
+      };
+    }
+    write(value: TypeName, into: RustBuffer): void {
+      FfiConverterUInt8.write(value.maxInflight, into);
+      FfiConverterUInt64.write(value.offset, into);
+      FfiConverterOptionalUInt64.write(value.length, into);
+    }
+    allocationSize(value: TypeName): number {
+      return (
+        FfiConverterUInt8.allocationSize(value.maxInflight) +
+        FfiConverterUInt64.allocationSize(value.offset) +
+        FfiConverterOptionalUInt64.allocationSize(value.length)
       );
     }
   }
@@ -276,6 +483,208 @@ const FfiConverterTypeNetAddress = (() => {
   return new FFIConverter();
 })();
 
+/**
+ * Used to paginate through objects stored in the indexer.
+ *
+ * When syncing changes from an indexer, `after` should be set to the
+ * last `updated_at` timestamp seen, and `key` should be set to the
+ * last object's key seen.
+ */
+export type ObjectsCursor = {
+  after: UniffiTimestamp;
+  key: string;
+};
+
+/**
+ * Generated factory for {@link ObjectsCursor} record objects.
+ */
+export const ObjectsCursor = (() => {
+  const defaults = () => ({});
+  const create = (() => {
+    return uniffiCreateRecord<ObjectsCursor, ReturnType<typeof defaults>>(
+      defaults
+    );
+  })();
+  return Object.freeze({
+    /**
+     * Create a frozen instance of {@link ObjectsCursor}, with defaults specified
+     * in Rust, in the {@link indexd_ffi} crate.
+     */
+    create,
+
+    /**
+     * Create a frozen instance of {@link ObjectsCursor}, with defaults specified
+     * in Rust, in the {@link indexd_ffi} crate.
+     */
+    new: create,
+
+    /**
+     * Defaults specified in the {@link indexd_ffi} crate.
+     */
+    defaults: () => Object.freeze(defaults()) as Partial<ObjectsCursor>,
+  });
+})();
+
+const FfiConverterTypeObjectsCursor = (() => {
+  type TypeName = ObjectsCursor;
+  class FFIConverter extends AbstractFfiConverterByteArray<TypeName> {
+    read(from: RustBuffer): TypeName {
+      return {
+        after: FfiConverterTimestamp.read(from),
+        key: FfiConverterString.read(from),
+      };
+    }
+    write(value: TypeName, into: RustBuffer): void {
+      FfiConverterTimestamp.write(value.after, into);
+      FfiConverterString.write(value.key, into);
+    }
+    allocationSize(value: TypeName): number {
+      return (
+        FfiConverterTimestamp.allocationSize(value.after) +
+        FfiConverterString.allocationSize(value.key)
+      );
+    }
+  }
+  return new FFIConverter();
+})();
+
+/**
+ * A sector stored on a specific host.
+ */
+export type PinnedSector = {
+  root: string;
+  hostKey: string;
+};
+
+/**
+ * Generated factory for {@link PinnedSector} record objects.
+ */
+export const PinnedSector = (() => {
+  const defaults = () => ({});
+  const create = (() => {
+    return uniffiCreateRecord<PinnedSector, ReturnType<typeof defaults>>(
+      defaults
+    );
+  })();
+  return Object.freeze({
+    /**
+     * Create a frozen instance of {@link PinnedSector}, with defaults specified
+     * in Rust, in the {@link indexd_ffi} crate.
+     */
+    create,
+
+    /**
+     * Create a frozen instance of {@link PinnedSector}, with defaults specified
+     * in Rust, in the {@link indexd_ffi} crate.
+     */
+    new: create,
+
+    /**
+     * Defaults specified in the {@link indexd_ffi} crate.
+     */
+    defaults: () => Object.freeze(defaults()) as Partial<PinnedSector>,
+  });
+})();
+
+const FfiConverterTypePinnedSector = (() => {
+  type TypeName = PinnedSector;
+  class FFIConverter extends AbstractFfiConverterByteArray<TypeName> {
+    read(from: RustBuffer): TypeName {
+      return {
+        root: FfiConverterString.read(from),
+        hostKey: FfiConverterString.read(from),
+      };
+    }
+    write(value: TypeName, into: RustBuffer): void {
+      FfiConverterString.write(value.root, into);
+      FfiConverterString.write(value.hostKey, into);
+    }
+    allocationSize(value: TypeName): number {
+      return (
+        FfiConverterString.allocationSize(value.root) +
+        FfiConverterString.allocationSize(value.hostKey)
+      );
+    }
+  }
+  return new FFIConverter();
+})();
+
+/**
+ * A PinnedSlab represents a slab that has been pinned to the indexer.
+ */
+export type PinnedSlab = {
+  id: string;
+  encryptionKey: ArrayBuffer;
+  minShards: /*u8*/ number;
+  sectors: Array<PinnedSector>;
+};
+
+/**
+ * Generated factory for {@link PinnedSlab} record objects.
+ */
+export const PinnedSlab = (() => {
+  const defaults = () => ({});
+  const create = (() => {
+    return uniffiCreateRecord<PinnedSlab, ReturnType<typeof defaults>>(
+      defaults
+    );
+  })();
+  return Object.freeze({
+    /**
+     * Create a frozen instance of {@link PinnedSlab}, with defaults specified
+     * in Rust, in the {@link indexd_ffi} crate.
+     */
+    create,
+
+    /**
+     * Create a frozen instance of {@link PinnedSlab}, with defaults specified
+     * in Rust, in the {@link indexd_ffi} crate.
+     */
+    new: create,
+
+    /**
+     * Defaults specified in the {@link indexd_ffi} crate.
+     */
+    defaults: () => Object.freeze(defaults()) as Partial<PinnedSlab>,
+  });
+})();
+
+const FfiConverterTypePinnedSlab = (() => {
+  type TypeName = PinnedSlab;
+  class FFIConverter extends AbstractFfiConverterByteArray<TypeName> {
+    read(from: RustBuffer): TypeName {
+      return {
+        id: FfiConverterString.read(from),
+        encryptionKey: FfiConverterArrayBuffer.read(from),
+        minShards: FfiConverterUInt8.read(from),
+        sectors: FfiConverterArrayTypePinnedSector.read(from),
+      };
+    }
+    write(value: TypeName, into: RustBuffer): void {
+      FfiConverterString.write(value.id, into);
+      FfiConverterArrayBuffer.write(value.encryptionKey, into);
+      FfiConverterUInt8.write(value.minShards, into);
+      FfiConverterArrayTypePinnedSector.write(value.sectors, into);
+    }
+    allocationSize(value: TypeName): number {
+      return (
+        FfiConverterString.allocationSize(value.id) +
+        FfiConverterArrayBuffer.allocationSize(value.encryptionKey) +
+        FfiConverterUInt8.allocationSize(value.minShards) +
+        FfiConverterArrayTypePinnedSector.allocationSize(value.sectors)
+      );
+    }
+  }
+  return new FFIConverter();
+})();
+
+/**
+ * The response from requesting app authorization.
+ *
+ * The `response_url` is the URL the user should visit to authorize the app.
+ * The `status_url` is the URL the app should poll to check if the user has
+ * authorized the app.
+ */
 export type RequestAuthResponse = {
   responseUrl: string;
   statusUrl: string;
@@ -328,6 +737,84 @@ const FfiConverterTypeRequestAuthResponse = (() => {
       return (
         FfiConverterString.allocationSize(value.responseUrl) +
         FfiConverterString.allocationSize(value.statusUrl)
+      );
+    }
+  }
+  return new FFIConverter();
+})();
+
+export type SealedObject = {
+  id: string;
+  encryptedMasterKey: ArrayBuffer;
+  slabs: Array<Slab>;
+  encryptedMetadata: ArrayBuffer;
+  signature: ArrayBuffer;
+  createdAt: UniffiTimestamp;
+  updatedAt: UniffiTimestamp;
+};
+
+/**
+ * Generated factory for {@link SealedObject} record objects.
+ */
+export const SealedObject = (() => {
+  const defaults = () => ({});
+  const create = (() => {
+    return uniffiCreateRecord<SealedObject, ReturnType<typeof defaults>>(
+      defaults
+    );
+  })();
+  return Object.freeze({
+    /**
+     * Create a frozen instance of {@link SealedObject}, with defaults specified
+     * in Rust, in the {@link indexd_ffi} crate.
+     */
+    create,
+
+    /**
+     * Create a frozen instance of {@link SealedObject}, with defaults specified
+     * in Rust, in the {@link indexd_ffi} crate.
+     */
+    new: create,
+
+    /**
+     * Defaults specified in the {@link indexd_ffi} crate.
+     */
+    defaults: () => Object.freeze(defaults()) as Partial<SealedObject>,
+  });
+})();
+
+const FfiConverterTypeSealedObject = (() => {
+  type TypeName = SealedObject;
+  class FFIConverter extends AbstractFfiConverterByteArray<TypeName> {
+    read(from: RustBuffer): TypeName {
+      return {
+        id: FfiConverterString.read(from),
+        encryptedMasterKey: FfiConverterArrayBuffer.read(from),
+        slabs: FfiConverterArrayTypeSlab.read(from),
+        encryptedMetadata: FfiConverterArrayBuffer.read(from),
+        signature: FfiConverterArrayBuffer.read(from),
+        createdAt: FfiConverterTimestamp.read(from),
+        updatedAt: FfiConverterTimestamp.read(from),
+      };
+    }
+    write(value: TypeName, into: RustBuffer): void {
+      FfiConverterString.write(value.id, into);
+      FfiConverterArrayBuffer.write(value.encryptedMasterKey, into);
+      FfiConverterArrayTypeSlab.write(value.slabs, into);
+      FfiConverterArrayBuffer.write(value.encryptedMetadata, into);
+      FfiConverterArrayBuffer.write(value.signature, into);
+      FfiConverterTimestamp.write(value.createdAt, into);
+      FfiConverterTimestamp.write(value.updatedAt, into);
+    }
+    allocationSize(value: TypeName): number {
+      return (
+        FfiConverterString.allocationSize(value.id) +
+        FfiConverterArrayBuffer.allocationSize(value.encryptedMasterKey) +
+        FfiConverterArrayTypeSlab.allocationSize(value.slabs) +
+        FfiConverterArrayBuffer.allocationSize(value.encryptedMetadata) +
+        FfiConverterArrayBuffer.allocationSize(value.signature) +
+        FfiConverterTimestamp.allocationSize(value.createdAt) +
+        FfiConverterTimestamp.allocationSize(value.updatedAt)
       );
     }
   }
@@ -397,6 +884,143 @@ const FfiConverterTypeSlab = (() => {
   return new FFIConverter();
 })();
 
+export type SlabPinParams = {
+  encryptionKey: EncryptionKeyInterface;
+  minShards: /*u8*/ number;
+  sectors: Array<PinnedSector>;
+};
+
+/**
+ * Generated factory for {@link SlabPinParams} record objects.
+ */
+export const SlabPinParams = (() => {
+  const defaults = () => ({});
+  const create = (() => {
+    return uniffiCreateRecord<SlabPinParams, ReturnType<typeof defaults>>(
+      defaults
+    );
+  })();
+  return Object.freeze({
+    /**
+     * Create a frozen instance of {@link SlabPinParams}, with defaults specified
+     * in Rust, in the {@link indexd_ffi} crate.
+     */
+    create,
+
+    /**
+     * Create a frozen instance of {@link SlabPinParams}, with defaults specified
+     * in Rust, in the {@link indexd_ffi} crate.
+     */
+    new: create,
+
+    /**
+     * Defaults specified in the {@link indexd_ffi} crate.
+     */
+    defaults: () => Object.freeze(defaults()) as Partial<SlabPinParams>,
+  });
+})();
+
+const FfiConverterTypeSlabPinParams = (() => {
+  type TypeName = SlabPinParams;
+  class FFIConverter extends AbstractFfiConverterByteArray<TypeName> {
+    read(from: RustBuffer): TypeName {
+      return {
+        encryptionKey: FfiConverterTypeEncryptionKey.read(from),
+        minShards: FfiConverterUInt8.read(from),
+        sectors: FfiConverterArrayTypePinnedSector.read(from),
+      };
+    }
+    write(value: TypeName, into: RustBuffer): void {
+      FfiConverterTypeEncryptionKey.write(value.encryptionKey, into);
+      FfiConverterUInt8.write(value.minShards, into);
+      FfiConverterArrayTypePinnedSector.write(value.sectors, into);
+    }
+    allocationSize(value: TypeName): number {
+      return (
+        FfiConverterTypeEncryptionKey.allocationSize(value.encryptionKey) +
+        FfiConverterUInt8.allocationSize(value.minShards) +
+        FfiConverterArrayTypePinnedSector.allocationSize(value.sectors)
+      );
+    }
+  }
+  return new FFIConverter();
+})();
+
+/**
+ * Provides options for an upload operation.
+ */
+export type UploadOptions = {
+  maxInflight: /*u8*/ number;
+  dataShards: /*u8*/ number;
+  parityShards: /*u8*/ number;
+  progressCallback: UploadProgressCallback | undefined;
+};
+
+/**
+ * Generated factory for {@link UploadOptions} record objects.
+ */
+export const UploadOptions = (() => {
+  const defaults = () => ({});
+  const create = (() => {
+    return uniffiCreateRecord<UploadOptions, ReturnType<typeof defaults>>(
+      defaults
+    );
+  })();
+  return Object.freeze({
+    /**
+     * Create a frozen instance of {@link UploadOptions}, with defaults specified
+     * in Rust, in the {@link indexd_ffi} crate.
+     */
+    create,
+
+    /**
+     * Create a frozen instance of {@link UploadOptions}, with defaults specified
+     * in Rust, in the {@link indexd_ffi} crate.
+     */
+    new: create,
+
+    /**
+     * Defaults specified in the {@link indexd_ffi} crate.
+     */
+    defaults: () => Object.freeze(defaults()) as Partial<UploadOptions>,
+  });
+})();
+
+const FfiConverterTypeUploadOptions = (() => {
+  type TypeName = UploadOptions;
+  class FFIConverter extends AbstractFfiConverterByteArray<TypeName> {
+    read(from: RustBuffer): TypeName {
+      return {
+        maxInflight: FfiConverterUInt8.read(from),
+        dataShards: FfiConverterUInt8.read(from),
+        parityShards: FfiConverterUInt8.read(from),
+        progressCallback:
+          FfiConverterOptionalTypeUploadProgressCallback.read(from),
+      };
+    }
+    write(value: TypeName, into: RustBuffer): void {
+      FfiConverterUInt8.write(value.maxInflight, into);
+      FfiConverterUInt8.write(value.dataShards, into);
+      FfiConverterUInt8.write(value.parityShards, into);
+      FfiConverterOptionalTypeUploadProgressCallback.write(
+        value.progressCallback,
+        into
+      );
+    }
+    allocationSize(value: TypeName): number {
+      return (
+        FfiConverterUInt8.allocationSize(value.maxInflight) +
+        FfiConverterUInt8.allocationSize(value.dataShards) +
+        FfiConverterUInt8.allocationSize(value.parityShards) +
+        FfiConverterOptionalTypeUploadProgressCallback.allocationSize(
+          value.progressCallback
+        )
+      );
+    }
+  }
+  return new FFIConverter();
+})();
+
 const stringConverter = {
   stringToBytes: (s: string) =>
     uniffiCaller.rustCall((status) =>
@@ -459,11 +1083,109 @@ const FfiConverterTypeAddressProtocol = (() => {
   return new FFIConverter();
 })();
 
+// Flat error type: AppKeyError
+export enum AppKeyError_Tags {
+  RecoveryPhrase = 'RecoveryPhrase',
+  AppIdLength = 'AppIdLength',
+}
+export const AppKeyError = (() => {
+  class RecoveryPhrase extends UniffiError {
+    /**
+     * @private
+     * This field is private and should not be used.
+     */
+    readonly [uniffiTypeNameSymbol]: string = 'AppKeyError';
+    /**
+     * @private
+     * This field is private and should not be used.
+     */
+    readonly [variantOrdinalSymbol] = 1;
+
+    public readonly tag = AppKeyError_Tags.RecoveryPhrase;
+
+    constructor(message: string) {
+      super('AppKeyError', 'RecoveryPhrase', message);
+    }
+
+    static instanceOf(e: any): e is RecoveryPhrase {
+      return instanceOf(e) && (e as any)[variantOrdinalSymbol] === 1;
+    }
+  }
+  class AppIdLength extends UniffiError {
+    /**
+     * @private
+     * This field is private and should not be used.
+     */
+    readonly [uniffiTypeNameSymbol]: string = 'AppKeyError';
+    /**
+     * @private
+     * This field is private and should not be used.
+     */
+    readonly [variantOrdinalSymbol] = 2;
+
+    public readonly tag = AppKeyError_Tags.AppIdLength;
+
+    constructor(message: string) {
+      super('AppKeyError', 'AppIdLength', message);
+    }
+
+    static instanceOf(e: any): e is AppIdLength {
+      return instanceOf(e) && (e as any)[variantOrdinalSymbol] === 2;
+    }
+  }
+
+  // Utility function which does not rely on instanceof.
+  function instanceOf(e: any): e is AppKeyError {
+    return (e as any)[uniffiTypeNameSymbol] === 'AppKeyError';
+  }
+  return {
+    RecoveryPhrase,
+    AppIdLength,
+    instanceOf,
+  };
+})();
+
+// Union type for AppKeyError error type.
+
+export type AppKeyError = InstanceType<
+  (typeof AppKeyError)[keyof Omit<typeof AppKeyError, 'instanceOf'>]
+>;
+
+const FfiConverterTypeAppKeyError = (() => {
+  const intConverter = FfiConverterInt32;
+  type TypeName = AppKeyError;
+  class FfiConverter extends AbstractFfiConverterByteArray<TypeName> {
+    read(from: RustBuffer): TypeName {
+      switch (intConverter.read(from)) {
+        case 1:
+          return new AppKeyError.RecoveryPhrase(FfiConverterString.read(from));
+
+        case 2:
+          return new AppKeyError.AppIdLength(FfiConverterString.read(from));
+
+        default:
+          throw new UniffiInternalError.UnexpectedEnumCase();
+      }
+    }
+    write(value: TypeName, into: RustBuffer): void {
+      const obj = value as any;
+      const index = obj[variantOrdinalSymbol] as number;
+      intConverter.write(index, into);
+    }
+    allocationSize(value: TypeName): number {
+      return intConverter.allocationSize(0);
+    }
+  }
+  return new FfiConverter();
+})();
+
 // Flat error type: DownloadError
 export enum DownloadError_Tags {
   Download = 'Download',
+  AppClient = 'AppClient',
   HexParseError = 'HexParseError',
   NotConnected = 'NotConnected',
+  Custom = 'Custom',
 }
 export const DownloadError = (() => {
   class Download extends UniffiError {
@@ -488,7 +1210,7 @@ export const DownloadError = (() => {
       return instanceOf(e) && (e as any)[variantOrdinalSymbol] === 1;
     }
   }
-  class HexParseError extends UniffiError {
+  class AppClient extends UniffiError {
     /**
      * @private
      * This field is private and should not be used.
@@ -500,6 +1222,28 @@ export const DownloadError = (() => {
      */
     readonly [variantOrdinalSymbol] = 2;
 
+    public readonly tag = DownloadError_Tags.AppClient;
+
+    constructor(message: string) {
+      super('DownloadError', 'AppClient', message);
+    }
+
+    static instanceOf(e: any): e is AppClient {
+      return instanceOf(e) && (e as any)[variantOrdinalSymbol] === 2;
+    }
+  }
+  class HexParseError extends UniffiError {
+    /**
+     * @private
+     * This field is private and should not be used.
+     */
+    readonly [uniffiTypeNameSymbol]: string = 'DownloadError';
+    /**
+     * @private
+     * This field is private and should not be used.
+     */
+    readonly [variantOrdinalSymbol] = 3;
+
     public readonly tag = DownloadError_Tags.HexParseError;
 
     constructor(message: string) {
@@ -507,7 +1251,7 @@ export const DownloadError = (() => {
     }
 
     static instanceOf(e: any): e is HexParseError {
-      return instanceOf(e) && (e as any)[variantOrdinalSymbol] === 2;
+      return instanceOf(e) && (e as any)[variantOrdinalSymbol] === 3;
     }
   }
   class NotConnected extends UniffiError {
@@ -520,7 +1264,7 @@ export const DownloadError = (() => {
      * @private
      * This field is private and should not be used.
      */
-    readonly [variantOrdinalSymbol] = 3;
+    readonly [variantOrdinalSymbol] = 4;
 
     public readonly tag = DownloadError_Tags.NotConnected;
 
@@ -529,7 +1273,29 @@ export const DownloadError = (() => {
     }
 
     static instanceOf(e: any): e is NotConnected {
-      return instanceOf(e) && (e as any)[variantOrdinalSymbol] === 3;
+      return instanceOf(e) && (e as any)[variantOrdinalSymbol] === 4;
+    }
+  }
+  class Custom extends UniffiError {
+    /**
+     * @private
+     * This field is private and should not be used.
+     */
+    readonly [uniffiTypeNameSymbol]: string = 'DownloadError';
+    /**
+     * @private
+     * This field is private and should not be used.
+     */
+    readonly [variantOrdinalSymbol] = 5;
+
+    public readonly tag = DownloadError_Tags.Custom;
+
+    constructor(message: string) {
+      super('DownloadError', 'Custom', message);
+    }
+
+    static instanceOf(e: any): e is Custom {
+      return instanceOf(e) && (e as any)[variantOrdinalSymbol] === 5;
     }
   }
 
@@ -539,8 +1305,10 @@ export const DownloadError = (() => {
   }
   return {
     Download,
+    AppClient,
     HexParseError,
     NotConnected,
+    Custom,
     instanceOf,
   };
 })();
@@ -561,10 +1329,119 @@ const FfiConverterTypeDownloadError = (() => {
           return new DownloadError.Download(FfiConverterString.read(from));
 
         case 2:
-          return new DownloadError.HexParseError(FfiConverterString.read(from));
+          return new DownloadError.AppClient(FfiConverterString.read(from));
 
         case 3:
+          return new DownloadError.HexParseError(FfiConverterString.read(from));
+
+        case 4:
           return new DownloadError.NotConnected(FfiConverterString.read(from));
+
+        case 5:
+          return new DownloadError.Custom(FfiConverterString.read(from));
+
+        default:
+          throw new UniffiInternalError.UnexpectedEnumCase();
+      }
+    }
+    write(value: TypeName, into: RustBuffer): void {
+      const obj = value as any;
+      const index = obj[variantOrdinalSymbol] as number;
+      intConverter.write(index, into);
+    }
+    allocationSize(value: TypeName): number {
+      return intConverter.allocationSize(0);
+    }
+  }
+  return new FfiConverter();
+})();
+
+// Flat error type: EncryptionKeyParseError
+export enum EncryptionKeyParseError_Tags {
+  Base64 = 'Base64',
+  KeyLength = 'KeyLength',
+}
+export const EncryptionKeyParseError = (() => {
+  class Base64 extends UniffiError {
+    /**
+     * @private
+     * This field is private and should not be used.
+     */
+    readonly [uniffiTypeNameSymbol]: string = 'EncryptionKeyParseError';
+    /**
+     * @private
+     * This field is private and should not be used.
+     */
+    readonly [variantOrdinalSymbol] = 1;
+
+    public readonly tag = EncryptionKeyParseError_Tags.Base64;
+
+    constructor(message: string) {
+      super('EncryptionKeyParseError', 'Base64', message);
+    }
+
+    static instanceOf(e: any): e is Base64 {
+      return instanceOf(e) && (e as any)[variantOrdinalSymbol] === 1;
+    }
+  }
+  class KeyLength extends UniffiError {
+    /**
+     * @private
+     * This field is private and should not be used.
+     */
+    readonly [uniffiTypeNameSymbol]: string = 'EncryptionKeyParseError';
+    /**
+     * @private
+     * This field is private and should not be used.
+     */
+    readonly [variantOrdinalSymbol] = 2;
+
+    public readonly tag = EncryptionKeyParseError_Tags.KeyLength;
+
+    constructor(message: string) {
+      super('EncryptionKeyParseError', 'KeyLength', message);
+    }
+
+    static instanceOf(e: any): e is KeyLength {
+      return instanceOf(e) && (e as any)[variantOrdinalSymbol] === 2;
+    }
+  }
+
+  // Utility function which does not rely on instanceof.
+  function instanceOf(e: any): e is EncryptionKeyParseError {
+    return (e as any)[uniffiTypeNameSymbol] === 'EncryptionKeyParseError';
+  }
+  return {
+    Base64,
+    KeyLength,
+    instanceOf,
+  };
+})();
+
+// Union type for EncryptionKeyParseError error type.
+
+export type EncryptionKeyParseError = InstanceType<
+  (typeof EncryptionKeyParseError)[keyof Omit<
+    typeof EncryptionKeyParseError,
+    'instanceOf'
+  >]
+>;
+
+const FfiConverterTypeEncryptionKeyParseError = (() => {
+  const intConverter = FfiConverterInt32;
+  type TypeName = EncryptionKeyParseError;
+  class FfiConverter extends AbstractFfiConverterByteArray<TypeName> {
+    read(from: RustBuffer): TypeName {
+      switch (intConverter.read(from)) {
+        case 1:
+          return new EncryptionKeyParseError.Base64(
+            FfiConverterString.read(from)
+          );
+
+        case 2:
+          return new EncryptionKeyParseError.KeyLength(
+            FfiConverterString.read(from)
+          );
 
         default:
           throw new UniffiInternalError.UnexpectedEnumCase();
@@ -587,7 +1464,9 @@ export enum Exception_Tags {
   Crypto = 'Crypto',
   AppClient = 'AppClient',
   Quic = 'Quic',
+  HexParseError = 'HexParseError',
   NotConnected = 'NotConnected',
+  SealedObject = 'SealedObject',
   Custom = 'Custom',
 }
 export const Exception = (() => {
@@ -657,7 +1536,7 @@ export const Exception = (() => {
       return instanceOf(e) && (e as any)[variantOrdinalSymbol] === 3;
     }
   }
-  class NotConnected extends UniffiError {
+  class HexParseError extends UniffiError {
     /**
      * @private
      * This field is private and should not be used.
@@ -669,6 +1548,28 @@ export const Exception = (() => {
      */
     readonly [variantOrdinalSymbol] = 4;
 
+    public readonly tag = Exception_Tags.HexParseError;
+
+    constructor(message: string) {
+      super('Exception', 'HexParseError', message);
+    }
+
+    static instanceOf(e: any): e is HexParseError {
+      return instanceOf(e) && (e as any)[variantOrdinalSymbol] === 4;
+    }
+  }
+  class NotConnected extends UniffiError {
+    /**
+     * @private
+     * This field is private and should not be used.
+     */
+    readonly [uniffiTypeNameSymbol]: string = 'Exception';
+    /**
+     * @private
+     * This field is private and should not be used.
+     */
+    readonly [variantOrdinalSymbol] = 5;
+
     public readonly tag = Exception_Tags.NotConnected;
 
     constructor(message: string) {
@@ -676,7 +1577,29 @@ export const Exception = (() => {
     }
 
     static instanceOf(e: any): e is NotConnected {
-      return instanceOf(e) && (e as any)[variantOrdinalSymbol] === 4;
+      return instanceOf(e) && (e as any)[variantOrdinalSymbol] === 5;
+    }
+  }
+  class SealedObject extends UniffiError {
+    /**
+     * @private
+     * This field is private and should not be used.
+     */
+    readonly [uniffiTypeNameSymbol]: string = 'Exception';
+    /**
+     * @private
+     * This field is private and should not be used.
+     */
+    readonly [variantOrdinalSymbol] = 6;
+
+    public readonly tag = Exception_Tags.SealedObject;
+
+    constructor(message: string) {
+      super('Exception', 'SealedObject', message);
+    }
+
+    static instanceOf(e: any): e is SealedObject {
+      return instanceOf(e) && (e as any)[variantOrdinalSymbol] === 6;
     }
   }
   class Custom extends UniffiError {
@@ -689,7 +1612,7 @@ export const Exception = (() => {
      * @private
      * This field is private and should not be used.
      */
-    readonly [variantOrdinalSymbol] = 5;
+    readonly [variantOrdinalSymbol] = 7;
 
     public readonly tag = Exception_Tags.Custom;
 
@@ -698,7 +1621,7 @@ export const Exception = (() => {
     }
 
     static instanceOf(e: any): e is Custom {
-      return instanceOf(e) && (e as any)[variantOrdinalSymbol] === 5;
+      return instanceOf(e) && (e as any)[variantOrdinalSymbol] === 7;
     }
   }
 
@@ -710,7 +1633,9 @@ export const Exception = (() => {
     Crypto,
     AppClient,
     Quic,
+    HexParseError,
     NotConnected,
+    SealedObject,
     Custom,
     instanceOf,
   };
@@ -738,10 +1663,112 @@ const FfiConverterTypeError = (() => {
           return new Exception.Quic(FfiConverterString.read(from));
 
         case 4:
-          return new Exception.NotConnected(FfiConverterString.read(from));
+          return new Exception.HexParseError(FfiConverterString.read(from));
 
         case 5:
+          return new Exception.NotConnected(FfiConverterString.read(from));
+
+        case 6:
+          return new Exception.SealedObject(FfiConverterString.read(from));
+
+        case 7:
           return new Exception.Custom(FfiConverterString.read(from));
+
+        default:
+          throw new UniffiInternalError.UnexpectedEnumCase();
+      }
+    }
+    write(value: TypeName, into: RustBuffer): void {
+      const obj = value as any;
+      const index = obj[variantOrdinalSymbol] as number;
+      intConverter.write(index, into);
+    }
+    allocationSize(value: TypeName): number {
+      return intConverter.allocationSize(0);
+    }
+  }
+  return new FfiConverter();
+})();
+
+// Flat error type: ObjectError
+export enum ObjectError_Tags {
+  SealedObject = 'SealedObject',
+  Encoding = 'Encoding',
+}
+export const ObjectError = (() => {
+  class SealedObject extends UniffiError {
+    /**
+     * @private
+     * This field is private and should not be used.
+     */
+    readonly [uniffiTypeNameSymbol]: string = 'ObjectError';
+    /**
+     * @private
+     * This field is private and should not be used.
+     */
+    readonly [variantOrdinalSymbol] = 1;
+
+    public readonly tag = ObjectError_Tags.SealedObject;
+
+    constructor(message: string) {
+      super('ObjectError', 'SealedObject', message);
+    }
+
+    static instanceOf(e: any): e is SealedObject {
+      return instanceOf(e) && (e as any)[variantOrdinalSymbol] === 1;
+    }
+  }
+  class Encoding extends UniffiError {
+    /**
+     * @private
+     * This field is private and should not be used.
+     */
+    readonly [uniffiTypeNameSymbol]: string = 'ObjectError';
+    /**
+     * @private
+     * This field is private and should not be used.
+     */
+    readonly [variantOrdinalSymbol] = 2;
+
+    public readonly tag = ObjectError_Tags.Encoding;
+
+    constructor(message: string) {
+      super('ObjectError', 'Encoding', message);
+    }
+
+    static instanceOf(e: any): e is Encoding {
+      return instanceOf(e) && (e as any)[variantOrdinalSymbol] === 2;
+    }
+  }
+
+  // Utility function which does not rely on instanceof.
+  function instanceOf(e: any): e is ObjectError {
+    return (e as any)[uniffiTypeNameSymbol] === 'ObjectError';
+  }
+  return {
+    SealedObject,
+    Encoding,
+    instanceOf,
+  };
+})();
+
+// Union type for ObjectError error type.
+
+export type ObjectError = InstanceType<
+  (typeof ObjectError)[keyof Omit<typeof ObjectError, 'instanceOf'>]
+>;
+
+const FfiConverterTypeObjectError = (() => {
+  const intConverter = FfiConverterInt32;
+  type TypeName = ObjectError;
+  class FfiConverter extends AbstractFfiConverterByteArray<TypeName> {
+    read(from: RustBuffer): TypeName {
+      switch (intConverter.read(from)) {
+        case 1:
+          return new ObjectError.SealedObject(FfiConverterString.read(from));
+
+        case 2:
+          return new ObjectError.Encoding(FfiConverterString.read(from));
 
         default:
           throw new UniffiInternalError.UnexpectedEnumCase();
@@ -936,8 +1963,142 @@ const FfiConverterTypeUploadError = (() => {
   return new FfiConverter();
 })();
 
+/**
+ * An AppKey is used to sign requests to the indexer.
+ */
+export interface AppKeyInterface {}
+
+/**
+ * An AppKey is used to sign requests to the indexer.
+ */
+export class AppKey extends UniffiAbstractObject implements AppKeyInterface {
+  readonly [uniffiTypeNameSymbol] = 'AppKey';
+  readonly [destructorGuardSymbol]: UniffiRustArcPtr;
+  readonly [pointerLiteralSymbol]: UnsafeMutableRawPointer;
+  /**
+   * Creates a new AppKey from a recovery phrase and a unique app ID.
+   * The app ID should be a unique 32-byte value. The value is not secret,
+   * but it should be random and unique to the app.
+   */
+  constructor(recoveryPhrase: string, appId: ArrayBuffer) /*throws*/ {
+    super();
+    const pointer = uniffiCaller.rustCallWithError(
+      /*liftError:*/ FfiConverterTypeAppKeyError.lift.bind(
+        FfiConverterTypeAppKeyError
+      ),
+      /*caller:*/ (callStatus) => {
+        return nativeModule().ubrn_uniffi_indexd_ffi_fn_constructor_appkey_new(
+          FfiConverterString.lower(recoveryPhrase),
+          FfiConverterArrayBuffer.lower(appId),
+          callStatus
+        );
+      },
+      /*liftString:*/ FfiConverterString.lift
+    );
+    this[pointerLiteralSymbol] = pointer;
+    this[destructorGuardSymbol] = uniffiTypeAppKeyObjectFactory.bless(pointer);
+  }
+
+  /**
+   * {@inheritDoc uniffi-bindgen-react-native#UniffiAbstractObject.uniffiDestroy}
+   */
+  uniffiDestroy(): void {
+    const ptr = (this as any)[destructorGuardSymbol];
+    if (ptr !== undefined) {
+      const pointer = uniffiTypeAppKeyObjectFactory.pointer(this);
+      uniffiTypeAppKeyObjectFactory.freePointer(pointer);
+      uniffiTypeAppKeyObjectFactory.unbless(ptr);
+      delete (this as any)[destructorGuardSymbol];
+    }
+  }
+
+  static instanceOf(obj: any): obj is AppKey {
+    return uniffiTypeAppKeyObjectFactory.isConcreteType(obj);
+  }
+}
+
+const uniffiTypeAppKeyObjectFactory: UniffiObjectFactory<AppKeyInterface> =
+  (() => {
+    return {
+      create(pointer: UnsafeMutableRawPointer): AppKeyInterface {
+        const instance = Object.create(AppKey.prototype);
+        instance[pointerLiteralSymbol] = pointer;
+        instance[destructorGuardSymbol] = this.bless(pointer);
+        instance[uniffiTypeNameSymbol] = 'AppKey';
+        return instance;
+      },
+
+      bless(p: UnsafeMutableRawPointer): UniffiRustArcPtr {
+        return uniffiCaller.rustCall(
+          /*caller:*/ (status) =>
+            nativeModule().ubrn_uniffi_internal_fn_method_appkey_ffi__bless_pointer(
+              p,
+              status
+            ),
+          /*liftString:*/ FfiConverterString.lift
+        );
+      },
+
+      unbless(ptr: UniffiRustArcPtr) {
+        ptr.markDestroyed();
+      },
+
+      pointer(obj: AppKeyInterface): UnsafeMutableRawPointer {
+        if ((obj as any)[destructorGuardSymbol] === undefined) {
+          throw new UniffiInternalError.UnexpectedNullPointer();
+        }
+        return (obj as any)[pointerLiteralSymbol];
+      },
+
+      clonePointer(obj: AppKeyInterface): UnsafeMutableRawPointer {
+        const pointer = this.pointer(obj);
+        return uniffiCaller.rustCall(
+          /*caller:*/ (callStatus) =>
+            nativeModule().ubrn_uniffi_indexd_ffi_fn_clone_appkey(
+              pointer,
+              callStatus
+            ),
+          /*liftString:*/ FfiConverterString.lift
+        );
+      },
+
+      freePointer(pointer: UnsafeMutableRawPointer): void {
+        uniffiCaller.rustCall(
+          /*caller:*/ (callStatus) =>
+            nativeModule().ubrn_uniffi_indexd_ffi_fn_free_appkey(
+              pointer,
+              callStatus
+            ),
+          /*liftString:*/ FfiConverterString.lift
+        );
+      },
+
+      isConcreteType(obj: any): obj is AppKeyInterface {
+        return (
+          obj[destructorGuardSymbol] && obj[uniffiTypeNameSymbol] === 'AppKey'
+        );
+      },
+    };
+  })();
+// FfiConverter for AppKeyInterface
+const FfiConverterTypeAppKey = new FfiConverterObject(
+  uniffiTypeAppKeyObjectFactory
+);
+
+/**
+ * Downloads data from the Sia network. It does so in chunks to support large files in
+ * arbitrary languages.
+ *
+ * Language bindings should provide a higher-level implementation that wraps a stream.
+ */
 export interface DownloadInterface {
   params(): DownloadStateInterface;
+  /**
+   * Reads a chunk of data from the Sia network.
+   *
+   * # Returns
+   * A vector containing the chunk of data read. If the vector is empty, the end of the download has been reached.
+   */
   readChunk(asyncOpts_?: {
     signal: AbortSignal;
   }) /*throws*/ : Promise<ArrayBuffer>;
@@ -945,6 +2106,12 @@ export interface DownloadInterface {
   update(n: /*u64*/ bigint): void;
 }
 
+/**
+ * Downloads data from the Sia network. It does so in chunks to support large files in
+ * arbitrary languages.
+ *
+ * Language bindings should provide a higher-level implementation that wraps a stream.
+ */
 export class Download
   extends UniffiAbstractObject
   implements DownloadInterface
@@ -974,6 +2141,12 @@ export class Download
     );
   }
 
+  /**
+   * Reads a chunk of data from the Sia network.
+   *
+   * # Returns
+   * A vector containing the chunk of data read. If the vector is empty, the end of the download has been reached.
+   */
   public async readChunk(asyncOpts_?: {
     signal: AbortSignal;
   }): Promise<ArrayBuffer> /*throws*/ {
@@ -1124,6 +2297,219 @@ const FfiConverterTypeDownload = new FfiConverterObject(
   uniffiTypeDownloadObjectFactory
 );
 
+/**
+ * Downloads data from the Sia network. It does so in chunks to support large files in
+ * arbitrary languages.
+ *
+ * Language bindings should provide a higher-level implementation that wraps a stream.
+ */
+export interface DownloadSharedInterface {
+  params(): DownloadStateInterface;
+  /**
+   * Reads a chunk of data from the Sia network.
+   *
+   * # Returns
+   * A vector containing the chunk of data read. If the vector is empty, the end of the download has been reached.
+   */
+  readChunk(asyncOpts_?: {
+    signal: AbortSignal;
+  }) /*throws*/ : Promise<ArrayBuffer>;
+  rem(): /*u64*/ bigint;
+  update(n: /*u64*/ bigint): void;
+}
+
+/**
+ * Downloads data from the Sia network. It does so in chunks to support large files in
+ * arbitrary languages.
+ *
+ * Language bindings should provide a higher-level implementation that wraps a stream.
+ */
+export class DownloadShared
+  extends UniffiAbstractObject
+  implements DownloadSharedInterface
+{
+  readonly [uniffiTypeNameSymbol] = 'DownloadShared';
+  readonly [destructorGuardSymbol]: UniffiRustArcPtr;
+  readonly [pointerLiteralSymbol]: UnsafeMutableRawPointer;
+  // No primary constructor declared for this class.
+  private constructor(pointer: UnsafeMutableRawPointer) {
+    super();
+    this[pointerLiteralSymbol] = pointer;
+    this[destructorGuardSymbol] =
+      uniffiTypeDownloadSharedObjectFactory.bless(pointer);
+  }
+
+  public params(): DownloadStateInterface {
+    return FfiConverterTypeDownloadState.lift(
+      uniffiCaller.rustCall(
+        /*caller:*/ (callStatus) => {
+          return nativeModule().ubrn_uniffi_indexd_ffi_fn_method_downloadshared_params(
+            uniffiTypeDownloadSharedObjectFactory.clonePointer(this),
+            callStatus
+          );
+        },
+        /*liftString:*/ FfiConverterString.lift
+      )
+    );
+  }
+
+  /**
+   * Reads a chunk of data from the Sia network.
+   *
+   * # Returns
+   * A vector containing the chunk of data read. If the vector is empty, the end of the download has been reached.
+   */
+  public async readChunk(asyncOpts_?: {
+    signal: AbortSignal;
+  }): Promise<ArrayBuffer> /*throws*/ {
+    const __stack = uniffiIsDebug ? new Error().stack : undefined;
+    try {
+      return await uniffiRustCallAsync(
+        /*rustCaller:*/ uniffiCaller,
+        /*rustFutureFunc:*/ () => {
+          return nativeModule().ubrn_uniffi_indexd_ffi_fn_method_downloadshared_read_chunk(
+            uniffiTypeDownloadSharedObjectFactory.clonePointer(this)
+          );
+        },
+        /*pollFunc:*/ nativeModule()
+          .ubrn_ffi_indexd_ffi_rust_future_poll_rust_buffer,
+        /*cancelFunc:*/ nativeModule()
+          .ubrn_ffi_indexd_ffi_rust_future_cancel_rust_buffer,
+        /*completeFunc:*/ nativeModule()
+          .ubrn_ffi_indexd_ffi_rust_future_complete_rust_buffer,
+        /*freeFunc:*/ nativeModule()
+          .ubrn_ffi_indexd_ffi_rust_future_free_rust_buffer,
+        /*liftFunc:*/ FfiConverterArrayBuffer.lift.bind(
+          FfiConverterArrayBuffer
+        ),
+        /*liftString:*/ FfiConverterString.lift,
+        /*asyncOpts:*/ asyncOpts_,
+        /*errorHandler:*/ FfiConverterTypeDownloadError.lift.bind(
+          FfiConverterTypeDownloadError
+        )
+      );
+    } catch (__error: any) {
+      if (uniffiIsDebug && __error instanceof Error) {
+        __error.stack = __stack;
+      }
+      throw __error;
+    }
+  }
+
+  public rem(): /*u64*/ bigint {
+    return FfiConverterUInt64.lift(
+      uniffiCaller.rustCall(
+        /*caller:*/ (callStatus) => {
+          return nativeModule().ubrn_uniffi_indexd_ffi_fn_method_downloadshared_rem(
+            uniffiTypeDownloadSharedObjectFactory.clonePointer(this),
+            callStatus
+          );
+        },
+        /*liftString:*/ FfiConverterString.lift
+      )
+    );
+  }
+
+  public update(n: /*u64*/ bigint): void {
+    uniffiCaller.rustCall(
+      /*caller:*/ (callStatus) => {
+        nativeModule().ubrn_uniffi_indexd_ffi_fn_method_downloadshared_update(
+          uniffiTypeDownloadSharedObjectFactory.clonePointer(this),
+          FfiConverterUInt64.lower(n),
+          callStatus
+        );
+      },
+      /*liftString:*/ FfiConverterString.lift
+    );
+  }
+
+  /**
+   * {@inheritDoc uniffi-bindgen-react-native#UniffiAbstractObject.uniffiDestroy}
+   */
+  uniffiDestroy(): void {
+    const ptr = (this as any)[destructorGuardSymbol];
+    if (ptr !== undefined) {
+      const pointer = uniffiTypeDownloadSharedObjectFactory.pointer(this);
+      uniffiTypeDownloadSharedObjectFactory.freePointer(pointer);
+      uniffiTypeDownloadSharedObjectFactory.unbless(ptr);
+      delete (this as any)[destructorGuardSymbol];
+    }
+  }
+
+  static instanceOf(obj: any): obj is DownloadShared {
+    return uniffiTypeDownloadSharedObjectFactory.isConcreteType(obj);
+  }
+}
+
+const uniffiTypeDownloadSharedObjectFactory: UniffiObjectFactory<DownloadSharedInterface> =
+  (() => {
+    return {
+      create(pointer: UnsafeMutableRawPointer): DownloadSharedInterface {
+        const instance = Object.create(DownloadShared.prototype);
+        instance[pointerLiteralSymbol] = pointer;
+        instance[destructorGuardSymbol] = this.bless(pointer);
+        instance[uniffiTypeNameSymbol] = 'DownloadShared';
+        return instance;
+      },
+
+      bless(p: UnsafeMutableRawPointer): UniffiRustArcPtr {
+        return uniffiCaller.rustCall(
+          /*caller:*/ (status) =>
+            nativeModule().ubrn_uniffi_internal_fn_method_downloadshared_ffi__bless_pointer(
+              p,
+              status
+            ),
+          /*liftString:*/ FfiConverterString.lift
+        );
+      },
+
+      unbless(ptr: UniffiRustArcPtr) {
+        ptr.markDestroyed();
+      },
+
+      pointer(obj: DownloadSharedInterface): UnsafeMutableRawPointer {
+        if ((obj as any)[destructorGuardSymbol] === undefined) {
+          throw new UniffiInternalError.UnexpectedNullPointer();
+        }
+        return (obj as any)[pointerLiteralSymbol];
+      },
+
+      clonePointer(obj: DownloadSharedInterface): UnsafeMutableRawPointer {
+        const pointer = this.pointer(obj);
+        return uniffiCaller.rustCall(
+          /*caller:*/ (callStatus) =>
+            nativeModule().ubrn_uniffi_indexd_ffi_fn_clone_downloadshared(
+              pointer,
+              callStatus
+            ),
+          /*liftString:*/ FfiConverterString.lift
+        );
+      },
+
+      freePointer(pointer: UnsafeMutableRawPointer): void {
+        uniffiCaller.rustCall(
+          /*caller:*/ (callStatus) =>
+            nativeModule().ubrn_uniffi_indexd_ffi_fn_free_downloadshared(
+              pointer,
+              callStatus
+            ),
+          /*liftString:*/ FfiConverterString.lift
+        );
+      },
+
+      isConcreteType(obj: any): obj is DownloadSharedInterface {
+        return (
+          obj[destructorGuardSymbol] &&
+          obj[uniffiTypeNameSymbol] === 'DownloadShared'
+        );
+      },
+    };
+  })();
+// FfiConverter for DownloadSharedInterface
+const FfiConverterTypeDownloadShared = new FfiConverterObject(
+  uniffiTypeDownloadSharedObjectFactory
+);
+
 export interface DownloadStateInterface {}
 
 export class DownloadState
@@ -1228,32 +2614,823 @@ const FfiConverterTypeDownloadState = new FfiConverterObject(
   uniffiTypeDownloadStateObjectFactory
 );
 
+export interface EncryptionKeyInterface {
+  /**
+   * Exports the key as a base64 encoded string.
+   *
+   * This should be used to store the key securely.
+   * The key should never be shared or transmitted
+   * in plaintext.
+   */
+  export_(): string;
+}
+
+export class EncryptionKey
+  extends UniffiAbstractObject
+  implements EncryptionKeyInterface
+{
+  readonly [uniffiTypeNameSymbol] = 'EncryptionKey';
+  readonly [destructorGuardSymbol]: UniffiRustArcPtr;
+  readonly [pointerLiteralSymbol]: UnsafeMutableRawPointer;
+  // No primary constructor declared for this class.
+  private constructor(pointer: UnsafeMutableRawPointer) {
+    super();
+    this[pointerLiteralSymbol] = pointer;
+    this[destructorGuardSymbol] =
+      uniffiTypeEncryptionKeyObjectFactory.bless(pointer);
+  }
+
+  public static parse(str: string): EncryptionKeyInterface /*throws*/ {
+    return FfiConverterTypeEncryptionKey.lift(
+      uniffiCaller.rustCallWithError(
+        /*liftError:*/ FfiConverterTypeEncryptionKeyParseError.lift.bind(
+          FfiConverterTypeEncryptionKeyParseError
+        ),
+        /*caller:*/ (callStatus) => {
+          return nativeModule().ubrn_uniffi_indexd_ffi_fn_constructor_encryptionkey_parse(
+            FfiConverterString.lower(str),
+            callStatus
+          );
+        },
+        /*liftString:*/ FfiConverterString.lift
+      )
+    );
+  }
+
+  /**
+   * Exports the key as a base64 encoded string.
+   *
+   * This should be used to store the key securely.
+   * The key should never be shared or transmitted
+   * in plaintext.
+   */
+  public export_(): string {
+    return FfiConverterString.lift(
+      uniffiCaller.rustCall(
+        /*caller:*/ (callStatus) => {
+          return nativeModule().ubrn_uniffi_indexd_ffi_fn_method_encryptionkey_export(
+            uniffiTypeEncryptionKeyObjectFactory.clonePointer(this),
+            callStatus
+          );
+        },
+        /*liftString:*/ FfiConverterString.lift
+      )
+    );
+  }
+
+  /**
+   * {@inheritDoc uniffi-bindgen-react-native#UniffiAbstractObject.uniffiDestroy}
+   */
+  uniffiDestroy(): void {
+    const ptr = (this as any)[destructorGuardSymbol];
+    if (ptr !== undefined) {
+      const pointer = uniffiTypeEncryptionKeyObjectFactory.pointer(this);
+      uniffiTypeEncryptionKeyObjectFactory.freePointer(pointer);
+      uniffiTypeEncryptionKeyObjectFactory.unbless(ptr);
+      delete (this as any)[destructorGuardSymbol];
+    }
+  }
+
+  static instanceOf(obj: any): obj is EncryptionKey {
+    return uniffiTypeEncryptionKeyObjectFactory.isConcreteType(obj);
+  }
+}
+
+const uniffiTypeEncryptionKeyObjectFactory: UniffiObjectFactory<EncryptionKeyInterface> =
+  (() => {
+    return {
+      create(pointer: UnsafeMutableRawPointer): EncryptionKeyInterface {
+        const instance = Object.create(EncryptionKey.prototype);
+        instance[pointerLiteralSymbol] = pointer;
+        instance[destructorGuardSymbol] = this.bless(pointer);
+        instance[uniffiTypeNameSymbol] = 'EncryptionKey';
+        return instance;
+      },
+
+      bless(p: UnsafeMutableRawPointer): UniffiRustArcPtr {
+        return uniffiCaller.rustCall(
+          /*caller:*/ (status) =>
+            nativeModule().ubrn_uniffi_internal_fn_method_encryptionkey_ffi__bless_pointer(
+              p,
+              status
+            ),
+          /*liftString:*/ FfiConverterString.lift
+        );
+      },
+
+      unbless(ptr: UniffiRustArcPtr) {
+        ptr.markDestroyed();
+      },
+
+      pointer(obj: EncryptionKeyInterface): UnsafeMutableRawPointer {
+        if ((obj as any)[destructorGuardSymbol] === undefined) {
+          throw new UniffiInternalError.UnexpectedNullPointer();
+        }
+        return (obj as any)[pointerLiteralSymbol];
+      },
+
+      clonePointer(obj: EncryptionKeyInterface): UnsafeMutableRawPointer {
+        const pointer = this.pointer(obj);
+        return uniffiCaller.rustCall(
+          /*caller:*/ (callStatus) =>
+            nativeModule().ubrn_uniffi_indexd_ffi_fn_clone_encryptionkey(
+              pointer,
+              callStatus
+            ),
+          /*liftString:*/ FfiConverterString.lift
+        );
+      },
+
+      freePointer(pointer: UnsafeMutableRawPointer): void {
+        uniffiCaller.rustCall(
+          /*caller:*/ (callStatus) =>
+            nativeModule().ubrn_uniffi_indexd_ffi_fn_free_encryptionkey(
+              pointer,
+              callStatus
+            ),
+          /*liftString:*/ FfiConverterString.lift
+        );
+      },
+
+      isConcreteType(obj: any): obj is EncryptionKeyInterface {
+        return (
+          obj[destructorGuardSymbol] &&
+          obj[uniffiTypeNameSymbol] === 'EncryptionKey'
+        );
+      },
+    };
+  })();
+// FfiConverter for EncryptionKeyInterface
+const FfiConverterTypeEncryptionKey = new FfiConverterObject(
+  uniffiTypeEncryptionKeyObjectFactory
+);
+
+export interface Logger {
+  info(msg: string): void;
+  warn(msg: string): void;
+  error(msg: string): void;
+  debug(msg: string): void;
+}
+
+export class LoggerImpl extends UniffiAbstractObject implements Logger {
+  readonly [uniffiTypeNameSymbol] = 'LoggerImpl';
+  readonly [destructorGuardSymbol]: UniffiRustArcPtr;
+  readonly [pointerLiteralSymbol]: UnsafeMutableRawPointer;
+  // No primary constructor declared for this class.
+  private constructor(pointer: UnsafeMutableRawPointer) {
+    super();
+    this[pointerLiteralSymbol] = pointer;
+    this[destructorGuardSymbol] =
+      uniffiTypeLoggerImplObjectFactory.bless(pointer);
+  }
+
+  public info(msg: string): void {
+    uniffiCaller.rustCall(
+      /*caller:*/ (callStatus) => {
+        nativeModule().ubrn_uniffi_indexd_ffi_fn_method_logger_info(
+          uniffiTypeLoggerImplObjectFactory.clonePointer(this),
+          FfiConverterString.lower(msg),
+          callStatus
+        );
+      },
+      /*liftString:*/ FfiConverterString.lift
+    );
+  }
+
+  public warn(msg: string): void {
+    uniffiCaller.rustCall(
+      /*caller:*/ (callStatus) => {
+        nativeModule().ubrn_uniffi_indexd_ffi_fn_method_logger_warn(
+          uniffiTypeLoggerImplObjectFactory.clonePointer(this),
+          FfiConverterString.lower(msg),
+          callStatus
+        );
+      },
+      /*liftString:*/ FfiConverterString.lift
+    );
+  }
+
+  public error(msg: string): void {
+    uniffiCaller.rustCall(
+      /*caller:*/ (callStatus) => {
+        nativeModule().ubrn_uniffi_indexd_ffi_fn_method_logger_error(
+          uniffiTypeLoggerImplObjectFactory.clonePointer(this),
+          FfiConverterString.lower(msg),
+          callStatus
+        );
+      },
+      /*liftString:*/ FfiConverterString.lift
+    );
+  }
+
+  public debug(msg: string): void {
+    uniffiCaller.rustCall(
+      /*caller:*/ (callStatus) => {
+        nativeModule().ubrn_uniffi_indexd_ffi_fn_method_logger_debug(
+          uniffiTypeLoggerImplObjectFactory.clonePointer(this),
+          FfiConverterString.lower(msg),
+          callStatus
+        );
+      },
+      /*liftString:*/ FfiConverterString.lift
+    );
+  }
+
+  /**
+   * {@inheritDoc uniffi-bindgen-react-native#UniffiAbstractObject.uniffiDestroy}
+   */
+  uniffiDestroy(): void {
+    const ptr = (this as any)[destructorGuardSymbol];
+    if (ptr !== undefined) {
+      const pointer = uniffiTypeLoggerImplObjectFactory.pointer(this);
+      uniffiTypeLoggerImplObjectFactory.freePointer(pointer);
+      uniffiTypeLoggerImplObjectFactory.unbless(ptr);
+      delete (this as any)[destructorGuardSymbol];
+    }
+  }
+
+  static instanceOf(obj: any): obj is LoggerImpl {
+    return uniffiTypeLoggerImplObjectFactory.isConcreteType(obj);
+  }
+}
+
+const uniffiTypeLoggerImplObjectFactory: UniffiObjectFactory<Logger> = (() => {
+  return {
+    create(pointer: UnsafeMutableRawPointer): Logger {
+      const instance = Object.create(LoggerImpl.prototype);
+      instance[pointerLiteralSymbol] = pointer;
+      instance[destructorGuardSymbol] = this.bless(pointer);
+      instance[uniffiTypeNameSymbol] = 'LoggerImpl';
+      return instance;
+    },
+
+    bless(p: UnsafeMutableRawPointer): UniffiRustArcPtr {
+      return uniffiCaller.rustCall(
+        /*caller:*/ (status) =>
+          nativeModule().ubrn_uniffi_internal_fn_method_logger_ffi__bless_pointer(
+            p,
+            status
+          ),
+        /*liftString:*/ FfiConverterString.lift
+      );
+    },
+
+    unbless(ptr: UniffiRustArcPtr) {
+      ptr.markDestroyed();
+    },
+
+    pointer(obj: Logger): UnsafeMutableRawPointer {
+      if ((obj as any)[destructorGuardSymbol] === undefined) {
+        throw new UniffiInternalError.UnexpectedNullPointer();
+      }
+      return (obj as any)[pointerLiteralSymbol];
+    },
+
+    clonePointer(obj: Logger): UnsafeMutableRawPointer {
+      const pointer = this.pointer(obj);
+      return uniffiCaller.rustCall(
+        /*caller:*/ (callStatus) =>
+          nativeModule().ubrn_uniffi_indexd_ffi_fn_clone_logger(
+            pointer,
+            callStatus
+          ),
+        /*liftString:*/ FfiConverterString.lift
+      );
+    },
+
+    freePointer(pointer: UnsafeMutableRawPointer): void {
+      uniffiCaller.rustCall(
+        /*caller:*/ (callStatus) =>
+          nativeModule().ubrn_uniffi_indexd_ffi_fn_free_logger(
+            pointer,
+            callStatus
+          ),
+        /*liftString:*/ FfiConverterString.lift
+      );
+    },
+
+    isConcreteType(obj: any): obj is Logger {
+      return (
+        obj[destructorGuardSymbol] && obj[uniffiTypeNameSymbol] === 'LoggerImpl'
+      );
+    },
+  };
+})();
+// FfiConverter for Logger
+const FfiConverterTypeLogger = new FfiConverterObjectWithCallbacks(
+  uniffiTypeLoggerImplObjectFactory
+);
+
+// Add a vtavble for the callbacks that go in Logger.
+
+// Put the implementation in a struct so we don't pollute the top-level namespace
+const uniffiCallbackInterfaceLogger: {
+  vtable: UniffiVTableCallbackInterfaceLogger;
+  register: () => void;
+} = {
+  // Create the VTable using a series of closures.
+  // ts automatically converts these into C callback functions.
+  vtable: {
+    info: (uniffiHandle: bigint, msg: Uint8Array) => {
+      const uniffiMakeCall = (): void => {
+        const jsCallback = FfiConverterTypeLogger.lift(uniffiHandle);
+        return jsCallback.info(FfiConverterString.lift(msg));
+      };
+      const uniffiResult = UniffiResult.ready<void>();
+      const uniffiHandleSuccess = (obj: any) => {};
+      const uniffiHandleError = (code: number, errBuf: UniffiByteArray) => {
+        UniffiResult.writeError(uniffiResult, code, errBuf);
+      };
+      uniffiTraitInterfaceCall(
+        /*makeCall:*/ uniffiMakeCall,
+        /*handleSuccess:*/ uniffiHandleSuccess,
+        /*handleError:*/ uniffiHandleError,
+        /*lowerString:*/ FfiConverterString.lower
+      );
+      return uniffiResult;
+    },
+    warn: (uniffiHandle: bigint, msg: Uint8Array) => {
+      const uniffiMakeCall = (): void => {
+        const jsCallback = FfiConverterTypeLogger.lift(uniffiHandle);
+        return jsCallback.warn(FfiConverterString.lift(msg));
+      };
+      const uniffiResult = UniffiResult.ready<void>();
+      const uniffiHandleSuccess = (obj: any) => {};
+      const uniffiHandleError = (code: number, errBuf: UniffiByteArray) => {
+        UniffiResult.writeError(uniffiResult, code, errBuf);
+      };
+      uniffiTraitInterfaceCall(
+        /*makeCall:*/ uniffiMakeCall,
+        /*handleSuccess:*/ uniffiHandleSuccess,
+        /*handleError:*/ uniffiHandleError,
+        /*lowerString:*/ FfiConverterString.lower
+      );
+      return uniffiResult;
+    },
+    error: (uniffiHandle: bigint, msg: Uint8Array) => {
+      const uniffiMakeCall = (): void => {
+        const jsCallback = FfiConverterTypeLogger.lift(uniffiHandle);
+        return jsCallback.error(FfiConverterString.lift(msg));
+      };
+      const uniffiResult = UniffiResult.ready<void>();
+      const uniffiHandleSuccess = (obj: any) => {};
+      const uniffiHandleError = (code: number, errBuf: UniffiByteArray) => {
+        UniffiResult.writeError(uniffiResult, code, errBuf);
+      };
+      uniffiTraitInterfaceCall(
+        /*makeCall:*/ uniffiMakeCall,
+        /*handleSuccess:*/ uniffiHandleSuccess,
+        /*handleError:*/ uniffiHandleError,
+        /*lowerString:*/ FfiConverterString.lower
+      );
+      return uniffiResult;
+    },
+    debug: (uniffiHandle: bigint, msg: Uint8Array) => {
+      const uniffiMakeCall = (): void => {
+        const jsCallback = FfiConverterTypeLogger.lift(uniffiHandle);
+        return jsCallback.debug(FfiConverterString.lift(msg));
+      };
+      const uniffiResult = UniffiResult.ready<void>();
+      const uniffiHandleSuccess = (obj: any) => {};
+      const uniffiHandleError = (code: number, errBuf: UniffiByteArray) => {
+        UniffiResult.writeError(uniffiResult, code, errBuf);
+      };
+      uniffiTraitInterfaceCall(
+        /*makeCall:*/ uniffiMakeCall,
+        /*handleSuccess:*/ uniffiHandleSuccess,
+        /*handleError:*/ uniffiHandleError,
+        /*lowerString:*/ FfiConverterString.lower
+      );
+      return uniffiResult;
+    },
+    uniffiFree: (uniffiHandle: UniffiHandle): void => {
+      // Logger: this will throw a stale handle error if the handle isn't found.
+      FfiConverterTypeLogger.drop(uniffiHandle);
+    },
+  },
+  register: () => {
+    nativeModule().ubrn_uniffi_indexd_ffi_fn_init_callback_vtable_logger(
+      uniffiCallbackInterfaceLogger.vtable
+    );
+  },
+};
+
+/**
+ * An object represents a file stored on the Sia network.
+ *
+ * It is made up of one or more slabs, which are erasure-coded segments of the file.
+ * The object is encrypted with a unique encryption key, which is used to encrypt
+ * the slabs and the metadata.
+ *
+ * It can be sealed for sharing, which encrypts the object's encryption key
+ * with a master key derived from the app key and a random nonce.
+ *
+ * It has no public fields to prevent accidental corruption of the object.
+ */
+export interface ObjectInterface {
+  /**
+   * Returns the time the object was created.
+   */
+  createdAt(): UniffiTimestamp;
+  /**
+   * Returns the object's ID, which is the Blake2b hash of its slabs.
+   */
+  id(): string;
+  /**
+   * Returns the metadata associated with the object.
+   */
+  metadata(): ArrayBuffer;
+  /**
+   * Seal the object for offline storage.
+   * # Arguments
+   * * `app_key` - The app key used to derive the master key to encrypt the object's encryption key.
+   *
+   * # Returns
+   * The sealed object.
+   */
+  seal(appKey: AppKeyInterface): SealedObject;
+  /**
+   * Returns the total size of the object by summing the lengths of its slabs.
+   */
+  size(): /*u64*/ bigint;
+  /**
+   * Returns the slabs that make up the object.
+   */
+  slabs(): Array<Slab>;
+  /**
+   * Updates the metadata associated with the object.
+   */
+  updateMetadata(metadata: ArrayBuffer): void;
+  /**
+   * Returns the time the object was last updated.
+   */
+  updatedAt(): UniffiTimestamp;
+}
+
+/**
+ * An object represents a file stored on the Sia network.
+ *
+ * It is made up of one or more slabs, which are erasure-coded segments of the file.
+ * The object is encrypted with a unique encryption key, which is used to encrypt
+ * the slabs and the metadata.
+ *
+ * It can be sealed for sharing, which encrypts the object's encryption key
+ * with a master key derived from the app key and a random nonce.
+ *
+ * It has no public fields to prevent accidental corruption of the object.
+ */
+export class Object extends UniffiAbstractObject implements ObjectInterface {
+  readonly [uniffiTypeNameSymbol] = 'Object';
+  readonly [destructorGuardSymbol]: UniffiRustArcPtr;
+  readonly [pointerLiteralSymbol]: UnsafeMutableRawPointer;
+  // No primary constructor declared for this class.
+  private constructor(pointer: UnsafeMutableRawPointer) {
+    super();
+    this[pointerLiteralSymbol] = pointer;
+    this[destructorGuardSymbol] = uniffiTypeObjectObjectFactory.bless(pointer);
+  }
+
+  /**
+   * Opens a sealed object using the provided app key.
+   *
+   * # Arguments
+   * * `app_key` - The app key used to derive the master key to decrypt the object's encryption key.
+   * * `sealed` - The sealed object to open.
+   *
+   * # Returns
+   * The unsealed object or an error if the object could not be opened.
+   */
+  public static open(
+    appKey: AppKeyInterface,
+    sealed: SealedObject
+  ): ObjectInterface /*throws*/ {
+    return FfiConverterTypeObject.lift(
+      uniffiCaller.rustCallWithError(
+        /*liftError:*/ FfiConverterTypeObjectError.lift.bind(
+          FfiConverterTypeObjectError
+        ),
+        /*caller:*/ (callStatus) => {
+          return nativeModule().ubrn_uniffi_indexd_ffi_fn_constructor_object_open(
+            FfiConverterTypeAppKey.lower(appKey),
+            FfiConverterTypeSealedObject.lower(sealed),
+            callStatus
+          );
+        },
+        /*liftString:*/ FfiConverterString.lift
+      )
+    );
+  }
+
+  /**
+   * Returns the time the object was created.
+   */
+  public createdAt(): UniffiTimestamp {
+    return FfiConverterTimestamp.lift(
+      uniffiCaller.rustCall(
+        /*caller:*/ (callStatus) => {
+          return nativeModule().ubrn_uniffi_indexd_ffi_fn_method_object_created_at(
+            uniffiTypeObjectObjectFactory.clonePointer(this),
+            callStatus
+          );
+        },
+        /*liftString:*/ FfiConverterString.lift
+      )
+    );
+  }
+
+  /**
+   * Returns the object's ID, which is the Blake2b hash of its slabs.
+   */
+  public id(): string {
+    return FfiConverterString.lift(
+      uniffiCaller.rustCall(
+        /*caller:*/ (callStatus) => {
+          return nativeModule().ubrn_uniffi_indexd_ffi_fn_method_object_id(
+            uniffiTypeObjectObjectFactory.clonePointer(this),
+            callStatus
+          );
+        },
+        /*liftString:*/ FfiConverterString.lift
+      )
+    );
+  }
+
+  /**
+   * Returns the metadata associated with the object.
+   */
+  public metadata(): ArrayBuffer {
+    return FfiConverterArrayBuffer.lift(
+      uniffiCaller.rustCall(
+        /*caller:*/ (callStatus) => {
+          return nativeModule().ubrn_uniffi_indexd_ffi_fn_method_object_metadata(
+            uniffiTypeObjectObjectFactory.clonePointer(this),
+            callStatus
+          );
+        },
+        /*liftString:*/ FfiConverterString.lift
+      )
+    );
+  }
+
+  /**
+   * Seal the object for offline storage.
+   * # Arguments
+   * * `app_key` - The app key used to derive the master key to encrypt the object's encryption key.
+   *
+   * # Returns
+   * The sealed object.
+   */
+  public seal(appKey: AppKeyInterface): SealedObject {
+    return FfiConverterTypeSealedObject.lift(
+      uniffiCaller.rustCall(
+        /*caller:*/ (callStatus) => {
+          return nativeModule().ubrn_uniffi_indexd_ffi_fn_method_object_seal(
+            uniffiTypeObjectObjectFactory.clonePointer(this),
+            FfiConverterTypeAppKey.lower(appKey),
+            callStatus
+          );
+        },
+        /*liftString:*/ FfiConverterString.lift
+      )
+    );
+  }
+
+  /**
+   * Returns the total size of the object by summing the lengths of its slabs.
+   */
+  public size(): /*u64*/ bigint {
+    return FfiConverterUInt64.lift(
+      uniffiCaller.rustCall(
+        /*caller:*/ (callStatus) => {
+          return nativeModule().ubrn_uniffi_indexd_ffi_fn_method_object_size(
+            uniffiTypeObjectObjectFactory.clonePointer(this),
+            callStatus
+          );
+        },
+        /*liftString:*/ FfiConverterString.lift
+      )
+    );
+  }
+
+  /**
+   * Returns the slabs that make up the object.
+   */
+  public slabs(): Array<Slab> {
+    return FfiConverterArrayTypeSlab.lift(
+      uniffiCaller.rustCall(
+        /*caller:*/ (callStatus) => {
+          return nativeModule().ubrn_uniffi_indexd_ffi_fn_method_object_slabs(
+            uniffiTypeObjectObjectFactory.clonePointer(this),
+            callStatus
+          );
+        },
+        /*liftString:*/ FfiConverterString.lift
+      )
+    );
+  }
+
+  /**
+   * Updates the metadata associated with the object.
+   */
+  public updateMetadata(metadata: ArrayBuffer): void {
+    uniffiCaller.rustCall(
+      /*caller:*/ (callStatus) => {
+        nativeModule().ubrn_uniffi_indexd_ffi_fn_method_object_update_metadata(
+          uniffiTypeObjectObjectFactory.clonePointer(this),
+          FfiConverterArrayBuffer.lower(metadata),
+          callStatus
+        );
+      },
+      /*liftString:*/ FfiConverterString.lift
+    );
+  }
+
+  /**
+   * Returns the time the object was last updated.
+   */
+  public updatedAt(): UniffiTimestamp {
+    return FfiConverterTimestamp.lift(
+      uniffiCaller.rustCall(
+        /*caller:*/ (callStatus) => {
+          return nativeModule().ubrn_uniffi_indexd_ffi_fn_method_object_updated_at(
+            uniffiTypeObjectObjectFactory.clonePointer(this),
+            callStatus
+          );
+        },
+        /*liftString:*/ FfiConverterString.lift
+      )
+    );
+  }
+
+  /**
+   * {@inheritDoc uniffi-bindgen-react-native#UniffiAbstractObject.uniffiDestroy}
+   */
+  uniffiDestroy(): void {
+    const ptr = (this as any)[destructorGuardSymbol];
+    if (ptr !== undefined) {
+      const pointer = uniffiTypeObjectObjectFactory.pointer(this);
+      uniffiTypeObjectObjectFactory.freePointer(pointer);
+      uniffiTypeObjectObjectFactory.unbless(ptr);
+      delete (this as any)[destructorGuardSymbol];
+    }
+  }
+
+  static instanceOf(obj: any): obj is Object {
+    return uniffiTypeObjectObjectFactory.isConcreteType(obj);
+  }
+}
+
+const uniffiTypeObjectObjectFactory: UniffiObjectFactory<ObjectInterface> =
+  (() => {
+    return {
+      create(pointer: UnsafeMutableRawPointer): ObjectInterface {
+        const instance = Object.create(Object.prototype);
+        instance[pointerLiteralSymbol] = pointer;
+        instance[destructorGuardSymbol] = this.bless(pointer);
+        instance[uniffiTypeNameSymbol] = 'Object';
+        return instance;
+      },
+
+      bless(p: UnsafeMutableRawPointer): UniffiRustArcPtr {
+        return uniffiCaller.rustCall(
+          /*caller:*/ (status) =>
+            nativeModule().ubrn_uniffi_internal_fn_method_object_ffi__bless_pointer(
+              p,
+              status
+            ),
+          /*liftString:*/ FfiConverterString.lift
+        );
+      },
+
+      unbless(ptr: UniffiRustArcPtr) {
+        ptr.markDestroyed();
+      },
+
+      pointer(obj: ObjectInterface): UnsafeMutableRawPointer {
+        if ((obj as any)[destructorGuardSymbol] === undefined) {
+          throw new UniffiInternalError.UnexpectedNullPointer();
+        }
+        return (obj as any)[pointerLiteralSymbol];
+      },
+
+      clonePointer(obj: ObjectInterface): UnsafeMutableRawPointer {
+        const pointer = this.pointer(obj);
+        return uniffiCaller.rustCall(
+          /*caller:*/ (callStatus) =>
+            nativeModule().ubrn_uniffi_indexd_ffi_fn_clone_object(
+              pointer,
+              callStatus
+            ),
+          /*liftString:*/ FfiConverterString.lift
+        );
+      },
+
+      freePointer(pointer: UnsafeMutableRawPointer): void {
+        uniffiCaller.rustCall(
+          /*caller:*/ (callStatus) =>
+            nativeModule().ubrn_uniffi_indexd_ffi_fn_free_object(
+              pointer,
+              callStatus
+            ),
+          /*liftString:*/ FfiConverterString.lift
+        );
+      },
+
+      isConcreteType(obj: any): obj is ObjectInterface {
+        return (
+          obj[destructorGuardSymbol] && obj[uniffiTypeNameSymbol] === 'Object'
+        );
+      },
+    };
+  })();
+// FfiConverter for ObjectInterface
+const FfiConverterTypeObject = new FfiConverterObject(
+  uniffiTypeObjectObjectFactory
+);
+
 /**
  * An SDK enables interaction with an indexer and
  * storage providers on the Sia network.
  */
 export interface SdkInterface {
   /**
+   * Returns the current account.
+   */
+  account(asyncOpts_?: { signal: AbortSignal }) /*throws*/ : Promise<Account>;
+  /**
    * Returns true if the app key is authorized, returns false otherwise
    */
   connect(asyncOpts_?: { signal: AbortSignal }) /*throws*/ : Promise<boolean>;
   /**
-   * Initiates a download of all the data specified in the slabs.
+   * Deletes an object from the indexer.
+   */
+  deleteObject(
+    key: string,
+    asyncOpts_?: { signal: AbortSignal }
+  ) /*throws*/ : Promise<void>;
+  /**
+   * Initiates a download of the data referenced by the object, starting at `offset` and reading `length` bytes.
+   *
+   * # Returns
+   * A [Download] object that can be used to read the data in chunks
    */
   download(
-    slabs: Array<Slab>,
+    object: ObjectInterface,
+    options: DownloadOptions,
     asyncOpts_?: { signal: AbortSignal }
   ) /*throws*/ : Promise<DownloadInterface>;
   /**
-   * Initiates a download of the data specified in the slabs.
+   * Initiates a download of all data in the shared object.
+   *
+   * # Returns
+   * A [`DownloadShared`] object that can be used to read the data in chunks
    */
-  downloadRange(
-    slabs: Array<Slab>,
-    offset: /*u64*/ bigint,
-    length: /*u64*/ bigint,
+  downloadShared(
+    shareUrl: string,
+    options: DownloadOptions,
     asyncOpts_?: { signal: AbortSignal }
-  ) /*throws*/ : Promise<DownloadInterface>;
+  ) /*throws*/ : Promise<DownloadSharedInterface>;
+  /**
+   * Returns a list of all usable hosts.
+   */
   hosts(asyncOpts_?: { signal: AbortSignal }) /*throws*/ : Promise<Array<Host>>;
+  /**
+   * Returns metadata about a specific object stored in the indexer.
+   */
+  object(
+    key: string,
+    asyncOpts_?: { signal: AbortSignal }
+  ) /*throws*/ : Promise<ObjectInterface>;
+  /**
+   * Creates a signed URL that can be used to share object metadata
+   * with other people using an indexer.
+   */
+  objectShareUrl(
+    objectKey: string,
+    encryptionKey: ArrayBuffer,
+    validUntil: UniffiTimestamp
+  ) /*throws*/ : string;
+  /**
+   * Returns objects stored in the indexer. When syncing, the caller should
+   * provide the last `updated_at` timestamp and `key` seen in the `cursor
+   * parameter to avoid missing or duplicating objects.
+   *
+   * # Arguments
+   * * `cursor` can be used to paginate through the results. If `cursor` is `None`, the first page of results will be returned.
+   * * `limit` specifies the maximum number of objects to return.
+   */
+  objects(
+    cursor: ObjectsCursor | undefined,
+    limit: /*u32*/ number,
+    asyncOpts_?: { signal: AbortSignal }
+  ) /*throws*/ : Promise<Array<ObjectInterface>>;
+  /**
+   * Pins a slab to the indexer.
+   */
+  pinSlab(
+    slabPinParams: SlabPinParams,
+    asyncOpts_?: { signal: AbortSignal }
+  ) /*throws*/ : Promise<string>;
   /**
    * Requests permission for the app to connect to the indexer.
    *
@@ -1264,10 +3441,46 @@ export interface SdkInterface {
     meta: AppMeta,
     asyncOpts_?: { signal: AbortSignal }
   ) /*throws*/ : Promise<RequestAuthResponse>;
+  /**
+   * Saves an object to the indexer.
+   */
+  saveObject(
+    object: ObjectInterface,
+    asyncOpts_?: { signal: AbortSignal }
+  ) /*throws*/ : Promise<void>;
+  /**
+   * Retrieves the unsealed metadata for a shared object via a share URL.
+   */
+  sharedObjectMetadata(
+    shareUrl: string,
+    asyncOpts_?: { signal: AbortSignal }
+  ) /*throws*/ : Promise<ArrayBuffer>;
+  /**
+   * Returns metadata about a slab stored in the indexer.
+   */
+  slab(
+    slabId: string,
+    asyncOpts_?: { signal: AbortSignal }
+  ) /*throws*/ : Promise<PinnedSlab>;
+  /**
+   * UnpinSlab unpins a slab from the indexer.
+   */
+  unpinSlab(
+    slabId: string,
+    asyncOpts_?: { signal: AbortSignal }
+  ) /*throws*/ : Promise<void>;
+  /**
+   * Uploads data to the Sia network and pins it to the indexer
+   *
+   * # Warnings
+   * * The `encryption_key` must be unique for every upload. Reusing an
+   * encryption key will compromise the security of the data.
+   *
+   * # Returns
+   * An object representing the uploaded data.
+   */
   upload(
-    encryptionKey: ArrayBuffer,
-    dataShards: /*u8*/ number,
-    parityShards: /*u8*/ number,
+    options: UploadOptions,
     asyncOpts_?: { signal: AbortSignal }
   ) /*throws*/ : Promise<UploadInterface>;
   /**
@@ -1300,14 +3513,14 @@ export class Sdk extends UniffiAbstractObject implements SdkInterface {
    * # Returns
    * A new SDK instance.
    */
-  constructor(indexerUrl: string, appSeed: ArrayBuffer) /*throws*/ {
+  constructor(indexerUrl: string, appKey: AppKeyInterface) /*throws*/ {
     super();
     const pointer = uniffiCaller.rustCallWithError(
       /*liftError:*/ FfiConverterTypeError.lift.bind(FfiConverterTypeError),
       /*caller:*/ (callStatus) => {
         return nativeModule().ubrn_uniffi_indexd_ffi_fn_constructor_sdk_new(
           FfiConverterString.lower(indexerUrl),
-          FfiConverterArrayBuffer.lower(appSeed),
+          FfiConverterTypeAppKey.lower(appKey),
           callStatus
         );
       },
@@ -1315,6 +3528,44 @@ export class Sdk extends UniffiAbstractObject implements SdkInterface {
     );
     this[pointerLiteralSymbol] = pointer;
     this[destructorGuardSymbol] = uniffiTypeSdkObjectFactory.bless(pointer);
+  }
+
+  /**
+   * Returns the current account.
+   */
+  public async account(asyncOpts_?: {
+    signal: AbortSignal;
+  }): Promise<Account> /*throws*/ {
+    const __stack = uniffiIsDebug ? new Error().stack : undefined;
+    try {
+      return await uniffiRustCallAsync(
+        /*rustCaller:*/ uniffiCaller,
+        /*rustFutureFunc:*/ () => {
+          return nativeModule().ubrn_uniffi_indexd_ffi_fn_method_sdk_account(
+            uniffiTypeSdkObjectFactory.clonePointer(this)
+          );
+        },
+        /*pollFunc:*/ nativeModule()
+          .ubrn_ffi_indexd_ffi_rust_future_poll_rust_buffer,
+        /*cancelFunc:*/ nativeModule()
+          .ubrn_ffi_indexd_ffi_rust_future_cancel_rust_buffer,
+        /*completeFunc:*/ nativeModule()
+          .ubrn_ffi_indexd_ffi_rust_future_complete_rust_buffer,
+        /*freeFunc:*/ nativeModule()
+          .ubrn_ffi_indexd_ffi_rust_future_free_rust_buffer,
+        /*liftFunc:*/ FfiConverterTypeAccount.lift.bind(
+          FfiConverterTypeAccount
+        ),
+        /*liftString:*/ FfiConverterString.lift,
+        /*asyncOpts:*/ asyncOpts_,
+        /*errorHandler:*/ FfiConverterTypeError.lift.bind(FfiConverterTypeError)
+      );
+    } catch (__error: any) {
+      if (uniffiIsDebug && __error instanceof Error) {
+        __error.stack = __stack;
+      }
+      throw __error;
+    }
   }
 
   /**
@@ -1352,10 +3603,50 @@ export class Sdk extends UniffiAbstractObject implements SdkInterface {
   }
 
   /**
-   * Initiates a download of all the data specified in the slabs.
+   * Deletes an object from the indexer.
+   */
+  public async deleteObject(
+    key: string,
+    asyncOpts_?: { signal: AbortSignal }
+  ): Promise<void> /*throws*/ {
+    const __stack = uniffiIsDebug ? new Error().stack : undefined;
+    try {
+      return await uniffiRustCallAsync(
+        /*rustCaller:*/ uniffiCaller,
+        /*rustFutureFunc:*/ () => {
+          return nativeModule().ubrn_uniffi_indexd_ffi_fn_method_sdk_delete_object(
+            uniffiTypeSdkObjectFactory.clonePointer(this),
+            FfiConverterString.lower(key)
+          );
+        },
+        /*pollFunc:*/ nativeModule().ubrn_ffi_indexd_ffi_rust_future_poll_void,
+        /*cancelFunc:*/ nativeModule()
+          .ubrn_ffi_indexd_ffi_rust_future_cancel_void,
+        /*completeFunc:*/ nativeModule()
+          .ubrn_ffi_indexd_ffi_rust_future_complete_void,
+        /*freeFunc:*/ nativeModule().ubrn_ffi_indexd_ffi_rust_future_free_void,
+        /*liftFunc:*/ (_v) => {},
+        /*liftString:*/ FfiConverterString.lift,
+        /*asyncOpts:*/ asyncOpts_,
+        /*errorHandler:*/ FfiConverterTypeError.lift.bind(FfiConverterTypeError)
+      );
+    } catch (__error: any) {
+      if (uniffiIsDebug && __error instanceof Error) {
+        __error.stack = __stack;
+      }
+      throw __error;
+    }
+  }
+
+  /**
+   * Initiates a download of the data referenced by the object, starting at `offset` and reading `length` bytes.
+   *
+   * # Returns
+   * A [Download] object that can be used to read the data in chunks
    */
   public async download(
-    slabs: Array<Slab>,
+    object: ObjectInterface,
+    options: DownloadOptions,
     asyncOpts_?: { signal: AbortSignal }
   ): Promise<DownloadInterface> /*throws*/ {
     const __stack = uniffiIsDebug ? new Error().stack : undefined;
@@ -1365,7 +3656,8 @@ export class Sdk extends UniffiAbstractObject implements SdkInterface {
         /*rustFutureFunc:*/ () => {
           return nativeModule().ubrn_uniffi_indexd_ffi_fn_method_sdk_download(
             uniffiTypeSdkObjectFactory.clonePointer(this),
-            FfiConverterArrayTypeSlab.lower(slabs)
+            FfiConverterTypeObject.lower(object),
+            FfiConverterTypeDownloadOptions.lower(options)
           );
         },
         /*pollFunc:*/ nativeModule()
@@ -1394,24 +3686,25 @@ export class Sdk extends UniffiAbstractObject implements SdkInterface {
   }
 
   /**
-   * Initiates a download of the data specified in the slabs.
+   * Initiates a download of all data in the shared object.
+   *
+   * # Returns
+   * A [`DownloadShared`] object that can be used to read the data in chunks
    */
-  public async downloadRange(
-    slabs: Array<Slab>,
-    offset: /*u64*/ bigint,
-    length: /*u64*/ bigint,
+  public async downloadShared(
+    shareUrl: string,
+    options: DownloadOptions,
     asyncOpts_?: { signal: AbortSignal }
-  ): Promise<DownloadInterface> /*throws*/ {
+  ): Promise<DownloadSharedInterface> /*throws*/ {
     const __stack = uniffiIsDebug ? new Error().stack : undefined;
     try {
       return await uniffiRustCallAsync(
         /*rustCaller:*/ uniffiCaller,
         /*rustFutureFunc:*/ () => {
-          return nativeModule().ubrn_uniffi_indexd_ffi_fn_method_sdk_download_range(
+          return nativeModule().ubrn_uniffi_indexd_ffi_fn_method_sdk_download_shared(
             uniffiTypeSdkObjectFactory.clonePointer(this),
-            FfiConverterArrayTypeSlab.lower(slabs),
-            FfiConverterUInt64.lower(offset),
-            FfiConverterUInt64.lower(length)
+            FfiConverterString.lower(shareUrl),
+            FfiConverterTypeDownloadOptions.lower(options)
           );
         },
         /*pollFunc:*/ nativeModule()
@@ -1422,8 +3715,8 @@ export class Sdk extends UniffiAbstractObject implements SdkInterface {
           .ubrn_ffi_indexd_ffi_rust_future_complete_pointer,
         /*freeFunc:*/ nativeModule()
           .ubrn_ffi_indexd_ffi_rust_future_free_pointer,
-        /*liftFunc:*/ FfiConverterTypeDownload.lift.bind(
-          FfiConverterTypeDownload
+        /*liftFunc:*/ FfiConverterTypeDownloadShared.lift.bind(
+          FfiConverterTypeDownloadShared
         ),
         /*liftString:*/ FfiConverterString.lift,
         /*asyncOpts:*/ asyncOpts_,
@@ -1439,6 +3732,9 @@ export class Sdk extends UniffiAbstractObject implements SdkInterface {
     }
   }
 
+  /**
+   * Returns a list of all usable hosts.
+   */
   public async hosts(asyncOpts_?: {
     signal: AbortSignal;
   }): Promise<Array<Host>> /*throws*/ {
@@ -1462,6 +3758,156 @@ export class Sdk extends UniffiAbstractObject implements SdkInterface {
         /*liftFunc:*/ FfiConverterArrayTypeHost.lift.bind(
           FfiConverterArrayTypeHost
         ),
+        /*liftString:*/ FfiConverterString.lift,
+        /*asyncOpts:*/ asyncOpts_,
+        /*errorHandler:*/ FfiConverterTypeError.lift.bind(FfiConverterTypeError)
+      );
+    } catch (__error: any) {
+      if (uniffiIsDebug && __error instanceof Error) {
+        __error.stack = __stack;
+      }
+      throw __error;
+    }
+  }
+
+  /**
+   * Returns metadata about a specific object stored in the indexer.
+   */
+  public async object(
+    key: string,
+    asyncOpts_?: { signal: AbortSignal }
+  ): Promise<ObjectInterface> /*throws*/ {
+    const __stack = uniffiIsDebug ? new Error().stack : undefined;
+    try {
+      return await uniffiRustCallAsync(
+        /*rustCaller:*/ uniffiCaller,
+        /*rustFutureFunc:*/ () => {
+          return nativeModule().ubrn_uniffi_indexd_ffi_fn_method_sdk_object(
+            uniffiTypeSdkObjectFactory.clonePointer(this),
+            FfiConverterString.lower(key)
+          );
+        },
+        /*pollFunc:*/ nativeModule()
+          .ubrn_ffi_indexd_ffi_rust_future_poll_pointer,
+        /*cancelFunc:*/ nativeModule()
+          .ubrn_ffi_indexd_ffi_rust_future_cancel_pointer,
+        /*completeFunc:*/ nativeModule()
+          .ubrn_ffi_indexd_ffi_rust_future_complete_pointer,
+        /*freeFunc:*/ nativeModule()
+          .ubrn_ffi_indexd_ffi_rust_future_free_pointer,
+        /*liftFunc:*/ FfiConverterTypeObject.lift.bind(FfiConverterTypeObject),
+        /*liftString:*/ FfiConverterString.lift,
+        /*asyncOpts:*/ asyncOpts_,
+        /*errorHandler:*/ FfiConverterTypeError.lift.bind(FfiConverterTypeError)
+      );
+    } catch (__error: any) {
+      if (uniffiIsDebug && __error instanceof Error) {
+        __error.stack = __stack;
+      }
+      throw __error;
+    }
+  }
+
+  /**
+   * Creates a signed URL that can be used to share object metadata
+   * with other people using an indexer.
+   */
+  public objectShareUrl(
+    objectKey: string,
+    encryptionKey: ArrayBuffer,
+    validUntil: UniffiTimestamp
+  ): string /*throws*/ {
+    return FfiConverterString.lift(
+      uniffiCaller.rustCallWithError(
+        /*liftError:*/ FfiConverterTypeError.lift.bind(FfiConverterTypeError),
+        /*caller:*/ (callStatus) => {
+          return nativeModule().ubrn_uniffi_indexd_ffi_fn_method_sdk_object_share_url(
+            uniffiTypeSdkObjectFactory.clonePointer(this),
+            FfiConverterString.lower(objectKey),
+            FfiConverterArrayBuffer.lower(encryptionKey),
+            FfiConverterTimestamp.lower(validUntil),
+            callStatus
+          );
+        },
+        /*liftString:*/ FfiConverterString.lift
+      )
+    );
+  }
+
+  /**
+   * Returns objects stored in the indexer. When syncing, the caller should
+   * provide the last `updated_at` timestamp and `key` seen in the `cursor
+   * parameter to avoid missing or duplicating objects.
+   *
+   * # Arguments
+   * * `cursor` can be used to paginate through the results. If `cursor` is `None`, the first page of results will be returned.
+   * * `limit` specifies the maximum number of objects to return.
+   */
+  public async objects(
+    cursor: ObjectsCursor | undefined,
+    limit: /*u32*/ number,
+    asyncOpts_?: { signal: AbortSignal }
+  ): Promise<Array<ObjectInterface>> /*throws*/ {
+    const __stack = uniffiIsDebug ? new Error().stack : undefined;
+    try {
+      return await uniffiRustCallAsync(
+        /*rustCaller:*/ uniffiCaller,
+        /*rustFutureFunc:*/ () => {
+          return nativeModule().ubrn_uniffi_indexd_ffi_fn_method_sdk_objects(
+            uniffiTypeSdkObjectFactory.clonePointer(this),
+            FfiConverterOptionalTypeObjectsCursor.lower(cursor),
+            FfiConverterUInt32.lower(limit)
+          );
+        },
+        /*pollFunc:*/ nativeModule()
+          .ubrn_ffi_indexd_ffi_rust_future_poll_rust_buffer,
+        /*cancelFunc:*/ nativeModule()
+          .ubrn_ffi_indexd_ffi_rust_future_cancel_rust_buffer,
+        /*completeFunc:*/ nativeModule()
+          .ubrn_ffi_indexd_ffi_rust_future_complete_rust_buffer,
+        /*freeFunc:*/ nativeModule()
+          .ubrn_ffi_indexd_ffi_rust_future_free_rust_buffer,
+        /*liftFunc:*/ FfiConverterArrayTypeObject.lift.bind(
+          FfiConverterArrayTypeObject
+        ),
+        /*liftString:*/ FfiConverterString.lift,
+        /*asyncOpts:*/ asyncOpts_,
+        /*errorHandler:*/ FfiConverterTypeError.lift.bind(FfiConverterTypeError)
+      );
+    } catch (__error: any) {
+      if (uniffiIsDebug && __error instanceof Error) {
+        __error.stack = __stack;
+      }
+      throw __error;
+    }
+  }
+
+  /**
+   * Pins a slab to the indexer.
+   */
+  public async pinSlab(
+    slabPinParams: SlabPinParams,
+    asyncOpts_?: { signal: AbortSignal }
+  ): Promise<string> /*throws*/ {
+    const __stack = uniffiIsDebug ? new Error().stack : undefined;
+    try {
+      return await uniffiRustCallAsync(
+        /*rustCaller:*/ uniffiCaller,
+        /*rustFutureFunc:*/ () => {
+          return nativeModule().ubrn_uniffi_indexd_ffi_fn_method_sdk_pin_slab(
+            uniffiTypeSdkObjectFactory.clonePointer(this),
+            FfiConverterTypeSlabPinParams.lower(slabPinParams)
+          );
+        },
+        /*pollFunc:*/ nativeModule()
+          .ubrn_ffi_indexd_ffi_rust_future_poll_rust_buffer,
+        /*cancelFunc:*/ nativeModule()
+          .ubrn_ffi_indexd_ffi_rust_future_cancel_rust_buffer,
+        /*completeFunc:*/ nativeModule()
+          .ubrn_ffi_indexd_ffi_rust_future_complete_rust_buffer,
+        /*freeFunc:*/ nativeModule()
+          .ubrn_ffi_indexd_ffi_rust_future_free_rust_buffer,
+        /*liftFunc:*/ FfiConverterString.lift.bind(FfiConverterString),
         /*liftString:*/ FfiConverterString.lift,
         /*asyncOpts:*/ asyncOpts_,
         /*errorHandler:*/ FfiConverterTypeError.lift.bind(FfiConverterTypeError)
@@ -1517,10 +3963,172 @@ export class Sdk extends UniffiAbstractObject implements SdkInterface {
     }
   }
 
+  /**
+   * Saves an object to the indexer.
+   */
+  public async saveObject(
+    object: ObjectInterface,
+    asyncOpts_?: { signal: AbortSignal }
+  ): Promise<void> /*throws*/ {
+    const __stack = uniffiIsDebug ? new Error().stack : undefined;
+    try {
+      return await uniffiRustCallAsync(
+        /*rustCaller:*/ uniffiCaller,
+        /*rustFutureFunc:*/ () => {
+          return nativeModule().ubrn_uniffi_indexd_ffi_fn_method_sdk_save_object(
+            uniffiTypeSdkObjectFactory.clonePointer(this),
+            FfiConverterTypeObject.lower(object)
+          );
+        },
+        /*pollFunc:*/ nativeModule().ubrn_ffi_indexd_ffi_rust_future_poll_void,
+        /*cancelFunc:*/ nativeModule()
+          .ubrn_ffi_indexd_ffi_rust_future_cancel_void,
+        /*completeFunc:*/ nativeModule()
+          .ubrn_ffi_indexd_ffi_rust_future_complete_void,
+        /*freeFunc:*/ nativeModule().ubrn_ffi_indexd_ffi_rust_future_free_void,
+        /*liftFunc:*/ (_v) => {},
+        /*liftString:*/ FfiConverterString.lift,
+        /*asyncOpts:*/ asyncOpts_,
+        /*errorHandler:*/ FfiConverterTypeError.lift.bind(FfiConverterTypeError)
+      );
+    } catch (__error: any) {
+      if (uniffiIsDebug && __error instanceof Error) {
+        __error.stack = __stack;
+      }
+      throw __error;
+    }
+  }
+
+  /**
+   * Retrieves the unsealed metadata for a shared object via a share URL.
+   */
+  public async sharedObjectMetadata(
+    shareUrl: string,
+    asyncOpts_?: { signal: AbortSignal }
+  ): Promise<ArrayBuffer> /*throws*/ {
+    const __stack = uniffiIsDebug ? new Error().stack : undefined;
+    try {
+      return await uniffiRustCallAsync(
+        /*rustCaller:*/ uniffiCaller,
+        /*rustFutureFunc:*/ () => {
+          return nativeModule().ubrn_uniffi_indexd_ffi_fn_method_sdk_shared_object_metadata(
+            uniffiTypeSdkObjectFactory.clonePointer(this),
+            FfiConverterString.lower(shareUrl)
+          );
+        },
+        /*pollFunc:*/ nativeModule()
+          .ubrn_ffi_indexd_ffi_rust_future_poll_rust_buffer,
+        /*cancelFunc:*/ nativeModule()
+          .ubrn_ffi_indexd_ffi_rust_future_cancel_rust_buffer,
+        /*completeFunc:*/ nativeModule()
+          .ubrn_ffi_indexd_ffi_rust_future_complete_rust_buffer,
+        /*freeFunc:*/ nativeModule()
+          .ubrn_ffi_indexd_ffi_rust_future_free_rust_buffer,
+        /*liftFunc:*/ FfiConverterArrayBuffer.lift.bind(
+          FfiConverterArrayBuffer
+        ),
+        /*liftString:*/ FfiConverterString.lift,
+        /*asyncOpts:*/ asyncOpts_,
+        /*errorHandler:*/ FfiConverterTypeDownloadError.lift.bind(
+          FfiConverterTypeDownloadError
+        )
+      );
+    } catch (__error: any) {
+      if (uniffiIsDebug && __error instanceof Error) {
+        __error.stack = __stack;
+      }
+      throw __error;
+    }
+  }
+
+  /**
+   * Returns metadata about a slab stored in the indexer.
+   */
+  public async slab(
+    slabId: string,
+    asyncOpts_?: { signal: AbortSignal }
+  ): Promise<PinnedSlab> /*throws*/ {
+    const __stack = uniffiIsDebug ? new Error().stack : undefined;
+    try {
+      return await uniffiRustCallAsync(
+        /*rustCaller:*/ uniffiCaller,
+        /*rustFutureFunc:*/ () => {
+          return nativeModule().ubrn_uniffi_indexd_ffi_fn_method_sdk_slab(
+            uniffiTypeSdkObjectFactory.clonePointer(this),
+            FfiConverterString.lower(slabId)
+          );
+        },
+        /*pollFunc:*/ nativeModule()
+          .ubrn_ffi_indexd_ffi_rust_future_poll_rust_buffer,
+        /*cancelFunc:*/ nativeModule()
+          .ubrn_ffi_indexd_ffi_rust_future_cancel_rust_buffer,
+        /*completeFunc:*/ nativeModule()
+          .ubrn_ffi_indexd_ffi_rust_future_complete_rust_buffer,
+        /*freeFunc:*/ nativeModule()
+          .ubrn_ffi_indexd_ffi_rust_future_free_rust_buffer,
+        /*liftFunc:*/ FfiConverterTypePinnedSlab.lift.bind(
+          FfiConverterTypePinnedSlab
+        ),
+        /*liftString:*/ FfiConverterString.lift,
+        /*asyncOpts:*/ asyncOpts_,
+        /*errorHandler:*/ FfiConverterTypeError.lift.bind(FfiConverterTypeError)
+      );
+    } catch (__error: any) {
+      if (uniffiIsDebug && __error instanceof Error) {
+        __error.stack = __stack;
+      }
+      throw __error;
+    }
+  }
+
+  /**
+   * UnpinSlab unpins a slab from the indexer.
+   */
+  public async unpinSlab(
+    slabId: string,
+    asyncOpts_?: { signal: AbortSignal }
+  ): Promise<void> /*throws*/ {
+    const __stack = uniffiIsDebug ? new Error().stack : undefined;
+    try {
+      return await uniffiRustCallAsync(
+        /*rustCaller:*/ uniffiCaller,
+        /*rustFutureFunc:*/ () => {
+          return nativeModule().ubrn_uniffi_indexd_ffi_fn_method_sdk_unpin_slab(
+            uniffiTypeSdkObjectFactory.clonePointer(this),
+            FfiConverterString.lower(slabId)
+          );
+        },
+        /*pollFunc:*/ nativeModule().ubrn_ffi_indexd_ffi_rust_future_poll_void,
+        /*cancelFunc:*/ nativeModule()
+          .ubrn_ffi_indexd_ffi_rust_future_cancel_void,
+        /*completeFunc:*/ nativeModule()
+          .ubrn_ffi_indexd_ffi_rust_future_complete_void,
+        /*freeFunc:*/ nativeModule().ubrn_ffi_indexd_ffi_rust_future_free_void,
+        /*liftFunc:*/ (_v) => {},
+        /*liftString:*/ FfiConverterString.lift,
+        /*asyncOpts:*/ asyncOpts_,
+        /*errorHandler:*/ FfiConverterTypeError.lift.bind(FfiConverterTypeError)
+      );
+    } catch (__error: any) {
+      if (uniffiIsDebug && __error instanceof Error) {
+        __error.stack = __stack;
+      }
+      throw __error;
+    }
+  }
+
+  /**
+   * Uploads data to the Sia network and pins it to the indexer
+   *
+   * # Warnings
+   * * The `encryption_key` must be unique for every upload. Reusing an
+   * encryption key will compromise the security of the data.
+   *
+   * # Returns
+   * An object representing the uploaded data.
+   */
   public async upload(
-    encryptionKey: ArrayBuffer,
-    dataShards: /*u8*/ number,
-    parityShards: /*u8*/ number,
+    options: UploadOptions,
     asyncOpts_?: { signal: AbortSignal }
   ): Promise<UploadInterface> /*throws*/ {
     const __stack = uniffiIsDebug ? new Error().stack : undefined;
@@ -1530,9 +4138,7 @@ export class Sdk extends UniffiAbstractObject implements SdkInterface {
         /*rustFutureFunc:*/ () => {
           return nativeModule().ubrn_uniffi_indexd_ffi_fn_method_sdk_upload(
             uniffiTypeSdkObjectFactory.clonePointer(this),
-            FfiConverterArrayBuffer.lower(encryptionKey),
-            FfiConverterUInt8.lower(dataShards),
-            FfiConverterUInt8.lower(parityShards)
+            FfiConverterTypeUploadOptions.lower(options)
           );
         },
         /*pollFunc:*/ nativeModule()
@@ -1695,12 +4301,12 @@ export interface UploadInterface {
    */
   finalize(asyncOpts_?: {
     signal: AbortSignal;
-  }) /*throws*/ : Promise<Array<Slab>>;
+  }) /*throws*/ : Promise<ObjectInterface>;
   /**
    * Writes a chunk of data to the Sia network. The data will be
    * erasure-coded and encrypted before upload.
    *
-   * Chunks should be written until EoF, then call [`finalize`].
+   * Chunks should be written until EoF, then call [`Upload::finalize`].
    */
   write(
     buf: ArrayBuffer,
@@ -1735,7 +4341,7 @@ export class Upload extends UniffiAbstractObject implements UploadInterface {
    */
   public async finalize(asyncOpts_?: {
     signal: AbortSignal;
-  }): Promise<Array<Slab>> /*throws*/ {
+  }): Promise<ObjectInterface> /*throws*/ {
     const __stack = uniffiIsDebug ? new Error().stack : undefined;
     try {
       return await uniffiRustCallAsync(
@@ -1746,16 +4352,14 @@ export class Upload extends UniffiAbstractObject implements UploadInterface {
           );
         },
         /*pollFunc:*/ nativeModule()
-          .ubrn_ffi_indexd_ffi_rust_future_poll_rust_buffer,
+          .ubrn_ffi_indexd_ffi_rust_future_poll_pointer,
         /*cancelFunc:*/ nativeModule()
-          .ubrn_ffi_indexd_ffi_rust_future_cancel_rust_buffer,
+          .ubrn_ffi_indexd_ffi_rust_future_cancel_pointer,
         /*completeFunc:*/ nativeModule()
-          .ubrn_ffi_indexd_ffi_rust_future_complete_rust_buffer,
+          .ubrn_ffi_indexd_ffi_rust_future_complete_pointer,
         /*freeFunc:*/ nativeModule()
-          .ubrn_ffi_indexd_ffi_rust_future_free_rust_buffer,
-        /*liftFunc:*/ FfiConverterArrayTypeSlab.lift.bind(
-          FfiConverterArrayTypeSlab
-        ),
+          .ubrn_ffi_indexd_ffi_rust_future_free_pointer,
+        /*liftFunc:*/ FfiConverterTypeObject.lift.bind(FfiConverterTypeObject),
         /*liftString:*/ FfiConverterString.lift,
         /*asyncOpts:*/ asyncOpts_,
         /*errorHandler:*/ FfiConverterTypeUploadError.lift.bind(
@@ -1774,7 +4378,7 @@ export class Upload extends UniffiAbstractObject implements UploadInterface {
    * Writes a chunk of data to the Sia network. The data will be
    * erasure-coded and encrypted before upload.
    *
-   * Chunks should be written until EoF, then call [`finalize`].
+   * Chunks should be written until EoF, then call [`Upload::finalize`].
    */
   public async write(
     buf: ArrayBuffer,
@@ -1897,8 +4501,184 @@ const FfiConverterTypeUpload = new FfiConverterObject(
   uniffiTypeUploadObjectFactory
 );
 
+export interface UploadProgressCallback {
+  progress(uploaded: /*u64*/ bigint, encodedSize: /*u64*/ bigint): void;
+}
+
+export class UploadProgressCallbackImpl
+  extends UniffiAbstractObject
+  implements UploadProgressCallback
+{
+  readonly [uniffiTypeNameSymbol] = 'UploadProgressCallbackImpl';
+  readonly [destructorGuardSymbol]: UniffiRustArcPtr;
+  readonly [pointerLiteralSymbol]: UnsafeMutableRawPointer;
+  // No primary constructor declared for this class.
+  private constructor(pointer: UnsafeMutableRawPointer) {
+    super();
+    this[pointerLiteralSymbol] = pointer;
+    this[destructorGuardSymbol] =
+      uniffiTypeUploadProgressCallbackImplObjectFactory.bless(pointer);
+  }
+
+  public progress(uploaded: /*u64*/ bigint, encodedSize: /*u64*/ bigint): void {
+    uniffiCaller.rustCall(
+      /*caller:*/ (callStatus) => {
+        nativeModule().ubrn_uniffi_indexd_ffi_fn_method_uploadprogresscallback_progress(
+          uniffiTypeUploadProgressCallbackImplObjectFactory.clonePointer(this),
+          FfiConverterUInt64.lower(uploaded),
+          FfiConverterUInt64.lower(encodedSize),
+          callStatus
+        );
+      },
+      /*liftString:*/ FfiConverterString.lift
+    );
+  }
+
+  /**
+   * {@inheritDoc uniffi-bindgen-react-native#UniffiAbstractObject.uniffiDestroy}
+   */
+  uniffiDestroy(): void {
+    const ptr = (this as any)[destructorGuardSymbol];
+    if (ptr !== undefined) {
+      const pointer =
+        uniffiTypeUploadProgressCallbackImplObjectFactory.pointer(this);
+      uniffiTypeUploadProgressCallbackImplObjectFactory.freePointer(pointer);
+      uniffiTypeUploadProgressCallbackImplObjectFactory.unbless(ptr);
+      delete (this as any)[destructorGuardSymbol];
+    }
+  }
+
+  static instanceOf(obj: any): obj is UploadProgressCallbackImpl {
+    return uniffiTypeUploadProgressCallbackImplObjectFactory.isConcreteType(
+      obj
+    );
+  }
+}
+
+const uniffiTypeUploadProgressCallbackImplObjectFactory: UniffiObjectFactory<UploadProgressCallback> =
+  (() => {
+    return {
+      create(pointer: UnsafeMutableRawPointer): UploadProgressCallback {
+        const instance = Object.create(UploadProgressCallbackImpl.prototype);
+        instance[pointerLiteralSymbol] = pointer;
+        instance[destructorGuardSymbol] = this.bless(pointer);
+        instance[uniffiTypeNameSymbol] = 'UploadProgressCallbackImpl';
+        return instance;
+      },
+
+      bless(p: UnsafeMutableRawPointer): UniffiRustArcPtr {
+        return uniffiCaller.rustCall(
+          /*caller:*/ (status) =>
+            nativeModule().ubrn_uniffi_internal_fn_method_uploadprogresscallback_ffi__bless_pointer(
+              p,
+              status
+            ),
+          /*liftString:*/ FfiConverterString.lift
+        );
+      },
+
+      unbless(ptr: UniffiRustArcPtr) {
+        ptr.markDestroyed();
+      },
+
+      pointer(obj: UploadProgressCallback): UnsafeMutableRawPointer {
+        if ((obj as any)[destructorGuardSymbol] === undefined) {
+          throw new UniffiInternalError.UnexpectedNullPointer();
+        }
+        return (obj as any)[pointerLiteralSymbol];
+      },
+
+      clonePointer(obj: UploadProgressCallback): UnsafeMutableRawPointer {
+        const pointer = this.pointer(obj);
+        return uniffiCaller.rustCall(
+          /*caller:*/ (callStatus) =>
+            nativeModule().ubrn_uniffi_indexd_ffi_fn_clone_uploadprogresscallback(
+              pointer,
+              callStatus
+            ),
+          /*liftString:*/ FfiConverterString.lift
+        );
+      },
+
+      freePointer(pointer: UnsafeMutableRawPointer): void {
+        uniffiCaller.rustCall(
+          /*caller:*/ (callStatus) =>
+            nativeModule().ubrn_uniffi_indexd_ffi_fn_free_uploadprogresscallback(
+              pointer,
+              callStatus
+            ),
+          /*liftString:*/ FfiConverterString.lift
+        );
+      },
+
+      isConcreteType(obj: any): obj is UploadProgressCallback {
+        return (
+          obj[destructorGuardSymbol] &&
+          obj[uniffiTypeNameSymbol] === 'UploadProgressCallbackImpl'
+        );
+      },
+    };
+  })();
+// FfiConverter for UploadProgressCallback
+const FfiConverterTypeUploadProgressCallback =
+  new FfiConverterObjectWithCallbacks(
+    uniffiTypeUploadProgressCallbackImplObjectFactory
+  );
+
+// Add a vtavble for the callbacks that go in UploadProgressCallback.
+
+// Put the implementation in a struct so we don't pollute the top-level namespace
+const uniffiCallbackInterfaceUploadProgressCallback: {
+  vtable: UniffiVTableCallbackInterfaceUploadProgressCallback;
+  register: () => void;
+} = {
+  // Create the VTable using a series of closures.
+  // ts automatically converts these into C callback functions.
+  vtable: {
+    progress: (uniffiHandle: bigint, uploaded: bigint, encodedSize: bigint) => {
+      const uniffiMakeCall = (): void => {
+        const jsCallback =
+          FfiConverterTypeUploadProgressCallback.lift(uniffiHandle);
+        return jsCallback.progress(
+          FfiConverterUInt64.lift(uploaded),
+          FfiConverterUInt64.lift(encodedSize)
+        );
+      };
+      const uniffiResult = UniffiResult.ready<void>();
+      const uniffiHandleSuccess = (obj: any) => {};
+      const uniffiHandleError = (code: number, errBuf: UniffiByteArray) => {
+        UniffiResult.writeError(uniffiResult, code, errBuf);
+      };
+      uniffiTraitInterfaceCall(
+        /*makeCall:*/ uniffiMakeCall,
+        /*handleSuccess:*/ uniffiHandleSuccess,
+        /*handleError:*/ uniffiHandleError,
+        /*lowerString:*/ FfiConverterString.lower
+      );
+      return uniffiResult;
+    },
+    uniffiFree: (uniffiHandle: UniffiHandle): void => {
+      // UploadProgressCallback: this will throw a stale handle error if the handle isn't found.
+      FfiConverterTypeUploadProgressCallback.drop(uniffiHandle);
+    },
+  },
+  register: () => {
+    nativeModule().ubrn_uniffi_indexd_ffi_fn_init_callback_vtable_uploadprogresscallback(
+      uniffiCallbackInterfaceUploadProgressCallback.vtable
+    );
+  },
+};
+
+// FfiConverter for ObjectsCursor | undefined
+const FfiConverterOptionalTypeObjectsCursor = new FfiConverterOptional(
+  FfiConverterTypeObjectsCursor
+);
+
 // FfiConverter for string | undefined
 const FfiConverterOptionalString = new FfiConverterOptional(FfiConverterString);
+
+// FfiConverter for /*u64*/bigint | undefined
+const FfiConverterOptionalUInt64 = new FfiConverterOptional(FfiConverterUInt64);
 
 // FfiConverter for Array<Host>
 const FfiConverterArrayTypeHost = new FfiConverterArray(FfiConverterTypeHost);
@@ -1908,8 +4688,23 @@ const FfiConverterArrayTypeNetAddress = new FfiConverterArray(
   FfiConverterTypeNetAddress
 );
 
+// FfiConverter for Array<PinnedSector>
+const FfiConverterArrayTypePinnedSector = new FfiConverterArray(
+  FfiConverterTypePinnedSector
+);
+
 // FfiConverter for Array<Slab>
 const FfiConverterArrayTypeSlab = new FfiConverterArray(FfiConverterTypeSlab);
+
+// FfiConverter for UploadProgressCallback | undefined
+const FfiConverterOptionalTypeUploadProgressCallback = new FfiConverterOptional(
+  FfiConverterTypeUploadProgressCallback
+);
+
+// FfiConverter for Array<ObjectInterface>
+const FfiConverterArrayTypeObject = new FfiConverterArray(
+  FfiConverterTypeObject
+);
 
 /**
  * This should be called before anything else.
@@ -1934,6 +4729,28 @@ function uniffiEnsureInitialized() {
     );
   }
   if (
+    nativeModule().ubrn_uniffi_indexd_ffi_checksum_func_encoded_size() !== 51818
+  ) {
+    throw new UniffiInternalError.ApiChecksumMismatch(
+      'uniffi_indexd_ffi_checksum_func_encoded_size'
+    );
+  }
+  if (
+    nativeModule().ubrn_uniffi_indexd_ffi_checksum_func_generate_recovery_phrase() !==
+    35343
+  ) {
+    throw new UniffiInternalError.ApiChecksumMismatch(
+      'uniffi_indexd_ffi_checksum_func_generate_recovery_phrase'
+    );
+  }
+  if (
+    nativeModule().ubrn_uniffi_indexd_ffi_checksum_func_set_logger() !== 36651
+  ) {
+    throw new UniffiInternalError.ApiChecksumMismatch(
+      'uniffi_indexd_ffi_checksum_func_set_logger'
+    );
+  }
+  if (
     nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_download_params() !==
     9644
   ) {
@@ -1943,7 +4760,7 @@ function uniffiEnsureInitialized() {
   }
   if (
     nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_download_read_chunk() !==
-    10275
+    5666
   ) {
     throw new UniffiInternalError.ApiChecksumMismatch(
       'uniffi_indexd_ffi_checksum_method_download_read_chunk'
@@ -1966,6 +4783,149 @@ function uniffiEnsureInitialized() {
     );
   }
   if (
+    nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_downloadshared_params() !==
+    21512
+  ) {
+    throw new UniffiInternalError.ApiChecksumMismatch(
+      'uniffi_indexd_ffi_checksum_method_downloadshared_params'
+    );
+  }
+  if (
+    nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_downloadshared_read_chunk() !==
+    10026
+  ) {
+    throw new UniffiInternalError.ApiChecksumMismatch(
+      'uniffi_indexd_ffi_checksum_method_downloadshared_read_chunk'
+    );
+  }
+  if (
+    nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_downloadshared_rem() !==
+    64815
+  ) {
+    throw new UniffiInternalError.ApiChecksumMismatch(
+      'uniffi_indexd_ffi_checksum_method_downloadshared_rem'
+    );
+  }
+  if (
+    nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_downloadshared_update() !==
+    57652
+  ) {
+    throw new UniffiInternalError.ApiChecksumMismatch(
+      'uniffi_indexd_ffi_checksum_method_downloadshared_update'
+    );
+  }
+  if (
+    nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_encryptionkey_export() !==
+    1252
+  ) {
+    throw new UniffiInternalError.ApiChecksumMismatch(
+      'uniffi_indexd_ffi_checksum_method_encryptionkey_export'
+    );
+  }
+  if (
+    nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_logger_info() !==
+    54729
+  ) {
+    throw new UniffiInternalError.ApiChecksumMismatch(
+      'uniffi_indexd_ffi_checksum_method_logger_info'
+    );
+  }
+  if (
+    nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_logger_warn() !==
+    48239
+  ) {
+    throw new UniffiInternalError.ApiChecksumMismatch(
+      'uniffi_indexd_ffi_checksum_method_logger_warn'
+    );
+  }
+  if (
+    nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_logger_error() !==
+    23088
+  ) {
+    throw new UniffiInternalError.ApiChecksumMismatch(
+      'uniffi_indexd_ffi_checksum_method_logger_error'
+    );
+  }
+  if (
+    nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_logger_debug() !==
+    42085
+  ) {
+    throw new UniffiInternalError.ApiChecksumMismatch(
+      'uniffi_indexd_ffi_checksum_method_logger_debug'
+    );
+  }
+  if (
+    nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_object_created_at() !==
+    35840
+  ) {
+    throw new UniffiInternalError.ApiChecksumMismatch(
+      'uniffi_indexd_ffi_checksum_method_object_created_at'
+    );
+  }
+  if (
+    nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_object_id() !== 38911
+  ) {
+    throw new UniffiInternalError.ApiChecksumMismatch(
+      'uniffi_indexd_ffi_checksum_method_object_id'
+    );
+  }
+  if (
+    nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_object_metadata() !==
+    17641
+  ) {
+    throw new UniffiInternalError.ApiChecksumMismatch(
+      'uniffi_indexd_ffi_checksum_method_object_metadata'
+    );
+  }
+  if (
+    nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_object_seal() !==
+    19629
+  ) {
+    throw new UniffiInternalError.ApiChecksumMismatch(
+      'uniffi_indexd_ffi_checksum_method_object_seal'
+    );
+  }
+  if (
+    nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_object_size() !==
+    37954
+  ) {
+    throw new UniffiInternalError.ApiChecksumMismatch(
+      'uniffi_indexd_ffi_checksum_method_object_size'
+    );
+  }
+  if (
+    nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_object_slabs() !==
+    27453
+  ) {
+    throw new UniffiInternalError.ApiChecksumMismatch(
+      'uniffi_indexd_ffi_checksum_method_object_slabs'
+    );
+  }
+  if (
+    nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_object_update_metadata() !==
+    16936
+  ) {
+    throw new UniffiInternalError.ApiChecksumMismatch(
+      'uniffi_indexd_ffi_checksum_method_object_update_metadata'
+    );
+  }
+  if (
+    nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_object_updated_at() !==
+    48573
+  ) {
+    throw new UniffiInternalError.ApiChecksumMismatch(
+      'uniffi_indexd_ffi_checksum_method_object_updated_at'
+    );
+  }
+  if (
+    nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_sdk_account() !==
+    50707
+  ) {
+    throw new UniffiInternalError.ApiChecksumMismatch(
+      'uniffi_indexd_ffi_checksum_method_sdk_account'
+    );
+  }
+  if (
     nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_sdk_connect() !==
     51960
   ) {
@@ -1974,26 +4934,65 @@ function uniffiEnsureInitialized() {
     );
   }
   if (
+    nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_sdk_delete_object() !==
+    39351
+  ) {
+    throw new UniffiInternalError.ApiChecksumMismatch(
+      'uniffi_indexd_ffi_checksum_method_sdk_delete_object'
+    );
+  }
+  if (
     nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_sdk_download() !==
-    65129
+    34325
   ) {
     throw new UniffiInternalError.ApiChecksumMismatch(
       'uniffi_indexd_ffi_checksum_method_sdk_download'
     );
   }
   if (
-    nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_sdk_download_range() !==
-    19578
+    nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_sdk_download_shared() !==
+    12955
   ) {
     throw new UniffiInternalError.ApiChecksumMismatch(
-      'uniffi_indexd_ffi_checksum_method_sdk_download_range'
+      'uniffi_indexd_ffi_checksum_method_sdk_download_shared'
     );
   }
   if (
-    nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_sdk_hosts() !== 15872
+    nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_sdk_hosts() !== 11119
   ) {
     throw new UniffiInternalError.ApiChecksumMismatch(
       'uniffi_indexd_ffi_checksum_method_sdk_hosts'
+    );
+  }
+  if (
+    nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_sdk_object() !== 59829
+  ) {
+    throw new UniffiInternalError.ApiChecksumMismatch(
+      'uniffi_indexd_ffi_checksum_method_sdk_object'
+    );
+  }
+  if (
+    nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_sdk_object_share_url() !==
+    50512
+  ) {
+    throw new UniffiInternalError.ApiChecksumMismatch(
+      'uniffi_indexd_ffi_checksum_method_sdk_object_share_url'
+    );
+  }
+  if (
+    nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_sdk_objects() !==
+    59890
+  ) {
+    throw new UniffiInternalError.ApiChecksumMismatch(
+      'uniffi_indexd_ffi_checksum_method_sdk_objects'
+    );
+  }
+  if (
+    nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_sdk_pin_slab() !==
+    24606
+  ) {
+    throw new UniffiInternalError.ApiChecksumMismatch(
+      'uniffi_indexd_ffi_checksum_method_sdk_pin_slab'
     );
   }
   if (
@@ -2005,7 +5004,38 @@ function uniffiEnsureInitialized() {
     );
   }
   if (
-    nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_sdk_upload() !== 43312
+    nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_sdk_save_object() !==
+    44358
+  ) {
+    throw new UniffiInternalError.ApiChecksumMismatch(
+      'uniffi_indexd_ffi_checksum_method_sdk_save_object'
+    );
+  }
+  if (
+    nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_sdk_shared_object_metadata() !==
+    32399
+  ) {
+    throw new UniffiInternalError.ApiChecksumMismatch(
+      'uniffi_indexd_ffi_checksum_method_sdk_shared_object_metadata'
+    );
+  }
+  if (
+    nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_sdk_slab() !== 48470
+  ) {
+    throw new UniffiInternalError.ApiChecksumMismatch(
+      'uniffi_indexd_ffi_checksum_method_sdk_slab'
+    );
+  }
+  if (
+    nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_sdk_unpin_slab() !==
+    9509
+  ) {
+    throw new UniffiInternalError.ApiChecksumMismatch(
+      'uniffi_indexd_ffi_checksum_method_sdk_unpin_slab'
+    );
+  }
+  if (
+    nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_sdk_upload() !== 59481
   ) {
     throw new UniffiInternalError.ApiChecksumMismatch(
       'uniffi_indexd_ffi_checksum_method_sdk_upload'
@@ -2021,7 +5051,7 @@ function uniffiEnsureInitialized() {
   }
   if (
     nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_upload_finalize() !==
-    45492
+    46983
   ) {
     throw new UniffiInternalError.ApiChecksumMismatch(
       'uniffi_indexd_ffi_checksum_method_upload_finalize'
@@ -2029,37 +5059,89 @@ function uniffiEnsureInitialized() {
   }
   if (
     nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_upload_write() !==
-    51812
+    44050
   ) {
     throw new UniffiInternalError.ApiChecksumMismatch(
       'uniffi_indexd_ffi_checksum_method_upload_write'
     );
   }
   if (
+    nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_uploadprogresscallback_progress() !==
+    10119
+  ) {
+    throw new UniffiInternalError.ApiChecksumMismatch(
+      'uniffi_indexd_ffi_checksum_method_uploadprogresscallback_progress'
+    );
+  }
+  if (
+    nativeModule().ubrn_uniffi_indexd_ffi_checksum_constructor_appkey_new() !==
+    22823
+  ) {
+    throw new UniffiInternalError.ApiChecksumMismatch(
+      'uniffi_indexd_ffi_checksum_constructor_appkey_new'
+    );
+  }
+  if (
+    nativeModule().ubrn_uniffi_indexd_ffi_checksum_constructor_encryptionkey_parse() !==
+    42073
+  ) {
+    throw new UniffiInternalError.ApiChecksumMismatch(
+      'uniffi_indexd_ffi_checksum_constructor_encryptionkey_parse'
+    );
+  }
+  if (
+    nativeModule().ubrn_uniffi_indexd_ffi_checksum_constructor_object_open() !==
+    54607
+  ) {
+    throw new UniffiInternalError.ApiChecksumMismatch(
+      'uniffi_indexd_ffi_checksum_constructor_object_open'
+    );
+  }
+  if (
     nativeModule().ubrn_uniffi_indexd_ffi_checksum_constructor_sdk_new() !==
-    46931
+    1321
   ) {
     throw new UniffiInternalError.ApiChecksumMismatch(
       'uniffi_indexd_ffi_checksum_constructor_sdk_new'
     );
   }
+
+  uniffiCallbackInterfaceLogger.register();
+  uniffiCallbackInterfaceUploadProgressCallback.register();
 }
 
 export default Object.freeze({
   initialize: uniffiEnsureInitialized,
   converters: {
+    FfiConverterTypeAccount,
     FfiConverterTypeAddressProtocol,
+    FfiConverterTypeAppKey,
+    FfiConverterTypeAppKeyError,
     FfiConverterTypeAppMeta,
     FfiConverterTypeDownload,
     FfiConverterTypeDownloadError,
+    FfiConverterTypeDownloadOptions,
+    FfiConverterTypeDownloadShared,
     FfiConverterTypeDownloadState,
+    FfiConverterTypeEncryptionKey,
+    FfiConverterTypeEncryptionKeyParseError,
     FfiConverterTypeError,
     FfiConverterTypeHost,
+    FfiConverterTypeLogger,
     FfiConverterTypeNetAddress,
+    FfiConverterTypeObject,
+    FfiConverterTypeObjectError,
+    FfiConverterTypeObjectsCursor,
+    FfiConverterTypePinnedSector,
+    FfiConverterTypePinnedSlab,
     FfiConverterTypeRequestAuthResponse,
     FfiConverterTypeSDK,
+    FfiConverterTypeSealedObject,
     FfiConverterTypeSlab,
+    FfiConverterTypeSlabPinParams,
     FfiConverterTypeUpload,
     FfiConverterTypeUploadError,
+    FfiConverterTypeUploadOptions,
+    FfiConverterTypeUploadProgressCallback,
   },
 });

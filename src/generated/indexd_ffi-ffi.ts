@@ -137,50 +137,50 @@ interface NativeModuleInterface {
     msg: Uint8Array,
     uniffi_out_err: UniffiRustCallStatus
   ): void;
-  ubrn_uniffi_indexd_ffi_fn_clone_object(
+  ubrn_uniffi_indexd_ffi_fn_clone_pinnedobject(
     ptr: bigint,
     uniffi_out_err: UniffiRustCallStatus
   ): bigint;
-  ubrn_uniffi_indexd_ffi_fn_free_object(
+  ubrn_uniffi_indexd_ffi_fn_free_pinnedobject(
     ptr: bigint,
     uniffi_out_err: UniffiRustCallStatus
   ): void;
-  ubrn_uniffi_indexd_ffi_fn_constructor_object_open(
+  ubrn_uniffi_indexd_ffi_fn_constructor_pinnedobject_open(
     appKey: bigint,
     sealed: Uint8Array,
     uniffi_out_err: UniffiRustCallStatus
   ): bigint;
-  ubrn_uniffi_indexd_ffi_fn_method_object_created_at(
+  ubrn_uniffi_indexd_ffi_fn_method_pinnedobject_created_at(
     ptr: bigint,
     uniffi_out_err: UniffiRustCallStatus
   ): Uint8Array;
-  ubrn_uniffi_indexd_ffi_fn_method_object_id(
+  ubrn_uniffi_indexd_ffi_fn_method_pinnedobject_id(
     ptr: bigint,
     uniffi_out_err: UniffiRustCallStatus
   ): Uint8Array;
-  ubrn_uniffi_indexd_ffi_fn_method_object_metadata(
+  ubrn_uniffi_indexd_ffi_fn_method_pinnedobject_metadata(
     ptr: bigint,
     uniffi_out_err: UniffiRustCallStatus
   ): Uint8Array;
-  ubrn_uniffi_indexd_ffi_fn_method_object_seal(
+  ubrn_uniffi_indexd_ffi_fn_method_pinnedobject_seal(
     ptr: bigint,
     appKey: bigint,
     uniffi_out_err: UniffiRustCallStatus
   ): Uint8Array;
-  ubrn_uniffi_indexd_ffi_fn_method_object_size(
+  ubrn_uniffi_indexd_ffi_fn_method_pinnedobject_size(
     ptr: bigint,
     uniffi_out_err: UniffiRustCallStatus
   ): bigint;
-  ubrn_uniffi_indexd_ffi_fn_method_object_slabs(
+  ubrn_uniffi_indexd_ffi_fn_method_pinnedobject_slabs(
     ptr: bigint,
     uniffi_out_err: UniffiRustCallStatus
   ): Uint8Array;
-  ubrn_uniffi_indexd_ffi_fn_method_object_update_metadata(
+  ubrn_uniffi_indexd_ffi_fn_method_pinnedobject_update_metadata(
     ptr: bigint,
     metadata: Uint8Array,
     uniffi_out_err: UniffiRustCallStatus
   ): void;
-  ubrn_uniffi_indexd_ffi_fn_method_object_updated_at(
+  ubrn_uniffi_indexd_ffi_fn_method_pinnedobject_updated_at(
     ptr: bigint,
     uniffi_out_err: UniffiRustCallStatus
   ): Uint8Array;
@@ -465,14 +465,14 @@ interface NativeModuleInterface {
   ubrn_uniffi_indexd_ffi_checksum_method_logger_warn(): number;
   ubrn_uniffi_indexd_ffi_checksum_method_logger_error(): number;
   ubrn_uniffi_indexd_ffi_checksum_method_logger_debug(): number;
-  ubrn_uniffi_indexd_ffi_checksum_method_object_created_at(): number;
-  ubrn_uniffi_indexd_ffi_checksum_method_object_id(): number;
-  ubrn_uniffi_indexd_ffi_checksum_method_object_metadata(): number;
-  ubrn_uniffi_indexd_ffi_checksum_method_object_seal(): number;
-  ubrn_uniffi_indexd_ffi_checksum_method_object_size(): number;
-  ubrn_uniffi_indexd_ffi_checksum_method_object_slabs(): number;
-  ubrn_uniffi_indexd_ffi_checksum_method_object_update_metadata(): number;
-  ubrn_uniffi_indexd_ffi_checksum_method_object_updated_at(): number;
+  ubrn_uniffi_indexd_ffi_checksum_method_pinnedobject_created_at(): number;
+  ubrn_uniffi_indexd_ffi_checksum_method_pinnedobject_id(): number;
+  ubrn_uniffi_indexd_ffi_checksum_method_pinnedobject_metadata(): number;
+  ubrn_uniffi_indexd_ffi_checksum_method_pinnedobject_seal(): number;
+  ubrn_uniffi_indexd_ffi_checksum_method_pinnedobject_size(): number;
+  ubrn_uniffi_indexd_ffi_checksum_method_pinnedobject_slabs(): number;
+  ubrn_uniffi_indexd_ffi_checksum_method_pinnedobject_update_metadata(): number;
+  ubrn_uniffi_indexd_ffi_checksum_method_pinnedobject_updated_at(): number;
   ubrn_uniffi_indexd_ffi_checksum_method_sdk_account(): number;
   ubrn_uniffi_indexd_ffi_checksum_method_sdk_connect(): number;
   ubrn_uniffi_indexd_ffi_checksum_method_sdk_delete_object(): number;
@@ -495,7 +495,7 @@ interface NativeModuleInterface {
   ubrn_uniffi_indexd_ffi_checksum_method_uploadprogresscallback_progress(): number;
   ubrn_uniffi_indexd_ffi_checksum_constructor_appkey_new(): number;
   ubrn_uniffi_indexd_ffi_checksum_constructor_encryptionkey_parse(): number;
-  ubrn_uniffi_indexd_ffi_checksum_constructor_object_open(): number;
+  ubrn_uniffi_indexd_ffi_checksum_constructor_pinnedobject_open(): number;
   ubrn_uniffi_indexd_ffi_checksum_constructor_sdk_new(): number;
   ubrn_ffi_indexd_ffi_uniffi_contract_version(): number;
   ubrn_uniffi_internal_fn_method_appkey_ffi__bless_pointer(
@@ -522,7 +522,7 @@ interface NativeModuleInterface {
     pointer: bigint,
     uniffi_out_err: UniffiRustCallStatus
   ): UniffiRustArcPtr;
-  ubrn_uniffi_internal_fn_method_object_ffi__bless_pointer(
+  ubrn_uniffi_internal_fn_method_pinnedobject_ffi__bless_pointer(
     pointer: bigint,
     uniffi_out_err: UniffiRustCallStatus
   ): UniffiRustArcPtr;

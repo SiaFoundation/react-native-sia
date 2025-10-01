@@ -953,6 +953,16 @@ export type UploadOptions = {
   maxInflight: /*u8*/ number;
   dataShards: /*u8*/ number;
   parityShards: /*u8*/ number;
+  /**
+   * Optional metadata to attach to the object.
+   * This will be encrypted with the object's master key.
+   */
+  metadata: ArrayBuffer | undefined;
+  /**
+   * Optional callback to report upload progress.
+   * The callback will be called with the number of bytes uploaded
+   * and the total encoded size of the upload.
+   */
   progressCallback: UploadProgressCallback | undefined;
 };
 
@@ -960,7 +970,11 @@ export type UploadOptions = {
  * Generated factory for {@link UploadOptions} record objects.
  */
 export const UploadOptions = (() => {
-  const defaults = () => ({});
+  const defaults = () => ({
+    maxInflight: 10,
+    dataShards: 10,
+    parityShards: 20,
+  });
   const create = (() => {
     return uniffiCreateRecord<UploadOptions, ReturnType<typeof defaults>>(
       defaults
@@ -994,6 +1008,7 @@ const FfiConverterTypeUploadOptions = (() => {
         maxInflight: FfiConverterUInt8.read(from),
         dataShards: FfiConverterUInt8.read(from),
         parityShards: FfiConverterUInt8.read(from),
+        metadata: FfiConverterOptionalArrayBuffer.read(from),
         progressCallback:
           FfiConverterOptionalTypeUploadProgressCallback.read(from),
       };
@@ -1002,6 +1017,7 @@ const FfiConverterTypeUploadOptions = (() => {
       FfiConverterUInt8.write(value.maxInflight, into);
       FfiConverterUInt8.write(value.dataShards, into);
       FfiConverterUInt8.write(value.parityShards, into);
+      FfiConverterOptionalArrayBuffer.write(value.metadata, into);
       FfiConverterOptionalTypeUploadProgressCallback.write(
         value.progressCallback,
         into
@@ -1012,6 +1028,7 @@ const FfiConverterTypeUploadOptions = (() => {
         FfiConverterUInt8.allocationSize(value.maxInflight) +
         FfiConverterUInt8.allocationSize(value.dataShards) +
         FfiConverterUInt8.allocationSize(value.parityShards) +
+        FfiConverterOptionalArrayBuffer.allocationSize(value.metadata) +
         FfiConverterOptionalTypeUploadProgressCallback.allocationSize(
           value.progressCallback
         )
@@ -3016,18 +3033,20 @@ const uniffiCallbackInterfaceLogger: {
 };
 
 /**
- * An object represents a file stored on the Sia network.
+ * An object that has been pinned to an indexer. Objects are immutable
+ * data stored on the Sia network. The data is erasure-coded and distributed across
+ * multiple storage providers. The object is encrypted with a unique encryption key,
+ * which is used to encrypt the metadata.
  *
- * It is made up of one or more slabs, which are erasure-coded segments of the file.
- * The object is encrypted with a unique encryption key, which is used to encrypt
- * the slabs and the metadata.
+ * Custom user-defined metadata can be associated with the object. It is
+ * recommended to use a portable format like JSON for metadata.
  *
- * It can be sealed for sharing, which encrypts the object's encryption key
- * with a master key derived from the app key and a random nonce.
+ * It can be sealed for secure offline storage or transmission and
+ * later opened using the app key.
  *
- * It has no public fields to prevent accidental corruption of the object.
+ * It has no public fields to prevent accidental leakage or corruption.
  */
-export interface ObjectInterface {
+export interface PinnedObjectInterface {
   /**
    * Returns the time the object was created.
    */
@@ -3068,33 +3087,39 @@ export interface ObjectInterface {
 }
 
 /**
- * An object represents a file stored on the Sia network.
+ * An object that has been pinned to an indexer. Objects are immutable
+ * data stored on the Sia network. The data is erasure-coded and distributed across
+ * multiple storage providers. The object is encrypted with a unique encryption key,
+ * which is used to encrypt the metadata.
  *
- * It is made up of one or more slabs, which are erasure-coded segments of the file.
- * The object is encrypted with a unique encryption key, which is used to encrypt
- * the slabs and the metadata.
+ * Custom user-defined metadata can be associated with the object. It is
+ * recommended to use a portable format like JSON for metadata.
  *
- * It can be sealed for sharing, which encrypts the object's encryption key
- * with a master key derived from the app key and a random nonce.
+ * It can be sealed for secure offline storage or transmission and
+ * later opened using the app key.
  *
- * It has no public fields to prevent accidental corruption of the object.
+ * It has no public fields to prevent accidental leakage or corruption.
  */
-export class Object extends UniffiAbstractObject implements ObjectInterface {
-  readonly [uniffiTypeNameSymbol] = 'Object';
+export class PinnedObject
+  extends UniffiAbstractObject
+  implements PinnedObjectInterface
+{
+  readonly [uniffiTypeNameSymbol] = 'PinnedObject';
   readonly [destructorGuardSymbol]: UniffiRustArcPtr;
   readonly [pointerLiteralSymbol]: UnsafeMutableRawPointer;
   // No primary constructor declared for this class.
   private constructor(pointer: UnsafeMutableRawPointer) {
     super();
     this[pointerLiteralSymbol] = pointer;
-    this[destructorGuardSymbol] = uniffiTypeObjectObjectFactory.bless(pointer);
+    this[destructorGuardSymbol] =
+      uniffiTypePinnedObjectObjectFactory.bless(pointer);
   }
 
   /**
    * Opens a sealed object using the provided app key.
    *
    * # Arguments
-   * * `app_key` - The app key used to derive the master key to decrypt the object's encryption key.
+   * * `app_key` - The app key that was used to seal the object.
    * * `sealed` - The sealed object to open.
    *
    * # Returns
@@ -3103,14 +3128,14 @@ export class Object extends UniffiAbstractObject implements ObjectInterface {
   public static open(
     appKey: AppKeyInterface,
     sealed: SealedObject
-  ): ObjectInterface /*throws*/ {
-    return FfiConverterTypeObject.lift(
+  ): PinnedObjectInterface /*throws*/ {
+    return FfiConverterTypePinnedObject.lift(
       uniffiCaller.rustCallWithError(
         /*liftError:*/ FfiConverterTypeObjectError.lift.bind(
           FfiConverterTypeObjectError
         ),
         /*caller:*/ (callStatus) => {
-          return nativeModule().ubrn_uniffi_indexd_ffi_fn_constructor_object_open(
+          return nativeModule().ubrn_uniffi_indexd_ffi_fn_constructor_pinnedobject_open(
             FfiConverterTypeAppKey.lower(appKey),
             FfiConverterTypeSealedObject.lower(sealed),
             callStatus
@@ -3128,8 +3153,8 @@ export class Object extends UniffiAbstractObject implements ObjectInterface {
     return FfiConverterTimestamp.lift(
       uniffiCaller.rustCall(
         /*caller:*/ (callStatus) => {
-          return nativeModule().ubrn_uniffi_indexd_ffi_fn_method_object_created_at(
-            uniffiTypeObjectObjectFactory.clonePointer(this),
+          return nativeModule().ubrn_uniffi_indexd_ffi_fn_method_pinnedobject_created_at(
+            uniffiTypePinnedObjectObjectFactory.clonePointer(this),
             callStatus
           );
         },
@@ -3145,8 +3170,8 @@ export class Object extends UniffiAbstractObject implements ObjectInterface {
     return FfiConverterString.lift(
       uniffiCaller.rustCall(
         /*caller:*/ (callStatus) => {
-          return nativeModule().ubrn_uniffi_indexd_ffi_fn_method_object_id(
-            uniffiTypeObjectObjectFactory.clonePointer(this),
+          return nativeModule().ubrn_uniffi_indexd_ffi_fn_method_pinnedobject_id(
+            uniffiTypePinnedObjectObjectFactory.clonePointer(this),
             callStatus
           );
         },
@@ -3162,8 +3187,8 @@ export class Object extends UniffiAbstractObject implements ObjectInterface {
     return FfiConverterArrayBuffer.lift(
       uniffiCaller.rustCall(
         /*caller:*/ (callStatus) => {
-          return nativeModule().ubrn_uniffi_indexd_ffi_fn_method_object_metadata(
-            uniffiTypeObjectObjectFactory.clonePointer(this),
+          return nativeModule().ubrn_uniffi_indexd_ffi_fn_method_pinnedobject_metadata(
+            uniffiTypePinnedObjectObjectFactory.clonePointer(this),
             callStatus
           );
         },
@@ -3184,8 +3209,8 @@ export class Object extends UniffiAbstractObject implements ObjectInterface {
     return FfiConverterTypeSealedObject.lift(
       uniffiCaller.rustCall(
         /*caller:*/ (callStatus) => {
-          return nativeModule().ubrn_uniffi_indexd_ffi_fn_method_object_seal(
-            uniffiTypeObjectObjectFactory.clonePointer(this),
+          return nativeModule().ubrn_uniffi_indexd_ffi_fn_method_pinnedobject_seal(
+            uniffiTypePinnedObjectObjectFactory.clonePointer(this),
             FfiConverterTypeAppKey.lower(appKey),
             callStatus
           );
@@ -3202,8 +3227,8 @@ export class Object extends UniffiAbstractObject implements ObjectInterface {
     return FfiConverterUInt64.lift(
       uniffiCaller.rustCall(
         /*caller:*/ (callStatus) => {
-          return nativeModule().ubrn_uniffi_indexd_ffi_fn_method_object_size(
-            uniffiTypeObjectObjectFactory.clonePointer(this),
+          return nativeModule().ubrn_uniffi_indexd_ffi_fn_method_pinnedobject_size(
+            uniffiTypePinnedObjectObjectFactory.clonePointer(this),
             callStatus
           );
         },
@@ -3219,8 +3244,8 @@ export class Object extends UniffiAbstractObject implements ObjectInterface {
     return FfiConverterArrayTypeSlab.lift(
       uniffiCaller.rustCall(
         /*caller:*/ (callStatus) => {
-          return nativeModule().ubrn_uniffi_indexd_ffi_fn_method_object_slabs(
-            uniffiTypeObjectObjectFactory.clonePointer(this),
+          return nativeModule().ubrn_uniffi_indexd_ffi_fn_method_pinnedobject_slabs(
+            uniffiTypePinnedObjectObjectFactory.clonePointer(this),
             callStatus
           );
         },
@@ -3235,8 +3260,8 @@ export class Object extends UniffiAbstractObject implements ObjectInterface {
   public updateMetadata(metadata: ArrayBuffer): void {
     uniffiCaller.rustCall(
       /*caller:*/ (callStatus) => {
-        nativeModule().ubrn_uniffi_indexd_ffi_fn_method_object_update_metadata(
-          uniffiTypeObjectObjectFactory.clonePointer(this),
+        nativeModule().ubrn_uniffi_indexd_ffi_fn_method_pinnedobject_update_metadata(
+          uniffiTypePinnedObjectObjectFactory.clonePointer(this),
           FfiConverterArrayBuffer.lower(metadata),
           callStatus
         );
@@ -3252,8 +3277,8 @@ export class Object extends UniffiAbstractObject implements ObjectInterface {
     return FfiConverterTimestamp.lift(
       uniffiCaller.rustCall(
         /*caller:*/ (callStatus) => {
-          return nativeModule().ubrn_uniffi_indexd_ffi_fn_method_object_updated_at(
-            uniffiTypeObjectObjectFactory.clonePointer(this),
+          return nativeModule().ubrn_uniffi_indexd_ffi_fn_method_pinnedobject_updated_at(
+            uniffiTypePinnedObjectObjectFactory.clonePointer(this),
             callStatus
           );
         },
@@ -3268,33 +3293,33 @@ export class Object extends UniffiAbstractObject implements ObjectInterface {
   uniffiDestroy(): void {
     const ptr = (this as any)[destructorGuardSymbol];
     if (ptr !== undefined) {
-      const pointer = uniffiTypeObjectObjectFactory.pointer(this);
-      uniffiTypeObjectObjectFactory.freePointer(pointer);
-      uniffiTypeObjectObjectFactory.unbless(ptr);
+      const pointer = uniffiTypePinnedObjectObjectFactory.pointer(this);
+      uniffiTypePinnedObjectObjectFactory.freePointer(pointer);
+      uniffiTypePinnedObjectObjectFactory.unbless(ptr);
       delete (this as any)[destructorGuardSymbol];
     }
   }
 
-  static instanceOf(obj: any): obj is Object {
-    return uniffiTypeObjectObjectFactory.isConcreteType(obj);
+  static instanceOf(obj: any): obj is PinnedObject {
+    return uniffiTypePinnedObjectObjectFactory.isConcreteType(obj);
   }
 }
 
-const uniffiTypeObjectObjectFactory: UniffiObjectFactory<ObjectInterface> =
+const uniffiTypePinnedObjectObjectFactory: UniffiObjectFactory<PinnedObjectInterface> =
   (() => {
     return {
-      create(pointer: UnsafeMutableRawPointer): ObjectInterface {
-        const instance = Object.create(Object.prototype);
+      create(pointer: UnsafeMutableRawPointer): PinnedObjectInterface {
+        const instance = Object.create(PinnedObject.prototype);
         instance[pointerLiteralSymbol] = pointer;
         instance[destructorGuardSymbol] = this.bless(pointer);
-        instance[uniffiTypeNameSymbol] = 'Object';
+        instance[uniffiTypeNameSymbol] = 'PinnedObject';
         return instance;
       },
 
       bless(p: UnsafeMutableRawPointer): UniffiRustArcPtr {
         return uniffiCaller.rustCall(
           /*caller:*/ (status) =>
-            nativeModule().ubrn_uniffi_internal_fn_method_object_ffi__bless_pointer(
+            nativeModule().ubrn_uniffi_internal_fn_method_pinnedobject_ffi__bless_pointer(
               p,
               status
             ),
@@ -3306,18 +3331,18 @@ const uniffiTypeObjectObjectFactory: UniffiObjectFactory<ObjectInterface> =
         ptr.markDestroyed();
       },
 
-      pointer(obj: ObjectInterface): UnsafeMutableRawPointer {
+      pointer(obj: PinnedObjectInterface): UnsafeMutableRawPointer {
         if ((obj as any)[destructorGuardSymbol] === undefined) {
           throw new UniffiInternalError.UnexpectedNullPointer();
         }
         return (obj as any)[pointerLiteralSymbol];
       },
 
-      clonePointer(obj: ObjectInterface): UnsafeMutableRawPointer {
+      clonePointer(obj: PinnedObjectInterface): UnsafeMutableRawPointer {
         const pointer = this.pointer(obj);
         return uniffiCaller.rustCall(
           /*caller:*/ (callStatus) =>
-            nativeModule().ubrn_uniffi_indexd_ffi_fn_clone_object(
+            nativeModule().ubrn_uniffi_indexd_ffi_fn_clone_pinnedobject(
               pointer,
               callStatus
             ),
@@ -3328,7 +3353,7 @@ const uniffiTypeObjectObjectFactory: UniffiObjectFactory<ObjectInterface> =
       freePointer(pointer: UnsafeMutableRawPointer): void {
         uniffiCaller.rustCall(
           /*caller:*/ (callStatus) =>
-            nativeModule().ubrn_uniffi_indexd_ffi_fn_free_object(
+            nativeModule().ubrn_uniffi_indexd_ffi_fn_free_pinnedobject(
               pointer,
               callStatus
             ),
@@ -3336,16 +3361,17 @@ const uniffiTypeObjectObjectFactory: UniffiObjectFactory<ObjectInterface> =
         );
       },
 
-      isConcreteType(obj: any): obj is ObjectInterface {
+      isConcreteType(obj: any): obj is PinnedObjectInterface {
         return (
-          obj[destructorGuardSymbol] && obj[uniffiTypeNameSymbol] === 'Object'
+          obj[destructorGuardSymbol] &&
+          obj[uniffiTypeNameSymbol] === 'PinnedObject'
         );
       },
     };
   })();
-// FfiConverter for ObjectInterface
-const FfiConverterTypeObject = new FfiConverterObject(
-  uniffiTypeObjectObjectFactory
+// FfiConverter for PinnedObjectInterface
+const FfiConverterTypePinnedObject = new FfiConverterObject(
+  uniffiTypePinnedObjectObjectFactory
 );
 
 /**
@@ -3375,7 +3401,7 @@ export interface SdkInterface {
    * A [Download] object that can be used to read the data in chunks
    */
   download(
-    object: ObjectInterface,
+    object: PinnedObjectInterface,
     options: DownloadOptions,
     asyncOpts_?: { signal: AbortSignal }
   ) /*throws*/ : Promise<DownloadInterface>;
@@ -3400,7 +3426,7 @@ export interface SdkInterface {
   object(
     key: string,
     asyncOpts_?: { signal: AbortSignal }
-  ) /*throws*/ : Promise<ObjectInterface>;
+  ) /*throws*/ : Promise<PinnedObjectInterface>;
   /**
    * Creates a signed URL that can be used to share object metadata
    * with other people using an indexer.
@@ -3423,7 +3449,7 @@ export interface SdkInterface {
     cursor: ObjectsCursor | undefined,
     limit: /*u32*/ number,
     asyncOpts_?: { signal: AbortSignal }
-  ) /*throws*/ : Promise<Array<ObjectInterface>>;
+  ) /*throws*/ : Promise<Array<PinnedObjectInterface>>;
   /**
    * Pins a slab to the indexer.
    */
@@ -3445,7 +3471,7 @@ export interface SdkInterface {
    * Saves an object to the indexer.
    */
   saveObject(
-    object: ObjectInterface,
+    object: PinnedObjectInterface,
     asyncOpts_?: { signal: AbortSignal }
   ) /*throws*/ : Promise<void>;
   /**
@@ -3645,7 +3671,7 @@ export class Sdk extends UniffiAbstractObject implements SdkInterface {
    * A [Download] object that can be used to read the data in chunks
    */
   public async download(
-    object: ObjectInterface,
+    object: PinnedObjectInterface,
     options: DownloadOptions,
     asyncOpts_?: { signal: AbortSignal }
   ): Promise<DownloadInterface> /*throws*/ {
@@ -3656,7 +3682,7 @@ export class Sdk extends UniffiAbstractObject implements SdkInterface {
         /*rustFutureFunc:*/ () => {
           return nativeModule().ubrn_uniffi_indexd_ffi_fn_method_sdk_download(
             uniffiTypeSdkObjectFactory.clonePointer(this),
-            FfiConverterTypeObject.lower(object),
+            FfiConverterTypePinnedObject.lower(object),
             FfiConverterTypeDownloadOptions.lower(options)
           );
         },
@@ -3776,7 +3802,7 @@ export class Sdk extends UniffiAbstractObject implements SdkInterface {
   public async object(
     key: string,
     asyncOpts_?: { signal: AbortSignal }
-  ): Promise<ObjectInterface> /*throws*/ {
+  ): Promise<PinnedObjectInterface> /*throws*/ {
     const __stack = uniffiIsDebug ? new Error().stack : undefined;
     try {
       return await uniffiRustCallAsync(
@@ -3795,7 +3821,9 @@ export class Sdk extends UniffiAbstractObject implements SdkInterface {
           .ubrn_ffi_indexd_ffi_rust_future_complete_pointer,
         /*freeFunc:*/ nativeModule()
           .ubrn_ffi_indexd_ffi_rust_future_free_pointer,
-        /*liftFunc:*/ FfiConverterTypeObject.lift.bind(FfiConverterTypeObject),
+        /*liftFunc:*/ FfiConverterTypePinnedObject.lift.bind(
+          FfiConverterTypePinnedObject
+        ),
         /*liftString:*/ FfiConverterString.lift,
         /*asyncOpts:*/ asyncOpts_,
         /*errorHandler:*/ FfiConverterTypeError.lift.bind(FfiConverterTypeError)
@@ -3847,7 +3875,7 @@ export class Sdk extends UniffiAbstractObject implements SdkInterface {
     cursor: ObjectsCursor | undefined,
     limit: /*u32*/ number,
     asyncOpts_?: { signal: AbortSignal }
-  ): Promise<Array<ObjectInterface>> /*throws*/ {
+  ): Promise<Array<PinnedObjectInterface>> /*throws*/ {
     const __stack = uniffiIsDebug ? new Error().stack : undefined;
     try {
       return await uniffiRustCallAsync(
@@ -3867,8 +3895,8 @@ export class Sdk extends UniffiAbstractObject implements SdkInterface {
           .ubrn_ffi_indexd_ffi_rust_future_complete_rust_buffer,
         /*freeFunc:*/ nativeModule()
           .ubrn_ffi_indexd_ffi_rust_future_free_rust_buffer,
-        /*liftFunc:*/ FfiConverterArrayTypeObject.lift.bind(
-          FfiConverterArrayTypeObject
+        /*liftFunc:*/ FfiConverterArrayTypePinnedObject.lift.bind(
+          FfiConverterArrayTypePinnedObject
         ),
         /*liftString:*/ FfiConverterString.lift,
         /*asyncOpts:*/ asyncOpts_,
@@ -3967,7 +3995,7 @@ export class Sdk extends UniffiAbstractObject implements SdkInterface {
    * Saves an object to the indexer.
    */
   public async saveObject(
-    object: ObjectInterface,
+    object: PinnedObjectInterface,
     asyncOpts_?: { signal: AbortSignal }
   ): Promise<void> /*throws*/ {
     const __stack = uniffiIsDebug ? new Error().stack : undefined;
@@ -3977,7 +4005,7 @@ export class Sdk extends UniffiAbstractObject implements SdkInterface {
         /*rustFutureFunc:*/ () => {
           return nativeModule().ubrn_uniffi_indexd_ffi_fn_method_sdk_save_object(
             uniffiTypeSdkObjectFactory.clonePointer(this),
-            FfiConverterTypeObject.lower(object)
+            FfiConverterTypePinnedObject.lower(object)
           );
         },
         /*pollFunc:*/ nativeModule().ubrn_ffi_indexd_ffi_rust_future_poll_void,
@@ -4301,7 +4329,7 @@ export interface UploadInterface {
    */
   finalize(asyncOpts_?: {
     signal: AbortSignal;
-  }) /*throws*/ : Promise<ObjectInterface>;
+  }) /*throws*/ : Promise<PinnedObjectInterface>;
   /**
    * Writes a chunk of data to the Sia network. The data will be
    * erasure-coded and encrypted before upload.
@@ -4341,7 +4369,7 @@ export class Upload extends UniffiAbstractObject implements UploadInterface {
    */
   public async finalize(asyncOpts_?: {
     signal: AbortSignal;
-  }): Promise<ObjectInterface> /*throws*/ {
+  }): Promise<PinnedObjectInterface> /*throws*/ {
     const __stack = uniffiIsDebug ? new Error().stack : undefined;
     try {
       return await uniffiRustCallAsync(
@@ -4359,7 +4387,9 @@ export class Upload extends UniffiAbstractObject implements UploadInterface {
           .ubrn_ffi_indexd_ffi_rust_future_complete_pointer,
         /*freeFunc:*/ nativeModule()
           .ubrn_ffi_indexd_ffi_rust_future_free_pointer,
-        /*liftFunc:*/ FfiConverterTypeObject.lift.bind(FfiConverterTypeObject),
+        /*liftFunc:*/ FfiConverterTypePinnedObject.lift.bind(
+          FfiConverterTypePinnedObject
+        ),
         /*liftString:*/ FfiConverterString.lift,
         /*asyncOpts:*/ asyncOpts_,
         /*errorHandler:*/ FfiConverterTypeUploadError.lift.bind(
@@ -4669,6 +4699,11 @@ const uniffiCallbackInterfaceUploadProgressCallback: {
   },
 };
 
+// FfiConverter for ArrayBuffer | undefined
+const FfiConverterOptionalArrayBuffer = new FfiConverterOptional(
+  FfiConverterArrayBuffer
+);
+
 // FfiConverter for ObjectsCursor | undefined
 const FfiConverterOptionalTypeObjectsCursor = new FfiConverterOptional(
   FfiConverterTypeObjectsCursor
@@ -4701,9 +4736,9 @@ const FfiConverterOptionalTypeUploadProgressCallback = new FfiConverterOptional(
   FfiConverterTypeUploadProgressCallback
 );
 
-// FfiConverter for Array<ObjectInterface>
-const FfiConverterArrayTypeObject = new FfiConverterArray(
-  FfiConverterTypeObject
+// FfiConverter for Array<PinnedObjectInterface>
+const FfiConverterArrayTypePinnedObject = new FfiConverterArray(
+  FfiConverterTypePinnedObject
 );
 
 /**
@@ -4855,66 +4890,67 @@ function uniffiEnsureInitialized() {
     );
   }
   if (
-    nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_object_created_at() !==
-    35840
+    nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_pinnedobject_created_at() !==
+    22273
   ) {
     throw new UniffiInternalError.ApiChecksumMismatch(
-      'uniffi_indexd_ffi_checksum_method_object_created_at'
+      'uniffi_indexd_ffi_checksum_method_pinnedobject_created_at'
     );
   }
   if (
-    nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_object_id() !== 38911
+    nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_pinnedobject_id() !==
+    62787
   ) {
     throw new UniffiInternalError.ApiChecksumMismatch(
-      'uniffi_indexd_ffi_checksum_method_object_id'
+      'uniffi_indexd_ffi_checksum_method_pinnedobject_id'
     );
   }
   if (
-    nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_object_metadata() !==
-    17641
+    nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_pinnedobject_metadata() !==
+    60113
   ) {
     throw new UniffiInternalError.ApiChecksumMismatch(
-      'uniffi_indexd_ffi_checksum_method_object_metadata'
+      'uniffi_indexd_ffi_checksum_method_pinnedobject_metadata'
     );
   }
   if (
-    nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_object_seal() !==
-    19629
+    nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_pinnedobject_seal() !==
+    13608
   ) {
     throw new UniffiInternalError.ApiChecksumMismatch(
-      'uniffi_indexd_ffi_checksum_method_object_seal'
+      'uniffi_indexd_ffi_checksum_method_pinnedobject_seal'
     );
   }
   if (
-    nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_object_size() !==
-    37954
+    nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_pinnedobject_size() !==
+    48206
   ) {
     throw new UniffiInternalError.ApiChecksumMismatch(
-      'uniffi_indexd_ffi_checksum_method_object_size'
+      'uniffi_indexd_ffi_checksum_method_pinnedobject_size'
     );
   }
   if (
-    nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_object_slabs() !==
-    27453
+    nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_pinnedobject_slabs() !==
+    21596
   ) {
     throw new UniffiInternalError.ApiChecksumMismatch(
-      'uniffi_indexd_ffi_checksum_method_object_slabs'
+      'uniffi_indexd_ffi_checksum_method_pinnedobject_slabs'
     );
   }
   if (
-    nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_object_update_metadata() !==
-    16936
+    nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_pinnedobject_update_metadata() !==
+    65197
   ) {
     throw new UniffiInternalError.ApiChecksumMismatch(
-      'uniffi_indexd_ffi_checksum_method_object_update_metadata'
+      'uniffi_indexd_ffi_checksum_method_pinnedobject_update_metadata'
     );
   }
   if (
-    nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_object_updated_at() !==
-    48573
+    nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_pinnedobject_updated_at() !==
+    1712
   ) {
     throw new UniffiInternalError.ApiChecksumMismatch(
-      'uniffi_indexd_ffi_checksum_method_object_updated_at'
+      'uniffi_indexd_ffi_checksum_method_pinnedobject_updated_at'
     );
   }
   if (
@@ -4943,7 +4979,7 @@ function uniffiEnsureInitialized() {
   }
   if (
     nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_sdk_download() !==
-    34325
+    58228
   ) {
     throw new UniffiInternalError.ApiChecksumMismatch(
       'uniffi_indexd_ffi_checksum_method_sdk_download'
@@ -4965,7 +5001,7 @@ function uniffiEnsureInitialized() {
     );
   }
   if (
-    nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_sdk_object() !== 59829
+    nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_sdk_object() !== 24221
   ) {
     throw new UniffiInternalError.ApiChecksumMismatch(
       'uniffi_indexd_ffi_checksum_method_sdk_object'
@@ -4981,7 +5017,7 @@ function uniffiEnsureInitialized() {
   }
   if (
     nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_sdk_objects() !==
-    59890
+    14867
   ) {
     throw new UniffiInternalError.ApiChecksumMismatch(
       'uniffi_indexd_ffi_checksum_method_sdk_objects'
@@ -5005,7 +5041,7 @@ function uniffiEnsureInitialized() {
   }
   if (
     nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_sdk_save_object() !==
-    44358
+    3512
   ) {
     throw new UniffiInternalError.ApiChecksumMismatch(
       'uniffi_indexd_ffi_checksum_method_sdk_save_object'
@@ -5051,7 +5087,7 @@ function uniffiEnsureInitialized() {
   }
   if (
     nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_upload_finalize() !==
-    46983
+    65498
   ) {
     throw new UniffiInternalError.ApiChecksumMismatch(
       'uniffi_indexd_ffi_checksum_method_upload_finalize'
@@ -5090,11 +5126,11 @@ function uniffiEnsureInitialized() {
     );
   }
   if (
-    nativeModule().ubrn_uniffi_indexd_ffi_checksum_constructor_object_open() !==
-    54607
+    nativeModule().ubrn_uniffi_indexd_ffi_checksum_constructor_pinnedobject_open() !==
+    56501
   ) {
     throw new UniffiInternalError.ApiChecksumMismatch(
-      'uniffi_indexd_ffi_checksum_constructor_object_open'
+      'uniffi_indexd_ffi_checksum_constructor_pinnedobject_open'
     );
   }
   if (
@@ -5129,9 +5165,9 @@ export default Object.freeze({
     FfiConverterTypeHost,
     FfiConverterTypeLogger,
     FfiConverterTypeNetAddress,
-    FfiConverterTypeObject,
     FfiConverterTypeObjectError,
     FfiConverterTypeObjectsCursor,
+    FfiConverterTypePinnedObject,
     FfiConverterTypePinnedSector,
     FfiConverterTypePinnedSlab,
     FfiConverterTypeRequestAuthResponse,

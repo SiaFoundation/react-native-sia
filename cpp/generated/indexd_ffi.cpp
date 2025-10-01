@@ -289,50 +289,50 @@ extern "C" {
         RustBuffer msg, 
         RustCallStatus *uniffi_out_err
     );
-    void * uniffi_indexd_ffi_fn_clone_object(
+    void * uniffi_indexd_ffi_fn_clone_pinnedobject(
         void * ptr, 
         RustCallStatus *uniffi_out_err
     );
-    void uniffi_indexd_ffi_fn_free_object(
+    void uniffi_indexd_ffi_fn_free_pinnedobject(
         void * ptr, 
         RustCallStatus *uniffi_out_err
     );
-    void * uniffi_indexd_ffi_fn_constructor_object_open(
+    void * uniffi_indexd_ffi_fn_constructor_pinnedobject_open(
         void * app_key, 
         RustBuffer sealed, 
         RustCallStatus *uniffi_out_err
     );
-    RustBuffer uniffi_indexd_ffi_fn_method_object_created_at(
+    RustBuffer uniffi_indexd_ffi_fn_method_pinnedobject_created_at(
         void * ptr, 
         RustCallStatus *uniffi_out_err
     );
-    RustBuffer uniffi_indexd_ffi_fn_method_object_id(
+    RustBuffer uniffi_indexd_ffi_fn_method_pinnedobject_id(
         void * ptr, 
         RustCallStatus *uniffi_out_err
     );
-    RustBuffer uniffi_indexd_ffi_fn_method_object_metadata(
+    RustBuffer uniffi_indexd_ffi_fn_method_pinnedobject_metadata(
         void * ptr, 
         RustCallStatus *uniffi_out_err
     );
-    RustBuffer uniffi_indexd_ffi_fn_method_object_seal(
+    RustBuffer uniffi_indexd_ffi_fn_method_pinnedobject_seal(
         void * ptr, 
         void * app_key, 
         RustCallStatus *uniffi_out_err
     );
-    uint64_t uniffi_indexd_ffi_fn_method_object_size(
+    uint64_t uniffi_indexd_ffi_fn_method_pinnedobject_size(
         void * ptr, 
         RustCallStatus *uniffi_out_err
     );
-    RustBuffer uniffi_indexd_ffi_fn_method_object_slabs(
+    RustBuffer uniffi_indexd_ffi_fn_method_pinnedobject_slabs(
         void * ptr, 
         RustCallStatus *uniffi_out_err
     );
-    void uniffi_indexd_ffi_fn_method_object_update_metadata(
+    void uniffi_indexd_ffi_fn_method_pinnedobject_update_metadata(
         void * ptr, 
         RustBuffer metadata, 
         RustCallStatus *uniffi_out_err
     );
-    RustBuffer uniffi_indexd_ffi_fn_method_object_updated_at(
+    RustBuffer uniffi_indexd_ffi_fn_method_pinnedobject_updated_at(
         void * ptr, 
         RustCallStatus *uniffi_out_err
     );
@@ -709,21 +709,21 @@ extern "C" {
     );
     uint16_t uniffi_indexd_ffi_checksum_method_logger_debug(
     );
-    uint16_t uniffi_indexd_ffi_checksum_method_object_created_at(
+    uint16_t uniffi_indexd_ffi_checksum_method_pinnedobject_created_at(
     );
-    uint16_t uniffi_indexd_ffi_checksum_method_object_id(
+    uint16_t uniffi_indexd_ffi_checksum_method_pinnedobject_id(
     );
-    uint16_t uniffi_indexd_ffi_checksum_method_object_metadata(
+    uint16_t uniffi_indexd_ffi_checksum_method_pinnedobject_metadata(
     );
-    uint16_t uniffi_indexd_ffi_checksum_method_object_seal(
+    uint16_t uniffi_indexd_ffi_checksum_method_pinnedobject_seal(
     );
-    uint16_t uniffi_indexd_ffi_checksum_method_object_size(
+    uint16_t uniffi_indexd_ffi_checksum_method_pinnedobject_size(
     );
-    uint16_t uniffi_indexd_ffi_checksum_method_object_slabs(
+    uint16_t uniffi_indexd_ffi_checksum_method_pinnedobject_slabs(
     );
-    uint16_t uniffi_indexd_ffi_checksum_method_object_update_metadata(
+    uint16_t uniffi_indexd_ffi_checksum_method_pinnedobject_update_metadata(
     );
-    uint16_t uniffi_indexd_ffi_checksum_method_object_updated_at(
+    uint16_t uniffi_indexd_ffi_checksum_method_pinnedobject_updated_at(
     );
     uint16_t uniffi_indexd_ffi_checksum_method_sdk_account(
     );
@@ -769,7 +769,7 @@ extern "C" {
     );
     uint16_t uniffi_indexd_ffi_checksum_constructor_encryptionkey_parse(
     );
-    uint16_t uniffi_indexd_ffi_checksum_constructor_object_open(
+    uint16_t uniffi_indexd_ffi_checksum_constructor_pinnedobject_open(
     );
     uint16_t uniffi_indexd_ffi_checksum_constructor_sdk_new(
     );
@@ -3501,92 +3501,92 @@ NativeIndexdFfi::NativeIndexdFfi(
             return this->cpp_uniffi_indexd_ffi_fn_method_logger_debug(rt, thisVal, args, count);
         }
     );
-    props["ubrn_uniffi_indexd_ffi_fn_clone_object"] = jsi::Function::createFromHostFunction(
+    props["ubrn_uniffi_indexd_ffi_fn_clone_pinnedobject"] = jsi::Function::createFromHostFunction(
         rt,
-        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_fn_clone_object"),
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_fn_clone_pinnedobject"),
         1,
         [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
-            return this->cpp_uniffi_indexd_ffi_fn_clone_object(rt, thisVal, args, count);
+            return this->cpp_uniffi_indexd_ffi_fn_clone_pinnedobject(rt, thisVal, args, count);
         }
     );
-    props["ubrn_uniffi_indexd_ffi_fn_free_object"] = jsi::Function::createFromHostFunction(
+    props["ubrn_uniffi_indexd_ffi_fn_free_pinnedobject"] = jsi::Function::createFromHostFunction(
         rt,
-        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_fn_free_object"),
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_fn_free_pinnedobject"),
         1,
         [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
-            return this->cpp_uniffi_indexd_ffi_fn_free_object(rt, thisVal, args, count);
+            return this->cpp_uniffi_indexd_ffi_fn_free_pinnedobject(rt, thisVal, args, count);
         }
     );
-    props["ubrn_uniffi_indexd_ffi_fn_constructor_object_open"] = jsi::Function::createFromHostFunction(
+    props["ubrn_uniffi_indexd_ffi_fn_constructor_pinnedobject_open"] = jsi::Function::createFromHostFunction(
         rt,
-        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_fn_constructor_object_open"),
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_fn_constructor_pinnedobject_open"),
         2,
         [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
-            return this->cpp_uniffi_indexd_ffi_fn_constructor_object_open(rt, thisVal, args, count);
+            return this->cpp_uniffi_indexd_ffi_fn_constructor_pinnedobject_open(rt, thisVal, args, count);
         }
     );
-    props["ubrn_uniffi_indexd_ffi_fn_method_object_created_at"] = jsi::Function::createFromHostFunction(
+    props["ubrn_uniffi_indexd_ffi_fn_method_pinnedobject_created_at"] = jsi::Function::createFromHostFunction(
         rt,
-        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_fn_method_object_created_at"),
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_fn_method_pinnedobject_created_at"),
         1,
         [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
-            return this->cpp_uniffi_indexd_ffi_fn_method_object_created_at(rt, thisVal, args, count);
+            return this->cpp_uniffi_indexd_ffi_fn_method_pinnedobject_created_at(rt, thisVal, args, count);
         }
     );
-    props["ubrn_uniffi_indexd_ffi_fn_method_object_id"] = jsi::Function::createFromHostFunction(
+    props["ubrn_uniffi_indexd_ffi_fn_method_pinnedobject_id"] = jsi::Function::createFromHostFunction(
         rt,
-        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_fn_method_object_id"),
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_fn_method_pinnedobject_id"),
         1,
         [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
-            return this->cpp_uniffi_indexd_ffi_fn_method_object_id(rt, thisVal, args, count);
+            return this->cpp_uniffi_indexd_ffi_fn_method_pinnedobject_id(rt, thisVal, args, count);
         }
     );
-    props["ubrn_uniffi_indexd_ffi_fn_method_object_metadata"] = jsi::Function::createFromHostFunction(
+    props["ubrn_uniffi_indexd_ffi_fn_method_pinnedobject_metadata"] = jsi::Function::createFromHostFunction(
         rt,
-        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_fn_method_object_metadata"),
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_fn_method_pinnedobject_metadata"),
         1,
         [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
-            return this->cpp_uniffi_indexd_ffi_fn_method_object_metadata(rt, thisVal, args, count);
+            return this->cpp_uniffi_indexd_ffi_fn_method_pinnedobject_metadata(rt, thisVal, args, count);
         }
     );
-    props["ubrn_uniffi_indexd_ffi_fn_method_object_seal"] = jsi::Function::createFromHostFunction(
+    props["ubrn_uniffi_indexd_ffi_fn_method_pinnedobject_seal"] = jsi::Function::createFromHostFunction(
         rt,
-        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_fn_method_object_seal"),
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_fn_method_pinnedobject_seal"),
         2,
         [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
-            return this->cpp_uniffi_indexd_ffi_fn_method_object_seal(rt, thisVal, args, count);
+            return this->cpp_uniffi_indexd_ffi_fn_method_pinnedobject_seal(rt, thisVal, args, count);
         }
     );
-    props["ubrn_uniffi_indexd_ffi_fn_method_object_size"] = jsi::Function::createFromHostFunction(
+    props["ubrn_uniffi_indexd_ffi_fn_method_pinnedobject_size"] = jsi::Function::createFromHostFunction(
         rt,
-        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_fn_method_object_size"),
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_fn_method_pinnedobject_size"),
         1,
         [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
-            return this->cpp_uniffi_indexd_ffi_fn_method_object_size(rt, thisVal, args, count);
+            return this->cpp_uniffi_indexd_ffi_fn_method_pinnedobject_size(rt, thisVal, args, count);
         }
     );
-    props["ubrn_uniffi_indexd_ffi_fn_method_object_slabs"] = jsi::Function::createFromHostFunction(
+    props["ubrn_uniffi_indexd_ffi_fn_method_pinnedobject_slabs"] = jsi::Function::createFromHostFunction(
         rt,
-        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_fn_method_object_slabs"),
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_fn_method_pinnedobject_slabs"),
         1,
         [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
-            return this->cpp_uniffi_indexd_ffi_fn_method_object_slabs(rt, thisVal, args, count);
+            return this->cpp_uniffi_indexd_ffi_fn_method_pinnedobject_slabs(rt, thisVal, args, count);
         }
     );
-    props["ubrn_uniffi_indexd_ffi_fn_method_object_update_metadata"] = jsi::Function::createFromHostFunction(
+    props["ubrn_uniffi_indexd_ffi_fn_method_pinnedobject_update_metadata"] = jsi::Function::createFromHostFunction(
         rt,
-        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_fn_method_object_update_metadata"),
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_fn_method_pinnedobject_update_metadata"),
         2,
         [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
-            return this->cpp_uniffi_indexd_ffi_fn_method_object_update_metadata(rt, thisVal, args, count);
+            return this->cpp_uniffi_indexd_ffi_fn_method_pinnedobject_update_metadata(rt, thisVal, args, count);
         }
     );
-    props["ubrn_uniffi_indexd_ffi_fn_method_object_updated_at"] = jsi::Function::createFromHostFunction(
+    props["ubrn_uniffi_indexd_ffi_fn_method_pinnedobject_updated_at"] = jsi::Function::createFromHostFunction(
         rt,
-        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_fn_method_object_updated_at"),
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_fn_method_pinnedobject_updated_at"),
         1,
         [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
-            return this->cpp_uniffi_indexd_ffi_fn_method_object_updated_at(rt, thisVal, args, count);
+            return this->cpp_uniffi_indexd_ffi_fn_method_pinnedobject_updated_at(rt, thisVal, args, count);
         }
     );
     props["ubrn_uniffi_indexd_ffi_fn_clone_sdk"] = jsi::Function::createFromHostFunction(
@@ -4381,68 +4381,68 @@ NativeIndexdFfi::NativeIndexdFfi(
             return this->cpp_uniffi_indexd_ffi_checksum_method_logger_debug(rt, thisVal, args, count);
         }
     );
-    props["ubrn_uniffi_indexd_ffi_checksum_method_object_created_at"] = jsi::Function::createFromHostFunction(
+    props["ubrn_uniffi_indexd_ffi_checksum_method_pinnedobject_created_at"] = jsi::Function::createFromHostFunction(
         rt,
-        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_checksum_method_object_created_at"),
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_checksum_method_pinnedobject_created_at"),
         0,
         [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
-            return this->cpp_uniffi_indexd_ffi_checksum_method_object_created_at(rt, thisVal, args, count);
+            return this->cpp_uniffi_indexd_ffi_checksum_method_pinnedobject_created_at(rt, thisVal, args, count);
         }
     );
-    props["ubrn_uniffi_indexd_ffi_checksum_method_object_id"] = jsi::Function::createFromHostFunction(
+    props["ubrn_uniffi_indexd_ffi_checksum_method_pinnedobject_id"] = jsi::Function::createFromHostFunction(
         rt,
-        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_checksum_method_object_id"),
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_checksum_method_pinnedobject_id"),
         0,
         [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
-            return this->cpp_uniffi_indexd_ffi_checksum_method_object_id(rt, thisVal, args, count);
+            return this->cpp_uniffi_indexd_ffi_checksum_method_pinnedobject_id(rt, thisVal, args, count);
         }
     );
-    props["ubrn_uniffi_indexd_ffi_checksum_method_object_metadata"] = jsi::Function::createFromHostFunction(
+    props["ubrn_uniffi_indexd_ffi_checksum_method_pinnedobject_metadata"] = jsi::Function::createFromHostFunction(
         rt,
-        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_checksum_method_object_metadata"),
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_checksum_method_pinnedobject_metadata"),
         0,
         [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
-            return this->cpp_uniffi_indexd_ffi_checksum_method_object_metadata(rt, thisVal, args, count);
+            return this->cpp_uniffi_indexd_ffi_checksum_method_pinnedobject_metadata(rt, thisVal, args, count);
         }
     );
-    props["ubrn_uniffi_indexd_ffi_checksum_method_object_seal"] = jsi::Function::createFromHostFunction(
+    props["ubrn_uniffi_indexd_ffi_checksum_method_pinnedobject_seal"] = jsi::Function::createFromHostFunction(
         rt,
-        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_checksum_method_object_seal"),
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_checksum_method_pinnedobject_seal"),
         0,
         [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
-            return this->cpp_uniffi_indexd_ffi_checksum_method_object_seal(rt, thisVal, args, count);
+            return this->cpp_uniffi_indexd_ffi_checksum_method_pinnedobject_seal(rt, thisVal, args, count);
         }
     );
-    props["ubrn_uniffi_indexd_ffi_checksum_method_object_size"] = jsi::Function::createFromHostFunction(
+    props["ubrn_uniffi_indexd_ffi_checksum_method_pinnedobject_size"] = jsi::Function::createFromHostFunction(
         rt,
-        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_checksum_method_object_size"),
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_checksum_method_pinnedobject_size"),
         0,
         [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
-            return this->cpp_uniffi_indexd_ffi_checksum_method_object_size(rt, thisVal, args, count);
+            return this->cpp_uniffi_indexd_ffi_checksum_method_pinnedobject_size(rt, thisVal, args, count);
         }
     );
-    props["ubrn_uniffi_indexd_ffi_checksum_method_object_slabs"] = jsi::Function::createFromHostFunction(
+    props["ubrn_uniffi_indexd_ffi_checksum_method_pinnedobject_slabs"] = jsi::Function::createFromHostFunction(
         rt,
-        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_checksum_method_object_slabs"),
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_checksum_method_pinnedobject_slabs"),
         0,
         [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
-            return this->cpp_uniffi_indexd_ffi_checksum_method_object_slabs(rt, thisVal, args, count);
+            return this->cpp_uniffi_indexd_ffi_checksum_method_pinnedobject_slabs(rt, thisVal, args, count);
         }
     );
-    props["ubrn_uniffi_indexd_ffi_checksum_method_object_update_metadata"] = jsi::Function::createFromHostFunction(
+    props["ubrn_uniffi_indexd_ffi_checksum_method_pinnedobject_update_metadata"] = jsi::Function::createFromHostFunction(
         rt,
-        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_checksum_method_object_update_metadata"),
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_checksum_method_pinnedobject_update_metadata"),
         0,
         [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
-            return this->cpp_uniffi_indexd_ffi_checksum_method_object_update_metadata(rt, thisVal, args, count);
+            return this->cpp_uniffi_indexd_ffi_checksum_method_pinnedobject_update_metadata(rt, thisVal, args, count);
         }
     );
-    props["ubrn_uniffi_indexd_ffi_checksum_method_object_updated_at"] = jsi::Function::createFromHostFunction(
+    props["ubrn_uniffi_indexd_ffi_checksum_method_pinnedobject_updated_at"] = jsi::Function::createFromHostFunction(
         rt,
-        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_checksum_method_object_updated_at"),
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_checksum_method_pinnedobject_updated_at"),
         0,
         [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
-            return this->cpp_uniffi_indexd_ffi_checksum_method_object_updated_at(rt, thisVal, args, count);
+            return this->cpp_uniffi_indexd_ffi_checksum_method_pinnedobject_updated_at(rt, thisVal, args, count);
         }
     );
     props["ubrn_uniffi_indexd_ffi_checksum_method_sdk_account"] = jsi::Function::createFromHostFunction(
@@ -4621,12 +4621,12 @@ NativeIndexdFfi::NativeIndexdFfi(
             return this->cpp_uniffi_indexd_ffi_checksum_constructor_encryptionkey_parse(rt, thisVal, args, count);
         }
     );
-    props["ubrn_uniffi_indexd_ffi_checksum_constructor_object_open"] = jsi::Function::createFromHostFunction(
+    props["ubrn_uniffi_indexd_ffi_checksum_constructor_pinnedobject_open"] = jsi::Function::createFromHostFunction(
         rt,
-        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_checksum_constructor_object_open"),
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_checksum_constructor_pinnedobject_open"),
         0,
         [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
-            return this->cpp_uniffi_indexd_ffi_checksum_constructor_object_open(rt, thisVal, args, count);
+            return this->cpp_uniffi_indexd_ffi_checksum_constructor_pinnedobject_open(rt, thisVal, args, count);
         }
     );
     props["ubrn_uniffi_indexd_ffi_checksum_constructor_sdk_new"] = jsi::Function::createFromHostFunction(
@@ -4693,12 +4693,12 @@ NativeIndexdFfi::NativeIndexdFfi(
             return this->cpp_uniffi_internal_fn_method_logger_ffi__bless_pointer(rt, thisVal, args, count);
         }
     );
-    props["ubrn_uniffi_internal_fn_method_object_ffi__bless_pointer"] = jsi::Function::createFromHostFunction(
+    props["ubrn_uniffi_internal_fn_method_pinnedobject_ffi__bless_pointer"] = jsi::Function::createFromHostFunction(
         rt,
-        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_internal_fn_method_object_ffi__bless_pointer"),
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_internal_fn_method_pinnedobject_ffi__bless_pointer"),
         1,
         [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
-            return this->cpp_uniffi_internal_fn_method_object_ffi__bless_pointer(rt, thisVal, args, count);
+            return this->cpp_uniffi_internal_fn_method_pinnedobject_ffi__bless_pointer(rt, thisVal, args, count);
         }
     );
     props["ubrn_uniffi_internal_fn_method_sdk_ffi__bless_pointer"] = jsi::Function::createFromHostFunction(
@@ -4847,12 +4847,12 @@ jsi::Value NativeIndexdFfi::cpp_uniffi_internal_fn_func_ffi__arraybuffer_to_stri
     auto ptrObj = std::make_shared<uniffi_jsi::DestructibleObject>(pointer, destructor);
     auto obj = jsi::Object::createFromHostObject(rt, ptrObj);
     return jsi::Value(rt, obj);
-}jsi::Value NativeIndexdFfi::cpp_uniffi_internal_fn_method_object_ffi__bless_pointer(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+}jsi::Value NativeIndexdFfi::cpp_uniffi_internal_fn_method_pinnedobject_ffi__bless_pointer(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
     auto pointer = uniffi_jsi::Bridging<uint64_t>::fromJs(rt, callInvoker, args[0]);
     auto static destructor = [](uint64_t p) {
         auto pointer = reinterpret_cast<void *>(static_cast<uintptr_t>(p));
         RustCallStatus status = {0};
-        uniffi_indexd_ffi_fn_free_object(pointer, &status);
+        uniffi_indexd_ffi_fn_free_pinnedobject(pointer, &status);
     };
     auto ptrObj = std::make_shared<uniffi_jsi::DestructibleObject>(pointer, destructor);
     auto obj = jsi::Object::createFromHostObject(rt, ptrObj);
@@ -5171,9 +5171,9 @@ jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_fn_method_logger_debug(jsi::Ru
         
         return jsi::Value::undefined();
 }
-jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_fn_clone_object(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_fn_clone_pinnedobject(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
         RustCallStatus status = uniffi::indexd_ffi::Bridging<RustCallStatus>::rustSuccess(rt);
-        auto value = uniffi_indexd_ffi_fn_clone_object(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), 
+        auto value = uniffi_indexd_ffi_fn_clone_pinnedobject(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), 
             &status
         );
         uniffi::indexd_ffi::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status, args[count - 1]);
@@ -5181,9 +5181,9 @@ jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_fn_clone_object(jsi::Runtime& 
         
         return uniffi_jsi::Bridging<void *>::toJs(rt, callInvoker, value);
 }
-jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_fn_free_object(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_fn_free_pinnedobject(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
         RustCallStatus status = uniffi::indexd_ffi::Bridging<RustCallStatus>::rustSuccess(rt);
-        uniffi_indexd_ffi_fn_free_object(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), 
+        uniffi_indexd_ffi_fn_free_pinnedobject(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), 
             &status
         );
         uniffi::indexd_ffi::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status, args[count - 1]);
@@ -5191,9 +5191,9 @@ jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_fn_free_object(jsi::Runtime& r
         
         return jsi::Value::undefined();
 }
-jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_fn_constructor_object_open(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_fn_constructor_pinnedobject_open(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
         RustCallStatus status = uniffi::indexd_ffi::Bridging<RustCallStatus>::rustSuccess(rt);
-        auto value = uniffi_indexd_ffi_fn_constructor_object_open(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), uniffi::indexd_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker, args[1]), 
+        auto value = uniffi_indexd_ffi_fn_constructor_pinnedobject_open(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), uniffi::indexd_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker, args[1]), 
             &status
         );
         uniffi::indexd_ffi::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status, args[count - 1]);
@@ -5201,9 +5201,9 @@ jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_fn_constructor_object_open(jsi
         
         return uniffi_jsi::Bridging<void *>::toJs(rt, callInvoker, value);
 }
-jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_fn_method_object_created_at(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_fn_method_pinnedobject_created_at(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
         RustCallStatus status = uniffi::indexd_ffi::Bridging<RustCallStatus>::rustSuccess(rt);
-        auto value = uniffi_indexd_ffi_fn_method_object_created_at(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), 
+        auto value = uniffi_indexd_ffi_fn_method_pinnedobject_created_at(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), 
             &status
         );
         uniffi::indexd_ffi::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status, args[count - 1]);
@@ -5211,9 +5211,9 @@ jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_fn_method_object_created_at(js
         
         return uniffi::indexd_ffi::Bridging<RustBuffer>::toJs(rt, callInvoker, value);
 }
-jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_fn_method_object_id(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_fn_method_pinnedobject_id(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
         RustCallStatus status = uniffi::indexd_ffi::Bridging<RustCallStatus>::rustSuccess(rt);
-        auto value = uniffi_indexd_ffi_fn_method_object_id(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), 
+        auto value = uniffi_indexd_ffi_fn_method_pinnedobject_id(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), 
             &status
         );
         uniffi::indexd_ffi::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status, args[count - 1]);
@@ -5221,9 +5221,9 @@ jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_fn_method_object_id(jsi::Runti
         
         return uniffi::indexd_ffi::Bridging<RustBuffer>::toJs(rt, callInvoker, value);
 }
-jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_fn_method_object_metadata(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_fn_method_pinnedobject_metadata(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
         RustCallStatus status = uniffi::indexd_ffi::Bridging<RustCallStatus>::rustSuccess(rt);
-        auto value = uniffi_indexd_ffi_fn_method_object_metadata(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), 
+        auto value = uniffi_indexd_ffi_fn_method_pinnedobject_metadata(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), 
             &status
         );
         uniffi::indexd_ffi::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status, args[count - 1]);
@@ -5231,9 +5231,9 @@ jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_fn_method_object_metadata(jsi:
         
         return uniffi::indexd_ffi::Bridging<RustBuffer>::toJs(rt, callInvoker, value);
 }
-jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_fn_method_object_seal(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_fn_method_pinnedobject_seal(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
         RustCallStatus status = uniffi::indexd_ffi::Bridging<RustCallStatus>::rustSuccess(rt);
-        auto value = uniffi_indexd_ffi_fn_method_object_seal(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[1]), 
+        auto value = uniffi_indexd_ffi_fn_method_pinnedobject_seal(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[1]), 
             &status
         );
         uniffi::indexd_ffi::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status, args[count - 1]);
@@ -5241,9 +5241,9 @@ jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_fn_method_object_seal(jsi::Run
         
         return uniffi::indexd_ffi::Bridging<RustBuffer>::toJs(rt, callInvoker, value);
 }
-jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_fn_method_object_size(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_fn_method_pinnedobject_size(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
         RustCallStatus status = uniffi::indexd_ffi::Bridging<RustCallStatus>::rustSuccess(rt);
-        auto value = uniffi_indexd_ffi_fn_method_object_size(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), 
+        auto value = uniffi_indexd_ffi_fn_method_pinnedobject_size(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), 
             &status
         );
         uniffi::indexd_ffi::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status, args[count - 1]);
@@ -5251,9 +5251,9 @@ jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_fn_method_object_size(jsi::Run
         
         return uniffi_jsi::Bridging<uint64_t>::toJs(rt, callInvoker, value);
 }
-jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_fn_method_object_slabs(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_fn_method_pinnedobject_slabs(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
         RustCallStatus status = uniffi::indexd_ffi::Bridging<RustCallStatus>::rustSuccess(rt);
-        auto value = uniffi_indexd_ffi_fn_method_object_slabs(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), 
+        auto value = uniffi_indexd_ffi_fn_method_pinnedobject_slabs(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), 
             &status
         );
         uniffi::indexd_ffi::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status, args[count - 1]);
@@ -5261,9 +5261,9 @@ jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_fn_method_object_slabs(jsi::Ru
         
         return uniffi::indexd_ffi::Bridging<RustBuffer>::toJs(rt, callInvoker, value);
 }
-jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_fn_method_object_update_metadata(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_fn_method_pinnedobject_update_metadata(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
         RustCallStatus status = uniffi::indexd_ffi::Bridging<RustCallStatus>::rustSuccess(rt);
-        uniffi_indexd_ffi_fn_method_object_update_metadata(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), uniffi::indexd_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker, args[1]), 
+        uniffi_indexd_ffi_fn_method_pinnedobject_update_metadata(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), uniffi::indexd_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker, args[1]), 
             &status
         );
         uniffi::indexd_ffi::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status, args[count - 1]);
@@ -5271,9 +5271,9 @@ jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_fn_method_object_update_metada
         
         return jsi::Value::undefined();
 }
-jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_fn_method_object_updated_at(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_fn_method_pinnedobject_updated_at(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
         RustCallStatus status = uniffi::indexd_ffi::Bridging<RustCallStatus>::rustSuccess(rt);
-        auto value = uniffi_indexd_ffi_fn_method_object_updated_at(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), 
+        auto value = uniffi_indexd_ffi_fn_method_pinnedobject_updated_at(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), 
             &status
         );
         uniffi::indexd_ffi::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status, args[count - 1]);
@@ -6058,57 +6058,57 @@ jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_checksum_method_logger_debug(j
         
         return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
-jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_checksum_method_object_created_at(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
-        auto value = uniffi_indexd_ffi_checksum_method_object_created_at(
+jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_checksum_method_pinnedobject_created_at(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        auto value = uniffi_indexd_ffi_checksum_method_pinnedobject_created_at(
         );
 
         
         return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
-jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_checksum_method_object_id(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
-        auto value = uniffi_indexd_ffi_checksum_method_object_id(
+jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_checksum_method_pinnedobject_id(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        auto value = uniffi_indexd_ffi_checksum_method_pinnedobject_id(
         );
 
         
         return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
-jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_checksum_method_object_metadata(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
-        auto value = uniffi_indexd_ffi_checksum_method_object_metadata(
+jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_checksum_method_pinnedobject_metadata(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        auto value = uniffi_indexd_ffi_checksum_method_pinnedobject_metadata(
         );
 
         
         return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
-jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_checksum_method_object_seal(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
-        auto value = uniffi_indexd_ffi_checksum_method_object_seal(
+jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_checksum_method_pinnedobject_seal(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        auto value = uniffi_indexd_ffi_checksum_method_pinnedobject_seal(
         );
 
         
         return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
-jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_checksum_method_object_size(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
-        auto value = uniffi_indexd_ffi_checksum_method_object_size(
+jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_checksum_method_pinnedobject_size(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        auto value = uniffi_indexd_ffi_checksum_method_pinnedobject_size(
         );
 
         
         return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
-jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_checksum_method_object_slabs(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
-        auto value = uniffi_indexd_ffi_checksum_method_object_slabs(
+jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_checksum_method_pinnedobject_slabs(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        auto value = uniffi_indexd_ffi_checksum_method_pinnedobject_slabs(
         );
 
         
         return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
-jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_checksum_method_object_update_metadata(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
-        auto value = uniffi_indexd_ffi_checksum_method_object_update_metadata(
+jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_checksum_method_pinnedobject_update_metadata(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        auto value = uniffi_indexd_ffi_checksum_method_pinnedobject_update_metadata(
         );
 
         
         return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
-jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_checksum_method_object_updated_at(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
-        auto value = uniffi_indexd_ffi_checksum_method_object_updated_at(
+jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_checksum_method_pinnedobject_updated_at(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        auto value = uniffi_indexd_ffi_checksum_method_pinnedobject_updated_at(
         );
 
         
@@ -6268,8 +6268,8 @@ jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_checksum_constructor_encryptio
         
         return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
-jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_checksum_constructor_object_open(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
-        auto value = uniffi_indexd_ffi_checksum_constructor_object_open(
+jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_checksum_constructor_pinnedobject_open(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        auto value = uniffi_indexd_ffi_checksum_constructor_pinnedobject_open(
         );
 
         

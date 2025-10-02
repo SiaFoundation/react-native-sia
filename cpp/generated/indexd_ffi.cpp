@@ -359,15 +359,17 @@ extern "C" {
         void * ptr, 
         RustBuffer key
     );
-    /*handle*/ uint64_t uniffi_indexd_ffi_fn_method_sdk_download(
+    void * uniffi_indexd_ffi_fn_method_sdk_download(
         void * ptr, 
         void * object, 
-        RustBuffer options
+        RustBuffer options, 
+        RustCallStatus *uniffi_out_err
     );
-    /*handle*/ uint64_t uniffi_indexd_ffi_fn_method_sdk_download_shared(
+    void * uniffi_indexd_ffi_fn_method_sdk_download_shared(
         void * ptr, 
-        RustBuffer share_url, 
-        RustBuffer options
+        void * shared_object, 
+        RustBuffer options, 
+        RustCallStatus *uniffi_out_err
     );
     /*handle*/ uint64_t uniffi_indexd_ffi_fn_method_sdk_hosts(
         void * ptr
@@ -376,21 +378,17 @@ extern "C" {
         void * ptr, 
         RustBuffer key
     );
-    RustBuffer uniffi_indexd_ffi_fn_method_sdk_object_share_url(
-        void * ptr, 
-        RustBuffer object_key, 
-        RustBuffer encryption_key, 
-        RustBuffer valid_until, 
-        RustCallStatus *uniffi_out_err
-    );
     /*handle*/ uint64_t uniffi_indexd_ffi_fn_method_sdk_objects(
         void * ptr, 
         RustBuffer cursor, 
         uint32_t limit
     );
-    /*handle*/ uint64_t uniffi_indexd_ffi_fn_method_sdk_pin_slab(
+    /*handle*/ uint64_t uniffi_indexd_ffi_fn_method_sdk_pin_shared(
         void * ptr, 
-        RustBuffer slab_pin_params
+        void * shared
+    );
+    /*handle*/ uint64_t uniffi_indexd_ffi_fn_method_sdk_prune_slabs(
+        void * ptr
     );
     /*handle*/ uint64_t uniffi_indexd_ffi_fn_method_sdk_request_app_connection(
         void * ptr, 
@@ -400,15 +398,17 @@ extern "C" {
         void * ptr, 
         void * object
     );
-    /*handle*/ uint64_t uniffi_indexd_ffi_fn_method_sdk_shared_object_metadata(
+    RustBuffer uniffi_indexd_ffi_fn_method_sdk_share_object(
         void * ptr, 
-        RustBuffer share_url
+        void * object, 
+        RustBuffer valid_until, 
+        RustCallStatus *uniffi_out_err
+    );
+    /*handle*/ uint64_t uniffi_indexd_ffi_fn_method_sdk_shared_object(
+        void * ptr, 
+        RustBuffer shared_url
     );
     /*handle*/ uint64_t uniffi_indexd_ffi_fn_method_sdk_slab(
-        void * ptr, 
-        RustBuffer slab_id
-    );
-    /*handle*/ uint64_t uniffi_indexd_ffi_fn_method_sdk_unpin_slab(
         void * ptr, 
         RustBuffer slab_id
     );
@@ -419,6 +419,22 @@ extern "C" {
     /*handle*/ uint64_t uniffi_indexd_ffi_fn_method_sdk_wait_for_connect(
         void * ptr, 
         RustBuffer resp
+    );
+    void * uniffi_indexd_ffi_fn_clone_sharedobject(
+        void * ptr, 
+        RustCallStatus *uniffi_out_err
+    );
+    void uniffi_indexd_ffi_fn_free_sharedobject(
+        void * ptr, 
+        RustCallStatus *uniffi_out_err
+    );
+    RustBuffer uniffi_indexd_ffi_fn_method_sharedobject_metadata(
+        void * ptr, 
+        RustCallStatus *uniffi_out_err
+    );
+    uint64_t uniffi_indexd_ffi_fn_method_sharedobject_size(
+        void * ptr, 
+        RustCallStatus *uniffi_out_err
     );
     void * uniffi_indexd_ffi_fn_clone_upload(
         void * ptr, 
@@ -739,25 +755,29 @@ extern "C" {
     );
     uint16_t uniffi_indexd_ffi_checksum_method_sdk_object(
     );
-    uint16_t uniffi_indexd_ffi_checksum_method_sdk_object_share_url(
-    );
     uint16_t uniffi_indexd_ffi_checksum_method_sdk_objects(
     );
-    uint16_t uniffi_indexd_ffi_checksum_method_sdk_pin_slab(
+    uint16_t uniffi_indexd_ffi_checksum_method_sdk_pin_shared(
+    );
+    uint16_t uniffi_indexd_ffi_checksum_method_sdk_prune_slabs(
     );
     uint16_t uniffi_indexd_ffi_checksum_method_sdk_request_app_connection(
     );
     uint16_t uniffi_indexd_ffi_checksum_method_sdk_save_object(
     );
-    uint16_t uniffi_indexd_ffi_checksum_method_sdk_shared_object_metadata(
+    uint16_t uniffi_indexd_ffi_checksum_method_sdk_share_object(
+    );
+    uint16_t uniffi_indexd_ffi_checksum_method_sdk_shared_object(
     );
     uint16_t uniffi_indexd_ffi_checksum_method_sdk_slab(
-    );
-    uint16_t uniffi_indexd_ffi_checksum_method_sdk_unpin_slab(
     );
     uint16_t uniffi_indexd_ffi_checksum_method_sdk_upload(
     );
     uint16_t uniffi_indexd_ffi_checksum_method_sdk_wait_for_connect(
+    );
+    uint16_t uniffi_indexd_ffi_checksum_method_sharedobject_metadata(
+    );
+    uint16_t uniffi_indexd_ffi_checksum_method_sharedobject_size(
     );
     uint16_t uniffi_indexd_ffi_checksum_method_upload_finalize(
     );
@@ -3669,14 +3689,6 @@ NativeIndexdFfi::NativeIndexdFfi(
             return this->cpp_uniffi_indexd_ffi_fn_method_sdk_object(rt, thisVal, args, count);
         }
     );
-    props["ubrn_uniffi_indexd_ffi_fn_method_sdk_object_share_url"] = jsi::Function::createFromHostFunction(
-        rt,
-        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_fn_method_sdk_object_share_url"),
-        4,
-        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
-            return this->cpp_uniffi_indexd_ffi_fn_method_sdk_object_share_url(rt, thisVal, args, count);
-        }
-    );
     props["ubrn_uniffi_indexd_ffi_fn_method_sdk_objects"] = jsi::Function::createFromHostFunction(
         rt,
         jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_fn_method_sdk_objects"),
@@ -3685,12 +3697,20 @@ NativeIndexdFfi::NativeIndexdFfi(
             return this->cpp_uniffi_indexd_ffi_fn_method_sdk_objects(rt, thisVal, args, count);
         }
     );
-    props["ubrn_uniffi_indexd_ffi_fn_method_sdk_pin_slab"] = jsi::Function::createFromHostFunction(
+    props["ubrn_uniffi_indexd_ffi_fn_method_sdk_pin_shared"] = jsi::Function::createFromHostFunction(
         rt,
-        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_fn_method_sdk_pin_slab"),
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_fn_method_sdk_pin_shared"),
         2,
         [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
-            return this->cpp_uniffi_indexd_ffi_fn_method_sdk_pin_slab(rt, thisVal, args, count);
+            return this->cpp_uniffi_indexd_ffi_fn_method_sdk_pin_shared(rt, thisVal, args, count);
+        }
+    );
+    props["ubrn_uniffi_indexd_ffi_fn_method_sdk_prune_slabs"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_fn_method_sdk_prune_slabs"),
+        1,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_indexd_ffi_fn_method_sdk_prune_slabs(rt, thisVal, args, count);
         }
     );
     props["ubrn_uniffi_indexd_ffi_fn_method_sdk_request_app_connection"] = jsi::Function::createFromHostFunction(
@@ -3709,12 +3729,20 @@ NativeIndexdFfi::NativeIndexdFfi(
             return this->cpp_uniffi_indexd_ffi_fn_method_sdk_save_object(rt, thisVal, args, count);
         }
     );
-    props["ubrn_uniffi_indexd_ffi_fn_method_sdk_shared_object_metadata"] = jsi::Function::createFromHostFunction(
+    props["ubrn_uniffi_indexd_ffi_fn_method_sdk_share_object"] = jsi::Function::createFromHostFunction(
         rt,
-        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_fn_method_sdk_shared_object_metadata"),
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_fn_method_sdk_share_object"),
+        3,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_indexd_ffi_fn_method_sdk_share_object(rt, thisVal, args, count);
+        }
+    );
+    props["ubrn_uniffi_indexd_ffi_fn_method_sdk_shared_object"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_fn_method_sdk_shared_object"),
         2,
         [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
-            return this->cpp_uniffi_indexd_ffi_fn_method_sdk_shared_object_metadata(rt, thisVal, args, count);
+            return this->cpp_uniffi_indexd_ffi_fn_method_sdk_shared_object(rt, thisVal, args, count);
         }
     );
     props["ubrn_uniffi_indexd_ffi_fn_method_sdk_slab"] = jsi::Function::createFromHostFunction(
@@ -3723,14 +3751,6 @@ NativeIndexdFfi::NativeIndexdFfi(
         2,
         [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
             return this->cpp_uniffi_indexd_ffi_fn_method_sdk_slab(rt, thisVal, args, count);
-        }
-    );
-    props["ubrn_uniffi_indexd_ffi_fn_method_sdk_unpin_slab"] = jsi::Function::createFromHostFunction(
-        rt,
-        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_fn_method_sdk_unpin_slab"),
-        2,
-        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
-            return this->cpp_uniffi_indexd_ffi_fn_method_sdk_unpin_slab(rt, thisVal, args, count);
         }
     );
     props["ubrn_uniffi_indexd_ffi_fn_method_sdk_upload"] = jsi::Function::createFromHostFunction(
@@ -3747,6 +3767,38 @@ NativeIndexdFfi::NativeIndexdFfi(
         2,
         [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
             return this->cpp_uniffi_indexd_ffi_fn_method_sdk_wait_for_connect(rt, thisVal, args, count);
+        }
+    );
+    props["ubrn_uniffi_indexd_ffi_fn_clone_sharedobject"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_fn_clone_sharedobject"),
+        1,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_indexd_ffi_fn_clone_sharedobject(rt, thisVal, args, count);
+        }
+    );
+    props["ubrn_uniffi_indexd_ffi_fn_free_sharedobject"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_fn_free_sharedobject"),
+        1,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_indexd_ffi_fn_free_sharedobject(rt, thisVal, args, count);
+        }
+    );
+    props["ubrn_uniffi_indexd_ffi_fn_method_sharedobject_metadata"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_fn_method_sharedobject_metadata"),
+        1,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_indexd_ffi_fn_method_sharedobject_metadata(rt, thisVal, args, count);
+        }
+    );
+    props["ubrn_uniffi_indexd_ffi_fn_method_sharedobject_size"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_fn_method_sharedobject_size"),
+        1,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_indexd_ffi_fn_method_sharedobject_size(rt, thisVal, args, count);
         }
     );
     props["ubrn_uniffi_indexd_ffi_fn_clone_upload"] = jsi::Function::createFromHostFunction(
@@ -4501,14 +4553,6 @@ NativeIndexdFfi::NativeIndexdFfi(
             return this->cpp_uniffi_indexd_ffi_checksum_method_sdk_object(rt, thisVal, args, count);
         }
     );
-    props["ubrn_uniffi_indexd_ffi_checksum_method_sdk_object_share_url"] = jsi::Function::createFromHostFunction(
-        rt,
-        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_checksum_method_sdk_object_share_url"),
-        0,
-        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
-            return this->cpp_uniffi_indexd_ffi_checksum_method_sdk_object_share_url(rt, thisVal, args, count);
-        }
-    );
     props["ubrn_uniffi_indexd_ffi_checksum_method_sdk_objects"] = jsi::Function::createFromHostFunction(
         rt,
         jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_checksum_method_sdk_objects"),
@@ -4517,12 +4561,20 @@ NativeIndexdFfi::NativeIndexdFfi(
             return this->cpp_uniffi_indexd_ffi_checksum_method_sdk_objects(rt, thisVal, args, count);
         }
     );
-    props["ubrn_uniffi_indexd_ffi_checksum_method_sdk_pin_slab"] = jsi::Function::createFromHostFunction(
+    props["ubrn_uniffi_indexd_ffi_checksum_method_sdk_pin_shared"] = jsi::Function::createFromHostFunction(
         rt,
-        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_checksum_method_sdk_pin_slab"),
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_checksum_method_sdk_pin_shared"),
         0,
         [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
-            return this->cpp_uniffi_indexd_ffi_checksum_method_sdk_pin_slab(rt, thisVal, args, count);
+            return this->cpp_uniffi_indexd_ffi_checksum_method_sdk_pin_shared(rt, thisVal, args, count);
+        }
+    );
+    props["ubrn_uniffi_indexd_ffi_checksum_method_sdk_prune_slabs"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_checksum_method_sdk_prune_slabs"),
+        0,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_indexd_ffi_checksum_method_sdk_prune_slabs(rt, thisVal, args, count);
         }
     );
     props["ubrn_uniffi_indexd_ffi_checksum_method_sdk_request_app_connection"] = jsi::Function::createFromHostFunction(
@@ -4541,12 +4593,20 @@ NativeIndexdFfi::NativeIndexdFfi(
             return this->cpp_uniffi_indexd_ffi_checksum_method_sdk_save_object(rt, thisVal, args, count);
         }
     );
-    props["ubrn_uniffi_indexd_ffi_checksum_method_sdk_shared_object_metadata"] = jsi::Function::createFromHostFunction(
+    props["ubrn_uniffi_indexd_ffi_checksum_method_sdk_share_object"] = jsi::Function::createFromHostFunction(
         rt,
-        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_checksum_method_sdk_shared_object_metadata"),
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_checksum_method_sdk_share_object"),
         0,
         [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
-            return this->cpp_uniffi_indexd_ffi_checksum_method_sdk_shared_object_metadata(rt, thisVal, args, count);
+            return this->cpp_uniffi_indexd_ffi_checksum_method_sdk_share_object(rt, thisVal, args, count);
+        }
+    );
+    props["ubrn_uniffi_indexd_ffi_checksum_method_sdk_shared_object"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_checksum_method_sdk_shared_object"),
+        0,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_indexd_ffi_checksum_method_sdk_shared_object(rt, thisVal, args, count);
         }
     );
     props["ubrn_uniffi_indexd_ffi_checksum_method_sdk_slab"] = jsi::Function::createFromHostFunction(
@@ -4555,14 +4615,6 @@ NativeIndexdFfi::NativeIndexdFfi(
         0,
         [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
             return this->cpp_uniffi_indexd_ffi_checksum_method_sdk_slab(rt, thisVal, args, count);
-        }
-    );
-    props["ubrn_uniffi_indexd_ffi_checksum_method_sdk_unpin_slab"] = jsi::Function::createFromHostFunction(
-        rt,
-        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_checksum_method_sdk_unpin_slab"),
-        0,
-        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
-            return this->cpp_uniffi_indexd_ffi_checksum_method_sdk_unpin_slab(rt, thisVal, args, count);
         }
     );
     props["ubrn_uniffi_indexd_ffi_checksum_method_sdk_upload"] = jsi::Function::createFromHostFunction(
@@ -4579,6 +4631,22 @@ NativeIndexdFfi::NativeIndexdFfi(
         0,
         [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
             return this->cpp_uniffi_indexd_ffi_checksum_method_sdk_wait_for_connect(rt, thisVal, args, count);
+        }
+    );
+    props["ubrn_uniffi_indexd_ffi_checksum_method_sharedobject_metadata"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_checksum_method_sharedobject_metadata"),
+        0,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_indexd_ffi_checksum_method_sharedobject_metadata(rt, thisVal, args, count);
+        }
+    );
+    props["ubrn_uniffi_indexd_ffi_checksum_method_sharedobject_size"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_checksum_method_sharedobject_size"),
+        0,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_indexd_ffi_checksum_method_sharedobject_size(rt, thisVal, args, count);
         }
     );
     props["ubrn_uniffi_indexd_ffi_checksum_method_upload_finalize"] = jsi::Function::createFromHostFunction(
@@ -4707,6 +4775,14 @@ NativeIndexdFfi::NativeIndexdFfi(
         1,
         [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
             return this->cpp_uniffi_internal_fn_method_sdk_ffi__bless_pointer(rt, thisVal, args, count);
+        }
+    );
+    props["ubrn_uniffi_internal_fn_method_sharedobject_ffi__bless_pointer"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_internal_fn_method_sharedobject_ffi__bless_pointer"),
+        1,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_internal_fn_method_sharedobject_ffi__bless_pointer(rt, thisVal, args, count);
         }
     );
     props["ubrn_uniffi_internal_fn_method_upload_ffi__bless_pointer"] = jsi::Function::createFromHostFunction(
@@ -4863,6 +4939,16 @@ jsi::Value NativeIndexdFfi::cpp_uniffi_internal_fn_func_ffi__arraybuffer_to_stri
         auto pointer = reinterpret_cast<void *>(static_cast<uintptr_t>(p));
         RustCallStatus status = {0};
         uniffi_indexd_ffi_fn_free_sdk(pointer, &status);
+    };
+    auto ptrObj = std::make_shared<uniffi_jsi::DestructibleObject>(pointer, destructor);
+    auto obj = jsi::Object::createFromHostObject(rt, ptrObj);
+    return jsi::Value(rt, obj);
+}jsi::Value NativeIndexdFfi::cpp_uniffi_internal_fn_method_sharedobject_ffi__bless_pointer(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+    auto pointer = uniffi_jsi::Bridging<uint64_t>::fromJs(rt, callInvoker, args[0]);
+    auto static destructor = [](uint64_t p) {
+        auto pointer = reinterpret_cast<void *>(static_cast<uintptr_t>(p));
+        RustCallStatus status = {0};
+        uniffi_indexd_ffi_fn_free_sharedobject(pointer, &status);
     };
     auto ptrObj = std::make_shared<uniffi_jsi::DestructibleObject>(pointer, destructor);
     auto obj = jsi::Object::createFromHostObject(rt, ptrObj);
@@ -5333,18 +5419,24 @@ jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_fn_method_sdk_delete_object(js
         return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker, value);
 }
 jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_fn_method_sdk_download(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
-        auto value = uniffi_indexd_ffi_fn_method_sdk_download(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[1]), uniffi::indexd_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker, args[2])
+        RustCallStatus status = uniffi::indexd_ffi::Bridging<RustCallStatus>::rustSuccess(rt);
+        auto value = uniffi_indexd_ffi_fn_method_sdk_download(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[1]), uniffi::indexd_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker, args[2]), 
+            &status
         );
+        uniffi::indexd_ffi::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status, args[count - 1]);
 
         
-        return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker, value);
+        return uniffi_jsi::Bridging<void *>::toJs(rt, callInvoker, value);
 }
 jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_fn_method_sdk_download_shared(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
-        auto value = uniffi_indexd_ffi_fn_method_sdk_download_shared(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), uniffi::indexd_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker, args[1]), uniffi::indexd_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker, args[2])
+        RustCallStatus status = uniffi::indexd_ffi::Bridging<RustCallStatus>::rustSuccess(rt);
+        auto value = uniffi_indexd_ffi_fn_method_sdk_download_shared(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[1]), uniffi::indexd_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker, args[2]), 
+            &status
         );
+        uniffi::indexd_ffi::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status, args[count - 1]);
 
         
-        return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker, value);
+        return uniffi_jsi::Bridging<void *>::toJs(rt, callInvoker, value);
 }
 jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_fn_method_sdk_hosts(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
         auto value = uniffi_indexd_ffi_fn_method_sdk_hosts(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0])
@@ -5360,16 +5452,6 @@ jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_fn_method_sdk_object(jsi::Runt
         
         return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker, value);
 }
-jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_fn_method_sdk_object_share_url(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
-        RustCallStatus status = uniffi::indexd_ffi::Bridging<RustCallStatus>::rustSuccess(rt);
-        auto value = uniffi_indexd_ffi_fn_method_sdk_object_share_url(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), uniffi::indexd_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker, args[1]), uniffi::indexd_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker, args[2]), uniffi::indexd_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker, args[3]), 
-            &status
-        );
-        uniffi::indexd_ffi::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status, args[count - 1]);
-
-        
-        return uniffi::indexd_ffi::Bridging<RustBuffer>::toJs(rt, callInvoker, value);
-}
 jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_fn_method_sdk_objects(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
         auto value = uniffi_indexd_ffi_fn_method_sdk_objects(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), uniffi::indexd_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker, args[1]), uniffi_jsi::Bridging<uint32_t>::fromJs(rt, callInvoker, args[2])
         );
@@ -5377,8 +5459,15 @@ jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_fn_method_sdk_objects(jsi::Run
         
         return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker, value);
 }
-jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_fn_method_sdk_pin_slab(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
-        auto value = uniffi_indexd_ffi_fn_method_sdk_pin_slab(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), uniffi::indexd_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker, args[1])
+jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_fn_method_sdk_pin_shared(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        auto value = uniffi_indexd_ffi_fn_method_sdk_pin_shared(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[1])
+        );
+
+        
+        return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_fn_method_sdk_prune_slabs(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        auto value = uniffi_indexd_ffi_fn_method_sdk_prune_slabs(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0])
         );
 
         
@@ -5398,8 +5487,18 @@ jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_fn_method_sdk_save_object(jsi:
         
         return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker, value);
 }
-jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_fn_method_sdk_shared_object_metadata(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
-        auto value = uniffi_indexd_ffi_fn_method_sdk_shared_object_metadata(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), uniffi::indexd_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker, args[1])
+jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_fn_method_sdk_share_object(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        RustCallStatus status = uniffi::indexd_ffi::Bridging<RustCallStatus>::rustSuccess(rt);
+        auto value = uniffi_indexd_ffi_fn_method_sdk_share_object(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[1]), uniffi::indexd_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker, args[2]), 
+            &status
+        );
+        uniffi::indexd_ffi::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status, args[count - 1]);
+
+        
+        return uniffi::indexd_ffi::Bridging<RustBuffer>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_fn_method_sdk_shared_object(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        auto value = uniffi_indexd_ffi_fn_method_sdk_shared_object(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), uniffi::indexd_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker, args[1])
         );
 
         
@@ -5407,13 +5506,6 @@ jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_fn_method_sdk_shared_object_me
 }
 jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_fn_method_sdk_slab(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
         auto value = uniffi_indexd_ffi_fn_method_sdk_slab(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), uniffi::indexd_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker, args[1])
-        );
-
-        
-        return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker, value);
-}
-jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_fn_method_sdk_unpin_slab(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
-        auto value = uniffi_indexd_ffi_fn_method_sdk_unpin_slab(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), uniffi::indexd_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker, args[1])
         );
 
         
@@ -5432,6 +5524,46 @@ jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_fn_method_sdk_wait_for_connect
 
         
         return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_fn_clone_sharedobject(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        RustCallStatus status = uniffi::indexd_ffi::Bridging<RustCallStatus>::rustSuccess(rt);
+        auto value = uniffi_indexd_ffi_fn_clone_sharedobject(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), 
+            &status
+        );
+        uniffi::indexd_ffi::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status, args[count - 1]);
+
+        
+        return uniffi_jsi::Bridging<void *>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_fn_free_sharedobject(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        RustCallStatus status = uniffi::indexd_ffi::Bridging<RustCallStatus>::rustSuccess(rt);
+        uniffi_indexd_ffi_fn_free_sharedobject(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), 
+            &status
+        );
+        uniffi::indexd_ffi::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status, args[count - 1]);
+
+        
+        return jsi::Value::undefined();
+}
+jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_fn_method_sharedobject_metadata(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        RustCallStatus status = uniffi::indexd_ffi::Bridging<RustCallStatus>::rustSuccess(rt);
+        auto value = uniffi_indexd_ffi_fn_method_sharedobject_metadata(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), 
+            &status
+        );
+        uniffi::indexd_ffi::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status, args[count - 1]);
+
+        
+        return uniffi::indexd_ffi::Bridging<RustBuffer>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_fn_method_sharedobject_size(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        RustCallStatus status = uniffi::indexd_ffi::Bridging<RustCallStatus>::rustSuccess(rt);
+        auto value = uniffi_indexd_ffi_fn_method_sharedobject_size(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), 
+            &status
+        );
+        uniffi::indexd_ffi::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status, args[count - 1]);
+
+        
+        return uniffi_jsi::Bridging<uint64_t>::toJs(rt, callInvoker, value);
 }
 jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_fn_clone_upload(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
         RustCallStatus status = uniffi::indexd_ffi::Bridging<RustCallStatus>::rustSuccess(rt);
@@ -6163,13 +6295,6 @@ jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_checksum_method_sdk_object(jsi
         
         return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
-jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_checksum_method_sdk_object_share_url(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
-        auto value = uniffi_indexd_ffi_checksum_method_sdk_object_share_url(
-        );
-
-        
-        return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
-}
 jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_checksum_method_sdk_objects(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
         auto value = uniffi_indexd_ffi_checksum_method_sdk_objects(
         );
@@ -6177,8 +6302,15 @@ jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_checksum_method_sdk_objects(js
         
         return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
-jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_checksum_method_sdk_pin_slab(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
-        auto value = uniffi_indexd_ffi_checksum_method_sdk_pin_slab(
+jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_checksum_method_sdk_pin_shared(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        auto value = uniffi_indexd_ffi_checksum_method_sdk_pin_shared(
+        );
+
+        
+        return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_checksum_method_sdk_prune_slabs(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        auto value = uniffi_indexd_ffi_checksum_method_sdk_prune_slabs(
         );
 
         
@@ -6198,8 +6330,15 @@ jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_checksum_method_sdk_save_objec
         
         return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
-jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_checksum_method_sdk_shared_object_metadata(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
-        auto value = uniffi_indexd_ffi_checksum_method_sdk_shared_object_metadata(
+jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_checksum_method_sdk_share_object(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        auto value = uniffi_indexd_ffi_checksum_method_sdk_share_object(
+        );
+
+        
+        return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_checksum_method_sdk_shared_object(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        auto value = uniffi_indexd_ffi_checksum_method_sdk_shared_object(
         );
 
         
@@ -6207,13 +6346,6 @@ jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_checksum_method_sdk_shared_obj
 }
 jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_checksum_method_sdk_slab(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
         auto value = uniffi_indexd_ffi_checksum_method_sdk_slab(
-        );
-
-        
-        return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
-}
-jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_checksum_method_sdk_unpin_slab(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
-        auto value = uniffi_indexd_ffi_checksum_method_sdk_unpin_slab(
         );
 
         
@@ -6228,6 +6360,20 @@ jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_checksum_method_sdk_upload(jsi
 }
 jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_checksum_method_sdk_wait_for_connect(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
         auto value = uniffi_indexd_ffi_checksum_method_sdk_wait_for_connect(
+        );
+
+        
+        return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_checksum_method_sharedobject_metadata(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        auto value = uniffi_indexd_ffi_checksum_method_sharedobject_metadata(
+        );
+
+        
+        return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_checksum_method_sharedobject_size(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        auto value = uniffi_indexd_ffi_checksum_method_sharedobject_size(
         );
 
         

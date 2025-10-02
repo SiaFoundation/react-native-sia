@@ -298,7 +298,11 @@ export type DownloadOptions = {
  * Generated factory for {@link DownloadOptions} record objects.
  */
 export const DownloadOptions = (() => {
-  const defaults = () => ({});
+  const defaults = () => ({
+    maxInflight: 10,
+    offset: BigInt('0'),
+    length: undefined,
+  });
   const create = (() => {
     return uniffiCreateRecord<DownloadOptions, ReturnType<typeof defaults>>(
       defaults
@@ -884,68 +888,6 @@ const FfiConverterTypeSlab = (() => {
   return new FFIConverter();
 })();
 
-export type SlabPinParams = {
-  encryptionKey: EncryptionKeyInterface;
-  minShards: /*u8*/ number;
-  sectors: Array<PinnedSector>;
-};
-
-/**
- * Generated factory for {@link SlabPinParams} record objects.
- */
-export const SlabPinParams = (() => {
-  const defaults = () => ({});
-  const create = (() => {
-    return uniffiCreateRecord<SlabPinParams, ReturnType<typeof defaults>>(
-      defaults
-    );
-  })();
-  return Object.freeze({
-    /**
-     * Create a frozen instance of {@link SlabPinParams}, with defaults specified
-     * in Rust, in the {@link indexd_ffi} crate.
-     */
-    create,
-
-    /**
-     * Create a frozen instance of {@link SlabPinParams}, with defaults specified
-     * in Rust, in the {@link indexd_ffi} crate.
-     */
-    new: create,
-
-    /**
-     * Defaults specified in the {@link indexd_ffi} crate.
-     */
-    defaults: () => Object.freeze(defaults()) as Partial<SlabPinParams>,
-  });
-})();
-
-const FfiConverterTypeSlabPinParams = (() => {
-  type TypeName = SlabPinParams;
-  class FFIConverter extends AbstractFfiConverterByteArray<TypeName> {
-    read(from: RustBuffer): TypeName {
-      return {
-        encryptionKey: FfiConverterTypeEncryptionKey.read(from),
-        minShards: FfiConverterUInt8.read(from),
-        sectors: FfiConverterArrayTypePinnedSector.read(from),
-      };
-    }
-    write(value: TypeName, into: RustBuffer): void {
-      FfiConverterTypeEncryptionKey.write(value.encryptionKey, into);
-      FfiConverterUInt8.write(value.minShards, into);
-      FfiConverterArrayTypePinnedSector.write(value.sectors, into);
-    }
-    allocationSize(value: TypeName): number {
-      return (
-        FfiConverterTypeEncryptionKey.allocationSize(value.encryptionKey) +
-        FfiConverterUInt8.allocationSize(value.minShards) +
-        FfiConverterArrayTypePinnedSector.allocationSize(value.sectors)
-      );
-    }
-  }
-  return new FFIConverter();
-})();
-
 /**
  * Provides options for an upload operation.
  */
@@ -974,6 +916,8 @@ export const UploadOptions = (() => {
     maxInflight: 10,
     dataShards: 10,
     parityShards: 20,
+    metadata: undefined,
+    progressCallback: undefined,
   });
   const create = (() => {
     return uniffiCreateRecord<UploadOptions, ReturnType<typeof defaults>>(
@@ -3402,9 +3346,8 @@ export interface SdkInterface {
    */
   download(
     object: PinnedObjectInterface,
-    options: DownloadOptions,
-    asyncOpts_?: { signal: AbortSignal }
-  ) /*throws*/ : Promise<DownloadInterface>;
+    options: DownloadOptions
+  ) /*throws*/ : DownloadInterface;
   /**
    * Initiates a download of all data in the shared object.
    *
@@ -3412,10 +3355,9 @@ export interface SdkInterface {
    * A [`DownloadShared`] object that can be used to read the data in chunks
    */
   downloadShared(
-    shareUrl: string,
-    options: DownloadOptions,
-    asyncOpts_?: { signal: AbortSignal }
-  ) /*throws*/ : Promise<DownloadSharedInterface>;
+    sharedObject: SharedObjectInterface,
+    options: DownloadOptions
+  ) /*throws*/ : DownloadSharedInterface;
   /**
    * Returns a list of all usable hosts.
    */
@@ -3427,15 +3369,6 @@ export interface SdkInterface {
     key: string,
     asyncOpts_?: { signal: AbortSignal }
   ) /*throws*/ : Promise<PinnedObjectInterface>;
-  /**
-   * Creates a signed URL that can be used to share object metadata
-   * with other people using an indexer.
-   */
-  objectShareUrl(
-    objectKey: string,
-    encryptionKey: ArrayBuffer,
-    validUntil: UniffiTimestamp
-  ) /*throws*/ : string;
   /**
    * Returns objects stored in the indexer. When syncing, the caller should
    * provide the last `updated_at` timestamp and `key` seen in the `cursor
@@ -3451,12 +3384,16 @@ export interface SdkInterface {
     asyncOpts_?: { signal: AbortSignal }
   ) /*throws*/ : Promise<Array<PinnedObjectInterface>>;
   /**
-   * Pins a slab to the indexer.
+   * Pins a shared object to the indexer and returns a [PinnedObject].
    */
-  pinSlab(
-    slabPinParams: SlabPinParams,
+  pinShared(
+    shared: SharedObjectInterface,
     asyncOpts_?: { signal: AbortSignal }
-  ) /*throws*/ : Promise<string>;
+  ) /*throws*/ : Promise<PinnedObjectInterface>;
+  /**
+   * Unpins slabs not used by any object on the account.
+   */
+  pruneSlabs(asyncOpts_?: { signal: AbortSignal }) /*throws*/ : Promise<void>;
   /**
    * Requests permission for the app to connect to the indexer.
    *
@@ -3475,12 +3412,20 @@ export interface SdkInterface {
     asyncOpts_?: { signal: AbortSignal }
   ) /*throws*/ : Promise<void>;
   /**
-   * Retrieves the unsealed metadata for a shared object via a share URL.
+   * Creates a signed URL that can be used to share object metadata
+   * with other people using an indexer.
    */
-  sharedObjectMetadata(
-    shareUrl: string,
+  shareObject(
+    object: PinnedObjectInterface,
+    validUntil: UniffiTimestamp
+  ) /*throws*/ : string;
+  /**
+   * Retrieves a shared object from a signed URL.
+   */
+  sharedObject(
+    sharedUrl: string,
     asyncOpts_?: { signal: AbortSignal }
-  ) /*throws*/ : Promise<ArrayBuffer>;
+  ) /*throws*/ : Promise<SharedObjectInterface>;
   /**
    * Returns metadata about a slab stored in the indexer.
    */
@@ -3488,13 +3433,6 @@ export interface SdkInterface {
     slabId: string,
     asyncOpts_?: { signal: AbortSignal }
   ) /*throws*/ : Promise<PinnedSlab>;
-  /**
-   * UnpinSlab unpins a slab from the indexer.
-   */
-  unpinSlab(
-    slabId: string,
-    asyncOpts_?: { signal: AbortSignal }
-  ) /*throws*/ : Promise<void>;
   /**
    * Uploads data to the Sia network and pins it to the indexer
    *
@@ -3670,45 +3608,26 @@ export class Sdk extends UniffiAbstractObject implements SdkInterface {
    * # Returns
    * A [Download] object that can be used to read the data in chunks
    */
-  public async download(
+  public download(
     object: PinnedObjectInterface,
-    options: DownloadOptions,
-    asyncOpts_?: { signal: AbortSignal }
-  ): Promise<DownloadInterface> /*throws*/ {
-    const __stack = uniffiIsDebug ? new Error().stack : undefined;
-    try {
-      return await uniffiRustCallAsync(
-        /*rustCaller:*/ uniffiCaller,
-        /*rustFutureFunc:*/ () => {
+    options: DownloadOptions
+  ): DownloadInterface /*throws*/ {
+    return FfiConverterTypeDownload.lift(
+      uniffiCaller.rustCallWithError(
+        /*liftError:*/ FfiConverterTypeDownloadError.lift.bind(
+          FfiConverterTypeDownloadError
+        ),
+        /*caller:*/ (callStatus) => {
           return nativeModule().ubrn_uniffi_indexd_ffi_fn_method_sdk_download(
             uniffiTypeSdkObjectFactory.clonePointer(this),
             FfiConverterTypePinnedObject.lower(object),
-            FfiConverterTypeDownloadOptions.lower(options)
+            FfiConverterTypeDownloadOptions.lower(options),
+            callStatus
           );
         },
-        /*pollFunc:*/ nativeModule()
-          .ubrn_ffi_indexd_ffi_rust_future_poll_pointer,
-        /*cancelFunc:*/ nativeModule()
-          .ubrn_ffi_indexd_ffi_rust_future_cancel_pointer,
-        /*completeFunc:*/ nativeModule()
-          .ubrn_ffi_indexd_ffi_rust_future_complete_pointer,
-        /*freeFunc:*/ nativeModule()
-          .ubrn_ffi_indexd_ffi_rust_future_free_pointer,
-        /*liftFunc:*/ FfiConverterTypeDownload.lift.bind(
-          FfiConverterTypeDownload
-        ),
-        /*liftString:*/ FfiConverterString.lift,
-        /*asyncOpts:*/ asyncOpts_,
-        /*errorHandler:*/ FfiConverterTypeDownloadError.lift.bind(
-          FfiConverterTypeDownloadError
-        )
-      );
-    } catch (__error: any) {
-      if (uniffiIsDebug && __error instanceof Error) {
-        __error.stack = __stack;
-      }
-      throw __error;
-    }
+        /*liftString:*/ FfiConverterString.lift
+      )
+    );
   }
 
   /**
@@ -3717,45 +3636,26 @@ export class Sdk extends UniffiAbstractObject implements SdkInterface {
    * # Returns
    * A [`DownloadShared`] object that can be used to read the data in chunks
    */
-  public async downloadShared(
-    shareUrl: string,
-    options: DownloadOptions,
-    asyncOpts_?: { signal: AbortSignal }
-  ): Promise<DownloadSharedInterface> /*throws*/ {
-    const __stack = uniffiIsDebug ? new Error().stack : undefined;
-    try {
-      return await uniffiRustCallAsync(
-        /*rustCaller:*/ uniffiCaller,
-        /*rustFutureFunc:*/ () => {
+  public downloadShared(
+    sharedObject: SharedObjectInterface,
+    options: DownloadOptions
+  ): DownloadSharedInterface /*throws*/ {
+    return FfiConverterTypeDownloadShared.lift(
+      uniffiCaller.rustCallWithError(
+        /*liftError:*/ FfiConverterTypeDownloadError.lift.bind(
+          FfiConverterTypeDownloadError
+        ),
+        /*caller:*/ (callStatus) => {
           return nativeModule().ubrn_uniffi_indexd_ffi_fn_method_sdk_download_shared(
             uniffiTypeSdkObjectFactory.clonePointer(this),
-            FfiConverterString.lower(shareUrl),
-            FfiConverterTypeDownloadOptions.lower(options)
+            FfiConverterTypeSharedObject.lower(sharedObject),
+            FfiConverterTypeDownloadOptions.lower(options),
+            callStatus
           );
         },
-        /*pollFunc:*/ nativeModule()
-          .ubrn_ffi_indexd_ffi_rust_future_poll_pointer,
-        /*cancelFunc:*/ nativeModule()
-          .ubrn_ffi_indexd_ffi_rust_future_cancel_pointer,
-        /*completeFunc:*/ nativeModule()
-          .ubrn_ffi_indexd_ffi_rust_future_complete_pointer,
-        /*freeFunc:*/ nativeModule()
-          .ubrn_ffi_indexd_ffi_rust_future_free_pointer,
-        /*liftFunc:*/ FfiConverterTypeDownloadShared.lift.bind(
-          FfiConverterTypeDownloadShared
-        ),
-        /*liftString:*/ FfiConverterString.lift,
-        /*asyncOpts:*/ asyncOpts_,
-        /*errorHandler:*/ FfiConverterTypeDownloadError.lift.bind(
-          FfiConverterTypeDownloadError
-        )
-      );
-    } catch (__error: any) {
-      if (uniffiIsDebug && __error instanceof Error) {
-        __error.stack = __stack;
-      }
-      throw __error;
-    }
+        /*liftString:*/ FfiConverterString.lift
+      )
+    );
   }
 
   /**
@@ -3837,32 +3737,6 @@ export class Sdk extends UniffiAbstractObject implements SdkInterface {
   }
 
   /**
-   * Creates a signed URL that can be used to share object metadata
-   * with other people using an indexer.
-   */
-  public objectShareUrl(
-    objectKey: string,
-    encryptionKey: ArrayBuffer,
-    validUntil: UniffiTimestamp
-  ): string /*throws*/ {
-    return FfiConverterString.lift(
-      uniffiCaller.rustCallWithError(
-        /*liftError:*/ FfiConverterTypeError.lift.bind(FfiConverterTypeError),
-        /*caller:*/ (callStatus) => {
-          return nativeModule().ubrn_uniffi_indexd_ffi_fn_method_sdk_object_share_url(
-            uniffiTypeSdkObjectFactory.clonePointer(this),
-            FfiConverterString.lower(objectKey),
-            FfiConverterArrayBuffer.lower(encryptionKey),
-            FfiConverterTimestamp.lower(validUntil),
-            callStatus
-          );
-        },
-        /*liftString:*/ FfiConverterString.lift
-      )
-    );
-  }
-
-  /**
    * Returns objects stored in the indexer. When syncing, the caller should
    * provide the last `updated_at` timestamp and `key` seen in the `cursor
    * parameter to avoid missing or duplicating objects.
@@ -3911,31 +3785,67 @@ export class Sdk extends UniffiAbstractObject implements SdkInterface {
   }
 
   /**
-   * Pins a slab to the indexer.
+   * Pins a shared object to the indexer and returns a [PinnedObject].
    */
-  public async pinSlab(
-    slabPinParams: SlabPinParams,
+  public async pinShared(
+    shared: SharedObjectInterface,
     asyncOpts_?: { signal: AbortSignal }
-  ): Promise<string> /*throws*/ {
+  ): Promise<PinnedObjectInterface> /*throws*/ {
     const __stack = uniffiIsDebug ? new Error().stack : undefined;
     try {
       return await uniffiRustCallAsync(
         /*rustCaller:*/ uniffiCaller,
         /*rustFutureFunc:*/ () => {
-          return nativeModule().ubrn_uniffi_indexd_ffi_fn_method_sdk_pin_slab(
+          return nativeModule().ubrn_uniffi_indexd_ffi_fn_method_sdk_pin_shared(
             uniffiTypeSdkObjectFactory.clonePointer(this),
-            FfiConverterTypeSlabPinParams.lower(slabPinParams)
+            FfiConverterTypeSharedObject.lower(shared)
           );
         },
         /*pollFunc:*/ nativeModule()
-          .ubrn_ffi_indexd_ffi_rust_future_poll_rust_buffer,
+          .ubrn_ffi_indexd_ffi_rust_future_poll_pointer,
         /*cancelFunc:*/ nativeModule()
-          .ubrn_ffi_indexd_ffi_rust_future_cancel_rust_buffer,
+          .ubrn_ffi_indexd_ffi_rust_future_cancel_pointer,
         /*completeFunc:*/ nativeModule()
-          .ubrn_ffi_indexd_ffi_rust_future_complete_rust_buffer,
+          .ubrn_ffi_indexd_ffi_rust_future_complete_pointer,
         /*freeFunc:*/ nativeModule()
-          .ubrn_ffi_indexd_ffi_rust_future_free_rust_buffer,
-        /*liftFunc:*/ FfiConverterString.lift.bind(FfiConverterString),
+          .ubrn_ffi_indexd_ffi_rust_future_free_pointer,
+        /*liftFunc:*/ FfiConverterTypePinnedObject.lift.bind(
+          FfiConverterTypePinnedObject
+        ),
+        /*liftString:*/ FfiConverterString.lift,
+        /*asyncOpts:*/ asyncOpts_,
+        /*errorHandler:*/ FfiConverterTypeError.lift.bind(FfiConverterTypeError)
+      );
+    } catch (__error: any) {
+      if (uniffiIsDebug && __error instanceof Error) {
+        __error.stack = __stack;
+      }
+      throw __error;
+    }
+  }
+
+  /**
+   * Unpins slabs not used by any object on the account.
+   */
+  public async pruneSlabs(asyncOpts_?: {
+    signal: AbortSignal;
+  }): Promise<void> /*throws*/ {
+    const __stack = uniffiIsDebug ? new Error().stack : undefined;
+    try {
+      return await uniffiRustCallAsync(
+        /*rustCaller:*/ uniffiCaller,
+        /*rustFutureFunc:*/ () => {
+          return nativeModule().ubrn_uniffi_indexd_ffi_fn_method_sdk_prune_slabs(
+            uniffiTypeSdkObjectFactory.clonePointer(this)
+          );
+        },
+        /*pollFunc:*/ nativeModule().ubrn_ffi_indexd_ffi_rust_future_poll_void,
+        /*cancelFunc:*/ nativeModule()
+          .ubrn_ffi_indexd_ffi_rust_future_cancel_void,
+        /*completeFunc:*/ nativeModule()
+          .ubrn_ffi_indexd_ffi_rust_future_complete_void,
+        /*freeFunc:*/ nativeModule().ubrn_ffi_indexd_ffi_rust_future_free_void,
+        /*liftFunc:*/ (_v) => {},
         /*liftString:*/ FfiConverterString.lift,
         /*asyncOpts:*/ asyncOpts_,
         /*errorHandler:*/ FfiConverterTypeError.lift.bind(FfiConverterTypeError)
@@ -4028,38 +3938,60 @@ export class Sdk extends UniffiAbstractObject implements SdkInterface {
   }
 
   /**
-   * Retrieves the unsealed metadata for a shared object via a share URL.
+   * Creates a signed URL that can be used to share object metadata
+   * with other people using an indexer.
    */
-  public async sharedObjectMetadata(
-    shareUrl: string,
+  public shareObject(
+    object: PinnedObjectInterface,
+    validUntil: UniffiTimestamp
+  ): string /*throws*/ {
+    return FfiConverterString.lift(
+      uniffiCaller.rustCallWithError(
+        /*liftError:*/ FfiConverterTypeError.lift.bind(FfiConverterTypeError),
+        /*caller:*/ (callStatus) => {
+          return nativeModule().ubrn_uniffi_indexd_ffi_fn_method_sdk_share_object(
+            uniffiTypeSdkObjectFactory.clonePointer(this),
+            FfiConverterTypePinnedObject.lower(object),
+            FfiConverterTimestamp.lower(validUntil),
+            callStatus
+          );
+        },
+        /*liftString:*/ FfiConverterString.lift
+      )
+    );
+  }
+
+  /**
+   * Retrieves a shared object from a signed URL.
+   */
+  public async sharedObject(
+    sharedUrl: string,
     asyncOpts_?: { signal: AbortSignal }
-  ): Promise<ArrayBuffer> /*throws*/ {
+  ): Promise<SharedObjectInterface> /*throws*/ {
     const __stack = uniffiIsDebug ? new Error().stack : undefined;
     try {
       return await uniffiRustCallAsync(
         /*rustCaller:*/ uniffiCaller,
         /*rustFutureFunc:*/ () => {
-          return nativeModule().ubrn_uniffi_indexd_ffi_fn_method_sdk_shared_object_metadata(
+          return nativeModule().ubrn_uniffi_indexd_ffi_fn_method_sdk_shared_object(
             uniffiTypeSdkObjectFactory.clonePointer(this),
-            FfiConverterString.lower(shareUrl)
+            FfiConverterString.lower(sharedUrl)
           );
         },
         /*pollFunc:*/ nativeModule()
-          .ubrn_ffi_indexd_ffi_rust_future_poll_rust_buffer,
+          .ubrn_ffi_indexd_ffi_rust_future_poll_pointer,
         /*cancelFunc:*/ nativeModule()
-          .ubrn_ffi_indexd_ffi_rust_future_cancel_rust_buffer,
+          .ubrn_ffi_indexd_ffi_rust_future_cancel_pointer,
         /*completeFunc:*/ nativeModule()
-          .ubrn_ffi_indexd_ffi_rust_future_complete_rust_buffer,
+          .ubrn_ffi_indexd_ffi_rust_future_complete_pointer,
         /*freeFunc:*/ nativeModule()
-          .ubrn_ffi_indexd_ffi_rust_future_free_rust_buffer,
-        /*liftFunc:*/ FfiConverterArrayBuffer.lift.bind(
-          FfiConverterArrayBuffer
+          .ubrn_ffi_indexd_ffi_rust_future_free_pointer,
+        /*liftFunc:*/ FfiConverterTypeSharedObject.lift.bind(
+          FfiConverterTypeSharedObject
         ),
         /*liftString:*/ FfiConverterString.lift,
         /*asyncOpts:*/ asyncOpts_,
-        /*errorHandler:*/ FfiConverterTypeDownloadError.lift.bind(
-          FfiConverterTypeDownloadError
-        )
+        /*errorHandler:*/ FfiConverterTypeError.lift.bind(FfiConverterTypeError)
       );
     } catch (__error: any) {
       if (uniffiIsDebug && __error instanceof Error) {
@@ -4097,42 +4029,6 @@ export class Sdk extends UniffiAbstractObject implements SdkInterface {
         /*liftFunc:*/ FfiConverterTypePinnedSlab.lift.bind(
           FfiConverterTypePinnedSlab
         ),
-        /*liftString:*/ FfiConverterString.lift,
-        /*asyncOpts:*/ asyncOpts_,
-        /*errorHandler:*/ FfiConverterTypeError.lift.bind(FfiConverterTypeError)
-      );
-    } catch (__error: any) {
-      if (uniffiIsDebug && __error instanceof Error) {
-        __error.stack = __stack;
-      }
-      throw __error;
-    }
-  }
-
-  /**
-   * UnpinSlab unpins a slab from the indexer.
-   */
-  public async unpinSlab(
-    slabId: string,
-    asyncOpts_?: { signal: AbortSignal }
-  ): Promise<void> /*throws*/ {
-    const __stack = uniffiIsDebug ? new Error().stack : undefined;
-    try {
-      return await uniffiRustCallAsync(
-        /*rustCaller:*/ uniffiCaller,
-        /*rustFutureFunc:*/ () => {
-          return nativeModule().ubrn_uniffi_indexd_ffi_fn_method_sdk_unpin_slab(
-            uniffiTypeSdkObjectFactory.clonePointer(this),
-            FfiConverterString.lower(slabId)
-          );
-        },
-        /*pollFunc:*/ nativeModule().ubrn_ffi_indexd_ffi_rust_future_poll_void,
-        /*cancelFunc:*/ nativeModule()
-          .ubrn_ffi_indexd_ffi_rust_future_cancel_void,
-        /*completeFunc:*/ nativeModule()
-          .ubrn_ffi_indexd_ffi_rust_future_complete_void,
-        /*freeFunc:*/ nativeModule().ubrn_ffi_indexd_ffi_rust_future_free_void,
-        /*liftFunc:*/ (_v) => {},
         /*liftString:*/ FfiConverterString.lift,
         /*asyncOpts:*/ asyncOpts_,
         /*errorHandler:*/ FfiConverterTypeError.lift.bind(FfiConverterTypeError)
@@ -4311,6 +4207,167 @@ const uniffiTypeSdkObjectFactory: UniffiObjectFactory<SdkInterface> = (() => {
 })();
 // FfiConverter for SdkInterface
 const FfiConverterTypeSDK = new FfiConverterObject(uniffiTypeSdkObjectFactory);
+
+/**
+ * An object that has been shared from an indexer. Shared objects
+ * are read-only and cannot be modified. They can be downloaded
+ * using [Sdk.download_shared] or pinned using [Sdk.pin_shared].
+ *
+ * It has no public fields to prevent accidental leakage or corruption.
+ */
+export interface SharedObjectInterface {
+  /**
+   * Returns the slabs that make up the object.
+   */
+  metadata(): ArrayBuffer;
+  /**
+   * Returns the size of the object by summing the lengths of its slabs.
+   */
+  size(): /*u64*/ bigint;
+}
+
+/**
+ * An object that has been shared from an indexer. Shared objects
+ * are read-only and cannot be modified. They can be downloaded
+ * using [Sdk.download_shared] or pinned using [Sdk.pin_shared].
+ *
+ * It has no public fields to prevent accidental leakage or corruption.
+ */
+export class SharedObject
+  extends UniffiAbstractObject
+  implements SharedObjectInterface
+{
+  readonly [uniffiTypeNameSymbol] = 'SharedObject';
+  readonly [destructorGuardSymbol]: UniffiRustArcPtr;
+  readonly [pointerLiteralSymbol]: UnsafeMutableRawPointer;
+  // No primary constructor declared for this class.
+  private constructor(pointer: UnsafeMutableRawPointer) {
+    super();
+    this[pointerLiteralSymbol] = pointer;
+    this[destructorGuardSymbol] =
+      uniffiTypeSharedObjectObjectFactory.bless(pointer);
+  }
+
+  /**
+   * Returns the slabs that make up the object.
+   */
+  public metadata(): ArrayBuffer {
+    return FfiConverterArrayBuffer.lift(
+      uniffiCaller.rustCall(
+        /*caller:*/ (callStatus) => {
+          return nativeModule().ubrn_uniffi_indexd_ffi_fn_method_sharedobject_metadata(
+            uniffiTypeSharedObjectObjectFactory.clonePointer(this),
+            callStatus
+          );
+        },
+        /*liftString:*/ FfiConverterString.lift
+      )
+    );
+  }
+
+  /**
+   * Returns the size of the object by summing the lengths of its slabs.
+   */
+  public size(): /*u64*/ bigint {
+    return FfiConverterUInt64.lift(
+      uniffiCaller.rustCall(
+        /*caller:*/ (callStatus) => {
+          return nativeModule().ubrn_uniffi_indexd_ffi_fn_method_sharedobject_size(
+            uniffiTypeSharedObjectObjectFactory.clonePointer(this),
+            callStatus
+          );
+        },
+        /*liftString:*/ FfiConverterString.lift
+      )
+    );
+  }
+
+  /**
+   * {@inheritDoc uniffi-bindgen-react-native#UniffiAbstractObject.uniffiDestroy}
+   */
+  uniffiDestroy(): void {
+    const ptr = (this as any)[destructorGuardSymbol];
+    if (ptr !== undefined) {
+      const pointer = uniffiTypeSharedObjectObjectFactory.pointer(this);
+      uniffiTypeSharedObjectObjectFactory.freePointer(pointer);
+      uniffiTypeSharedObjectObjectFactory.unbless(ptr);
+      delete (this as any)[destructorGuardSymbol];
+    }
+  }
+
+  static instanceOf(obj: any): obj is SharedObject {
+    return uniffiTypeSharedObjectObjectFactory.isConcreteType(obj);
+  }
+}
+
+const uniffiTypeSharedObjectObjectFactory: UniffiObjectFactory<SharedObjectInterface> =
+  (() => {
+    return {
+      create(pointer: UnsafeMutableRawPointer): SharedObjectInterface {
+        const instance = Object.create(SharedObject.prototype);
+        instance[pointerLiteralSymbol] = pointer;
+        instance[destructorGuardSymbol] = this.bless(pointer);
+        instance[uniffiTypeNameSymbol] = 'SharedObject';
+        return instance;
+      },
+
+      bless(p: UnsafeMutableRawPointer): UniffiRustArcPtr {
+        return uniffiCaller.rustCall(
+          /*caller:*/ (status) =>
+            nativeModule().ubrn_uniffi_internal_fn_method_sharedobject_ffi__bless_pointer(
+              p,
+              status
+            ),
+          /*liftString:*/ FfiConverterString.lift
+        );
+      },
+
+      unbless(ptr: UniffiRustArcPtr) {
+        ptr.markDestroyed();
+      },
+
+      pointer(obj: SharedObjectInterface): UnsafeMutableRawPointer {
+        if ((obj as any)[destructorGuardSymbol] === undefined) {
+          throw new UniffiInternalError.UnexpectedNullPointer();
+        }
+        return (obj as any)[pointerLiteralSymbol];
+      },
+
+      clonePointer(obj: SharedObjectInterface): UnsafeMutableRawPointer {
+        const pointer = this.pointer(obj);
+        return uniffiCaller.rustCall(
+          /*caller:*/ (callStatus) =>
+            nativeModule().ubrn_uniffi_indexd_ffi_fn_clone_sharedobject(
+              pointer,
+              callStatus
+            ),
+          /*liftString:*/ FfiConverterString.lift
+        );
+      },
+
+      freePointer(pointer: UnsafeMutableRawPointer): void {
+        uniffiCaller.rustCall(
+          /*caller:*/ (callStatus) =>
+            nativeModule().ubrn_uniffi_indexd_ffi_fn_free_sharedobject(
+              pointer,
+              callStatus
+            ),
+          /*liftString:*/ FfiConverterString.lift
+        );
+      },
+
+      isConcreteType(obj: any): obj is SharedObjectInterface {
+        return (
+          obj[destructorGuardSymbol] &&
+          obj[uniffiTypeNameSymbol] === 'SharedObject'
+        );
+      },
+    };
+  })();
+// FfiConverter for SharedObjectInterface
+const FfiConverterTypeSharedObject = new FfiConverterObject(
+  uniffiTypeSharedObjectObjectFactory
+);
 
 /**
  * Uploads data to the Sia network. It does so in chunks to support large files in
@@ -4979,7 +5036,7 @@ function uniffiEnsureInitialized() {
   }
   if (
     nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_sdk_download() !==
-    58228
+    48047
   ) {
     throw new UniffiInternalError.ApiChecksumMismatch(
       'uniffi_indexd_ffi_checksum_method_sdk_download'
@@ -4987,7 +5044,7 @@ function uniffiEnsureInitialized() {
   }
   if (
     nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_sdk_download_shared() !==
-    12955
+    2353
   ) {
     throw new UniffiInternalError.ApiChecksumMismatch(
       'uniffi_indexd_ffi_checksum_method_sdk_download_shared'
@@ -5008,14 +5065,6 @@ function uniffiEnsureInitialized() {
     );
   }
   if (
-    nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_sdk_object_share_url() !==
-    50512
-  ) {
-    throw new UniffiInternalError.ApiChecksumMismatch(
-      'uniffi_indexd_ffi_checksum_method_sdk_object_share_url'
-    );
-  }
-  if (
     nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_sdk_objects() !==
     14867
   ) {
@@ -5024,11 +5073,19 @@ function uniffiEnsureInitialized() {
     );
   }
   if (
-    nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_sdk_pin_slab() !==
-    24606
+    nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_sdk_pin_shared() !==
+    28491
   ) {
     throw new UniffiInternalError.ApiChecksumMismatch(
-      'uniffi_indexd_ffi_checksum_method_sdk_pin_slab'
+      'uniffi_indexd_ffi_checksum_method_sdk_pin_shared'
+    );
+  }
+  if (
+    nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_sdk_prune_slabs() !==
+    23027
+  ) {
+    throw new UniffiInternalError.ApiChecksumMismatch(
+      'uniffi_indexd_ffi_checksum_method_sdk_prune_slabs'
     );
   }
   if (
@@ -5048,11 +5105,19 @@ function uniffiEnsureInitialized() {
     );
   }
   if (
-    nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_sdk_shared_object_metadata() !==
-    32399
+    nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_sdk_share_object() !==
+    18462
   ) {
     throw new UniffiInternalError.ApiChecksumMismatch(
-      'uniffi_indexd_ffi_checksum_method_sdk_shared_object_metadata'
+      'uniffi_indexd_ffi_checksum_method_sdk_share_object'
+    );
+  }
+  if (
+    nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_sdk_shared_object() !==
+    39630
+  ) {
+    throw new UniffiInternalError.ApiChecksumMismatch(
+      'uniffi_indexd_ffi_checksum_method_sdk_shared_object'
     );
   }
   if (
@@ -5060,14 +5125,6 @@ function uniffiEnsureInitialized() {
   ) {
     throw new UniffiInternalError.ApiChecksumMismatch(
       'uniffi_indexd_ffi_checksum_method_sdk_slab'
-    );
-  }
-  if (
-    nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_sdk_unpin_slab() !==
-    9509
-  ) {
-    throw new UniffiInternalError.ApiChecksumMismatch(
-      'uniffi_indexd_ffi_checksum_method_sdk_unpin_slab'
     );
   }
   if (
@@ -5083,6 +5140,22 @@ function uniffiEnsureInitialized() {
   ) {
     throw new UniffiInternalError.ApiChecksumMismatch(
       'uniffi_indexd_ffi_checksum_method_sdk_wait_for_connect'
+    );
+  }
+  if (
+    nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_sharedobject_metadata() !==
+    43501
+  ) {
+    throw new UniffiInternalError.ApiChecksumMismatch(
+      'uniffi_indexd_ffi_checksum_method_sharedobject_metadata'
+    );
+  }
+  if (
+    nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_sharedobject_size() !==
+    31454
+  ) {
+    throw new UniffiInternalError.ApiChecksumMismatch(
+      'uniffi_indexd_ffi_checksum_method_sharedobject_size'
     );
   }
   if (
@@ -5173,8 +5246,8 @@ export default Object.freeze({
     FfiConverterTypeRequestAuthResponse,
     FfiConverterTypeSDK,
     FfiConverterTypeSealedObject,
+    FfiConverterTypeSharedObject,
     FfiConverterTypeSlab,
-    FfiConverterTypeSlabPinParams,
     FfiConverterTypeUpload,
     FfiConverterTypeUploadError,
     FfiConverterTypeUploadOptions,

@@ -206,34 +206,30 @@ interface NativeModuleInterface {
   ubrn_uniffi_indexd_ffi_fn_method_sdk_download(
     ptr: bigint,
     object: bigint,
-    options: Uint8Array
+    options: Uint8Array,
+    uniffi_out_err: UniffiRustCallStatus
   ): bigint;
   ubrn_uniffi_indexd_ffi_fn_method_sdk_download_shared(
     ptr: bigint,
-    shareUrl: Uint8Array,
-    options: Uint8Array
+    sharedObject: bigint,
+    options: Uint8Array,
+    uniffi_out_err: UniffiRustCallStatus
   ): bigint;
   ubrn_uniffi_indexd_ffi_fn_method_sdk_hosts(ptr: bigint): bigint;
   ubrn_uniffi_indexd_ffi_fn_method_sdk_object(
     ptr: bigint,
     key: Uint8Array
   ): bigint;
-  ubrn_uniffi_indexd_ffi_fn_method_sdk_object_share_url(
-    ptr: bigint,
-    objectKey: Uint8Array,
-    encryptionKey: Uint8Array,
-    validUntil: Uint8Array,
-    uniffi_out_err: UniffiRustCallStatus
-  ): Uint8Array;
   ubrn_uniffi_indexd_ffi_fn_method_sdk_objects(
     ptr: bigint,
     cursor: Uint8Array,
     limit: number
   ): bigint;
-  ubrn_uniffi_indexd_ffi_fn_method_sdk_pin_slab(
+  ubrn_uniffi_indexd_ffi_fn_method_sdk_pin_shared(
     ptr: bigint,
-    slabPinParams: Uint8Array
+    shared: bigint
   ): bigint;
+  ubrn_uniffi_indexd_ffi_fn_method_sdk_prune_slabs(ptr: bigint): bigint;
   ubrn_uniffi_indexd_ffi_fn_method_sdk_request_app_connection(
     ptr: bigint,
     meta: Uint8Array
@@ -242,15 +238,17 @@ interface NativeModuleInterface {
     ptr: bigint,
     object: bigint
   ): bigint;
-  ubrn_uniffi_indexd_ffi_fn_method_sdk_shared_object_metadata(
+  ubrn_uniffi_indexd_ffi_fn_method_sdk_share_object(
     ptr: bigint,
-    shareUrl: Uint8Array
+    object: bigint,
+    validUntil: Uint8Array,
+    uniffi_out_err: UniffiRustCallStatus
+  ): Uint8Array;
+  ubrn_uniffi_indexd_ffi_fn_method_sdk_shared_object(
+    ptr: bigint,
+    sharedUrl: Uint8Array
   ): bigint;
   ubrn_uniffi_indexd_ffi_fn_method_sdk_slab(
-    ptr: bigint,
-    slabId: Uint8Array
-  ): bigint;
-  ubrn_uniffi_indexd_ffi_fn_method_sdk_unpin_slab(
     ptr: bigint,
     slabId: Uint8Array
   ): bigint;
@@ -261,6 +259,22 @@ interface NativeModuleInterface {
   ubrn_uniffi_indexd_ffi_fn_method_sdk_wait_for_connect(
     ptr: bigint,
     resp: Uint8Array
+  ): bigint;
+  ubrn_uniffi_indexd_ffi_fn_clone_sharedobject(
+    ptr: bigint,
+    uniffi_out_err: UniffiRustCallStatus
+  ): bigint;
+  ubrn_uniffi_indexd_ffi_fn_free_sharedobject(
+    ptr: bigint,
+    uniffi_out_err: UniffiRustCallStatus
+  ): void;
+  ubrn_uniffi_indexd_ffi_fn_method_sharedobject_metadata(
+    ptr: bigint,
+    uniffi_out_err: UniffiRustCallStatus
+  ): Uint8Array;
+  ubrn_uniffi_indexd_ffi_fn_method_sharedobject_size(
+    ptr: bigint,
+    uniffi_out_err: UniffiRustCallStatus
   ): bigint;
   ubrn_uniffi_indexd_ffi_fn_clone_upload(
     ptr: bigint,
@@ -480,16 +494,18 @@ interface NativeModuleInterface {
   ubrn_uniffi_indexd_ffi_checksum_method_sdk_download_shared(): number;
   ubrn_uniffi_indexd_ffi_checksum_method_sdk_hosts(): number;
   ubrn_uniffi_indexd_ffi_checksum_method_sdk_object(): number;
-  ubrn_uniffi_indexd_ffi_checksum_method_sdk_object_share_url(): number;
   ubrn_uniffi_indexd_ffi_checksum_method_sdk_objects(): number;
-  ubrn_uniffi_indexd_ffi_checksum_method_sdk_pin_slab(): number;
+  ubrn_uniffi_indexd_ffi_checksum_method_sdk_pin_shared(): number;
+  ubrn_uniffi_indexd_ffi_checksum_method_sdk_prune_slabs(): number;
   ubrn_uniffi_indexd_ffi_checksum_method_sdk_request_app_connection(): number;
   ubrn_uniffi_indexd_ffi_checksum_method_sdk_save_object(): number;
-  ubrn_uniffi_indexd_ffi_checksum_method_sdk_shared_object_metadata(): number;
+  ubrn_uniffi_indexd_ffi_checksum_method_sdk_share_object(): number;
+  ubrn_uniffi_indexd_ffi_checksum_method_sdk_shared_object(): number;
   ubrn_uniffi_indexd_ffi_checksum_method_sdk_slab(): number;
-  ubrn_uniffi_indexd_ffi_checksum_method_sdk_unpin_slab(): number;
   ubrn_uniffi_indexd_ffi_checksum_method_sdk_upload(): number;
   ubrn_uniffi_indexd_ffi_checksum_method_sdk_wait_for_connect(): number;
+  ubrn_uniffi_indexd_ffi_checksum_method_sharedobject_metadata(): number;
+  ubrn_uniffi_indexd_ffi_checksum_method_sharedobject_size(): number;
   ubrn_uniffi_indexd_ffi_checksum_method_upload_finalize(): number;
   ubrn_uniffi_indexd_ffi_checksum_method_upload_write(): number;
   ubrn_uniffi_indexd_ffi_checksum_method_uploadprogresscallback_progress(): number;
@@ -527,6 +543,10 @@ interface NativeModuleInterface {
     uniffi_out_err: UniffiRustCallStatus
   ): UniffiRustArcPtr;
   ubrn_uniffi_internal_fn_method_sdk_ffi__bless_pointer(
+    pointer: bigint,
+    uniffi_out_err: UniffiRustCallStatus
+  ): UniffiRustArcPtr;
+  ubrn_uniffi_internal_fn_method_sharedobject_ffi__bless_pointer(
     pointer: bigint,
     uniffi_out_err: UniffiRustCallStatus
   ): UniffiRustArcPtr;

@@ -2541,7 +2541,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - Sia (0.0.5):
+  - Sia (0.10.0):
     - boost
     - DoubleConversion
     - fast_float
@@ -2898,7 +2898,7 @@ SPEC CHECKSUMS:
   RNCClipboard: 4b58c780f63676367640f23c8e114e9bd0cf86ac
   RNScreens: 0bbf16c074ae6bb1058a7bf2d1ae017f4306797c
   RNSVG: 6c39befcfad06eec55b40c19a030b2d9eca63334
-  Sia: edcd519df7cb80dbcf470a863bbc69cb7d9ba558
+  Sia: 8eb387c739b88b44e1f8734b14bc53cb6946f249
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
   uniffi-bindgen-react-native: 125eae9e3a0cf34bf8f3d4b0ceed517df7cc0733
   Yoga: 00013dd9cde63a2d98e8002fcc4f5ddb66c10782

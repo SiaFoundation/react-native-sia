@@ -86,6 +86,7 @@ class NativeIndexdFfi : public jsi::HostObject {
     jsi::Value cpp_uniffi_indexd_ffi_fn_method_sharedobject_size(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count);
     jsi::Value cpp_uniffi_indexd_ffi_fn_clone_upload(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count);
     jsi::Value cpp_uniffi_indexd_ffi_fn_free_upload(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count);
+    jsi::Value cpp_uniffi_indexd_ffi_fn_method_upload_cancel(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count);
     jsi::Value cpp_uniffi_indexd_ffi_fn_method_upload_finalize(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count);
     jsi::Value cpp_uniffi_indexd_ffi_fn_method_upload_write(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count);
     jsi::Value cpp_uniffi_indexd_ffi_fn_clone_uploadprogresscallback(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count);
@@ -190,6 +191,7 @@ class NativeIndexdFfi : public jsi::HostObject {
     jsi::Value cpp_uniffi_indexd_ffi_checksum_method_sdk_wait_for_connect(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count);
     jsi::Value cpp_uniffi_indexd_ffi_checksum_method_sharedobject_metadata(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count);
     jsi::Value cpp_uniffi_indexd_ffi_checksum_method_sharedobject_size(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count);
+    jsi::Value cpp_uniffi_indexd_ffi_checksum_method_upload_cancel(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count);
     jsi::Value cpp_uniffi_indexd_ffi_checksum_method_upload_finalize(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count);
     jsi::Value cpp_uniffi_indexd_ffi_checksum_method_upload_write(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count);
     jsi::Value cpp_uniffi_indexd_ffi_checksum_method_uploadprogresscallback_progress(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count);

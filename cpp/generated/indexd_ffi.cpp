@@ -444,6 +444,10 @@ extern "C" {
         void * ptr, 
         RustCallStatus *uniffi_out_err
     );
+    void uniffi_indexd_ffi_fn_method_upload_cancel(
+        void * ptr, 
+        RustCallStatus *uniffi_out_err
+    );
     /*handle*/ uint64_t uniffi_indexd_ffi_fn_method_upload_finalize(
         void * ptr
     );
@@ -778,6 +782,8 @@ extern "C" {
     uint16_t uniffi_indexd_ffi_checksum_method_sharedobject_metadata(
     );
     uint16_t uniffi_indexd_ffi_checksum_method_sharedobject_size(
+    );
+    uint16_t uniffi_indexd_ffi_checksum_method_upload_cancel(
     );
     uint16_t uniffi_indexd_ffi_checksum_method_upload_finalize(
     );
@@ -3817,6 +3823,14 @@ NativeIndexdFfi::NativeIndexdFfi(
             return this->cpp_uniffi_indexd_ffi_fn_free_upload(rt, thisVal, args, count);
         }
     );
+    props["ubrn_uniffi_indexd_ffi_fn_method_upload_cancel"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_fn_method_upload_cancel"),
+        1,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_indexd_ffi_fn_method_upload_cancel(rt, thisVal, args, count);
+        }
+    );
     props["ubrn_uniffi_indexd_ffi_fn_method_upload_finalize"] = jsi::Function::createFromHostFunction(
         rt,
         jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_fn_method_upload_finalize"),
@@ -4647,6 +4661,14 @@ NativeIndexdFfi::NativeIndexdFfi(
         0,
         [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
             return this->cpp_uniffi_indexd_ffi_checksum_method_sharedobject_size(rt, thisVal, args, count);
+        }
+    );
+    props["ubrn_uniffi_indexd_ffi_checksum_method_upload_cancel"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_checksum_method_upload_cancel"),
+        0,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_indexd_ffi_checksum_method_upload_cancel(rt, thisVal, args, count);
         }
     );
     props["ubrn_uniffi_indexd_ffi_checksum_method_upload_finalize"] = jsi::Function::createFromHostFunction(
@@ -5585,6 +5607,16 @@ jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_fn_free_upload(jsi::Runtime& r
         
         return jsi::Value::undefined();
 }
+jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_fn_method_upload_cancel(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        RustCallStatus status = uniffi::indexd_ffi::Bridging<RustCallStatus>::rustSuccess(rt);
+        uniffi_indexd_ffi_fn_method_upload_cancel(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), 
+            &status
+        );
+        uniffi::indexd_ffi::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status, args[count - 1]);
+
+        
+        return jsi::Value::undefined();
+}
 jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_fn_method_upload_finalize(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
         auto value = uniffi_indexd_ffi_fn_method_upload_finalize(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0])
         );
@@ -6374,6 +6406,13 @@ jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_checksum_method_sharedobject_m
 }
 jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_checksum_method_sharedobject_size(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
         auto value = uniffi_indexd_ffi_checksum_method_sharedobject_size(
+        );
+
+        
+        return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_checksum_method_upload_cancel(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        auto value = uniffi_indexd_ffi_checksum_method_upload_cancel(
         );
 
         

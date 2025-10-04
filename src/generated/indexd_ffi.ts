@@ -1750,6 +1750,7 @@ const FfiConverterTypeObjectError = (() => {
 // Flat error type: UploadError
 export enum UploadError_Tags {
   Closed = 'Closed',
+  Cancelled = 'Cancelled',
   Upload = 'Upload',
   Crypto = 'Crypto',
   NotConnected = 'NotConnected',
@@ -1778,7 +1779,7 @@ export const UploadError = (() => {
       return instanceOf(e) && (e as any)[variantOrdinalSymbol] === 1;
     }
   }
-  class Upload extends UniffiError {
+  class Cancelled extends UniffiError {
     /**
      * @private
      * This field is private and should not be used.
@@ -1790,6 +1791,28 @@ export const UploadError = (() => {
      */
     readonly [variantOrdinalSymbol] = 2;
 
+    public readonly tag = UploadError_Tags.Cancelled;
+
+    constructor(message: string) {
+      super('UploadError', 'Cancelled', message);
+    }
+
+    static instanceOf(e: any): e is Cancelled {
+      return instanceOf(e) && (e as any)[variantOrdinalSymbol] === 2;
+    }
+  }
+  class Upload extends UniffiError {
+    /**
+     * @private
+     * This field is private and should not be used.
+     */
+    readonly [uniffiTypeNameSymbol]: string = 'UploadError';
+    /**
+     * @private
+     * This field is private and should not be used.
+     */
+    readonly [variantOrdinalSymbol] = 3;
+
     public readonly tag = UploadError_Tags.Upload;
 
     constructor(message: string) {
@@ -1797,7 +1820,7 @@ export const UploadError = (() => {
     }
 
     static instanceOf(e: any): e is Upload {
-      return instanceOf(e) && (e as any)[variantOrdinalSymbol] === 2;
+      return instanceOf(e) && (e as any)[variantOrdinalSymbol] === 3;
     }
   }
   class Crypto extends UniffiError {
@@ -1810,7 +1833,7 @@ export const UploadError = (() => {
      * @private
      * This field is private and should not be used.
      */
-    readonly [variantOrdinalSymbol] = 3;
+    readonly [variantOrdinalSymbol] = 4;
 
     public readonly tag = UploadError_Tags.Crypto;
 
@@ -1819,7 +1842,7 @@ export const UploadError = (() => {
     }
 
     static instanceOf(e: any): e is Crypto {
-      return instanceOf(e) && (e as any)[variantOrdinalSymbol] === 3;
+      return instanceOf(e) && (e as any)[variantOrdinalSymbol] === 4;
     }
   }
   class NotConnected extends UniffiError {
@@ -1832,7 +1855,7 @@ export const UploadError = (() => {
      * @private
      * This field is private and should not be used.
      */
-    readonly [variantOrdinalSymbol] = 4;
+    readonly [variantOrdinalSymbol] = 5;
 
     public readonly tag = UploadError_Tags.NotConnected;
 
@@ -1841,7 +1864,7 @@ export const UploadError = (() => {
     }
 
     static instanceOf(e: any): e is NotConnected {
-      return instanceOf(e) && (e as any)[variantOrdinalSymbol] === 4;
+      return instanceOf(e) && (e as any)[variantOrdinalSymbol] === 5;
     }
   }
   class Custom extends UniffiError {
@@ -1854,7 +1877,7 @@ export const UploadError = (() => {
      * @private
      * This field is private and should not be used.
      */
-    readonly [variantOrdinalSymbol] = 5;
+    readonly [variantOrdinalSymbol] = 6;
 
     public readonly tag = UploadError_Tags.Custom;
 
@@ -1863,7 +1886,7 @@ export const UploadError = (() => {
     }
 
     static instanceOf(e: any): e is Custom {
-      return instanceOf(e) && (e as any)[variantOrdinalSymbol] === 5;
+      return instanceOf(e) && (e as any)[variantOrdinalSymbol] === 6;
     }
   }
 
@@ -1873,6 +1896,7 @@ export const UploadError = (() => {
   }
   return {
     Closed,
+    Cancelled,
     Upload,
     Crypto,
     NotConnected,
@@ -1897,15 +1921,18 @@ const FfiConverterTypeUploadError = (() => {
           return new UploadError.Closed(FfiConverterString.read(from));
 
         case 2:
-          return new UploadError.Upload(FfiConverterString.read(from));
+          return new UploadError.Cancelled(FfiConverterString.read(from));
 
         case 3:
-          return new UploadError.Crypto(FfiConverterString.read(from));
+          return new UploadError.Upload(FfiConverterString.read(from));
 
         case 4:
-          return new UploadError.NotConnected(FfiConverterString.read(from));
+          return new UploadError.Crypto(FfiConverterString.read(from));
 
         case 5:
+          return new UploadError.NotConnected(FfiConverterString.read(from));
+
+        case 6:
           return new UploadError.Custom(FfiConverterString.read(from));
 
         default:
@@ -4373,13 +4400,22 @@ const FfiConverterTypeSharedObject = new FfiConverterObject(
  * Uploads data to the Sia network. It does so in chunks to support large files in
  * arbitrary languages.
  *
+ * Callers should write data using [`Upload::write`] until EoF, then call
+ * [`Upload::finalize`] to complete the upload and get the metadata. [`Upload::cancel`]
+ * can be called to abort an in-progress upload.
+ *
  * Language bindings should provide a higher-level implementation that wraps a stream.
  */
 export interface UploadInterface {
   /**
+   * Cancels an in-progress upload. This will drop any data
+   * that has already been written.
+   */
+  cancel(): void;
+  /**
    * Waits for all chunks of data to be pinned to the indexer and
    * returns the metadata. Data can no longer be written after
-   * calling finalize.
+   * calling finalize. This function must only be called once.
    *
    * The caller must store the metadata locally in order to download
    * it in the future.
@@ -4403,6 +4439,10 @@ export interface UploadInterface {
  * Uploads data to the Sia network. It does so in chunks to support large files in
  * arbitrary languages.
  *
+ * Callers should write data using [`Upload::write`] until EoF, then call
+ * [`Upload::finalize`] to complete the upload and get the metadata. [`Upload::cancel`]
+ * can be called to abort an in-progress upload.
+ *
  * Language bindings should provide a higher-level implementation that wraps a stream.
  */
 export class Upload extends UniffiAbstractObject implements UploadInterface {
@@ -4417,9 +4457,25 @@ export class Upload extends UniffiAbstractObject implements UploadInterface {
   }
 
   /**
+   * Cancels an in-progress upload. This will drop any data
+   * that has already been written.
+   */
+  public cancel(): void {
+    uniffiCaller.rustCall(
+      /*caller:*/ (callStatus) => {
+        nativeModule().ubrn_uniffi_indexd_ffi_fn_method_upload_cancel(
+          uniffiTypeUploadObjectFactory.clonePointer(this),
+          callStatus
+        );
+      },
+      /*liftString:*/ FfiConverterString.lift
+    );
+  }
+
+  /**
    * Waits for all chunks of data to be pinned to the indexer and
    * returns the metadata. Data can no longer be written after
-   * calling finalize.
+   * calling finalize. This function must only be called once.
    *
    * The caller must store the metadata locally in order to download
    * it in the future.
@@ -5159,8 +5215,16 @@ function uniffiEnsureInitialized() {
     );
   }
   if (
+    nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_upload_cancel() !==
+    62647
+  ) {
+    throw new UniffiInternalError.ApiChecksumMismatch(
+      'uniffi_indexd_ffi_checksum_method_upload_cancel'
+    );
+  }
+  if (
     nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_upload_finalize() !==
-    65498
+    17666
   ) {
     throw new UniffiInternalError.ApiChecksumMismatch(
       'uniffi_indexd_ffi_checksum_method_upload_finalize'

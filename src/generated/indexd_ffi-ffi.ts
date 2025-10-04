@@ -284,6 +284,10 @@ interface NativeModuleInterface {
     ptr: bigint,
     uniffi_out_err: UniffiRustCallStatus
   ): void;
+  ubrn_uniffi_indexd_ffi_fn_method_upload_cancel(
+    ptr: bigint,
+    uniffi_out_err: UniffiRustCallStatus
+  ): void;
   ubrn_uniffi_indexd_ffi_fn_method_upload_finalize(ptr: bigint): bigint;
   ubrn_uniffi_indexd_ffi_fn_method_upload_write(
     ptr: bigint,
@@ -506,6 +510,7 @@ interface NativeModuleInterface {
   ubrn_uniffi_indexd_ffi_checksum_method_sdk_wait_for_connect(): number;
   ubrn_uniffi_indexd_ffi_checksum_method_sharedobject_metadata(): number;
   ubrn_uniffi_indexd_ffi_checksum_method_sharedobject_size(): number;
+  ubrn_uniffi_indexd_ffi_checksum_method_upload_cancel(): number;
   ubrn_uniffi_indexd_ffi_checksum_method_upload_finalize(): number;
   ubrn_uniffi_indexd_ffi_checksum_method_upload_write(): number;
   ubrn_uniffi_indexd_ffi_checksum_method_uploadprogresscallback_progress(): number;

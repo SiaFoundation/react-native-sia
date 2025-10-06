@@ -1750,7 +1750,6 @@ const FfiConverterTypeObjectError = (() => {
 // Flat error type: UploadError
 export enum UploadError_Tags {
   Closed = 'Closed',
-  Cancelled = 'Cancelled',
   Upload = 'Upload',
   Crypto = 'Crypto',
   NotConnected = 'NotConnected',
@@ -1779,7 +1778,7 @@ export const UploadError = (() => {
       return instanceOf(e) && (e as any)[variantOrdinalSymbol] === 1;
     }
   }
-  class Cancelled extends UniffiError {
+  class Upload extends UniffiError {
     /**
      * @private
      * This field is private and should not be used.
@@ -1791,28 +1790,6 @@ export const UploadError = (() => {
      */
     readonly [variantOrdinalSymbol] = 2;
 
-    public readonly tag = UploadError_Tags.Cancelled;
-
-    constructor(message: string) {
-      super('UploadError', 'Cancelled', message);
-    }
-
-    static instanceOf(e: any): e is Cancelled {
-      return instanceOf(e) && (e as any)[variantOrdinalSymbol] === 2;
-    }
-  }
-  class Upload extends UniffiError {
-    /**
-     * @private
-     * This field is private and should not be used.
-     */
-    readonly [uniffiTypeNameSymbol]: string = 'UploadError';
-    /**
-     * @private
-     * This field is private and should not be used.
-     */
-    readonly [variantOrdinalSymbol] = 3;
-
     public readonly tag = UploadError_Tags.Upload;
 
     constructor(message: string) {
@@ -1820,7 +1797,7 @@ export const UploadError = (() => {
     }
 
     static instanceOf(e: any): e is Upload {
-      return instanceOf(e) && (e as any)[variantOrdinalSymbol] === 3;
+      return instanceOf(e) && (e as any)[variantOrdinalSymbol] === 2;
     }
   }
   class Crypto extends UniffiError {
@@ -1833,7 +1810,7 @@ export const UploadError = (() => {
      * @private
      * This field is private and should not be used.
      */
-    readonly [variantOrdinalSymbol] = 4;
+    readonly [variantOrdinalSymbol] = 3;
 
     public readonly tag = UploadError_Tags.Crypto;
 
@@ -1842,7 +1819,7 @@ export const UploadError = (() => {
     }
 
     static instanceOf(e: any): e is Crypto {
-      return instanceOf(e) && (e as any)[variantOrdinalSymbol] === 4;
+      return instanceOf(e) && (e as any)[variantOrdinalSymbol] === 3;
     }
   }
   class NotConnected extends UniffiError {
@@ -1855,7 +1832,7 @@ export const UploadError = (() => {
      * @private
      * This field is private and should not be used.
      */
-    readonly [variantOrdinalSymbol] = 5;
+    readonly [variantOrdinalSymbol] = 4;
 
     public readonly tag = UploadError_Tags.NotConnected;
 
@@ -1864,7 +1841,7 @@ export const UploadError = (() => {
     }
 
     static instanceOf(e: any): e is NotConnected {
-      return instanceOf(e) && (e as any)[variantOrdinalSymbol] === 5;
+      return instanceOf(e) && (e as any)[variantOrdinalSymbol] === 4;
     }
   }
   class Custom extends UniffiError {
@@ -1877,7 +1854,7 @@ export const UploadError = (() => {
      * @private
      * This field is private and should not be used.
      */
-    readonly [variantOrdinalSymbol] = 6;
+    readonly [variantOrdinalSymbol] = 5;
 
     public readonly tag = UploadError_Tags.Custom;
 
@@ -1886,7 +1863,7 @@ export const UploadError = (() => {
     }
 
     static instanceOf(e: any): e is Custom {
-      return instanceOf(e) && (e as any)[variantOrdinalSymbol] === 6;
+      return instanceOf(e) && (e as any)[variantOrdinalSymbol] === 5;
     }
   }
 
@@ -1896,7 +1873,6 @@ export const UploadError = (() => {
   }
   return {
     Closed,
-    Cancelled,
     Upload,
     Crypto,
     NotConnected,
@@ -1921,18 +1897,15 @@ const FfiConverterTypeUploadError = (() => {
           return new UploadError.Closed(FfiConverterString.read(from));
 
         case 2:
-          return new UploadError.Cancelled(FfiConverterString.read(from));
-
-        case 3:
           return new UploadError.Upload(FfiConverterString.read(from));
 
-        case 4:
+        case 3:
           return new UploadError.Crypto(FfiConverterString.read(from));
 
-        case 5:
+        case 4:
           return new UploadError.NotConnected(FfiConverterString.read(from));
 
-        case 6:
+        case 5:
           return new UploadError.Custom(FfiConverterString.read(from));
 
         default:

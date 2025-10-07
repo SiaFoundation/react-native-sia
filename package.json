@@ -1,6 +1,6 @@
 {
   "name": "react-native-sia",
-  "version": "0.10.3",
+  "version": "0.11.0",
   "description": "The Sia SDK for React Native.",
   "main": "./lib/module/public.js",
   "types": "./lib/typescript/src/public.d.ts",

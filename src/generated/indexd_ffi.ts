@@ -488,6 +488,71 @@ const FfiConverterTypeNetAddress = (() => {
 })();
 
 /**
+ * An ObjectEvent represents an object and whether it was deleted or not.
+ */
+export type ObjectEvent = {
+  key: string;
+  deleted: boolean;
+  object: PinnedObjectInterface | undefined;
+};
+
+/**
+ * Generated factory for {@link ObjectEvent} record objects.
+ */
+export const ObjectEvent = (() => {
+  const defaults = () => ({});
+  const create = (() => {
+    return uniffiCreateRecord<ObjectEvent, ReturnType<typeof defaults>>(
+      defaults
+    );
+  })();
+  return Object.freeze({
+    /**
+     * Create a frozen instance of {@link ObjectEvent}, with defaults specified
+     * in Rust, in the {@link indexd_ffi} crate.
+     */
+    create,
+
+    /**
+     * Create a frozen instance of {@link ObjectEvent}, with defaults specified
+     * in Rust, in the {@link indexd_ffi} crate.
+     */
+    new: create,
+
+    /**
+     * Defaults specified in the {@link indexd_ffi} crate.
+     */
+    defaults: () => Object.freeze(defaults()) as Partial<ObjectEvent>,
+  });
+})();
+
+const FfiConverterTypeObjectEvent = (() => {
+  type TypeName = ObjectEvent;
+  class FFIConverter extends AbstractFfiConverterByteArray<TypeName> {
+    read(from: RustBuffer): TypeName {
+      return {
+        key: FfiConverterString.read(from),
+        deleted: FfiConverterBool.read(from),
+        object: FfiConverterOptionalTypePinnedObject.read(from),
+      };
+    }
+    write(value: TypeName, into: RustBuffer): void {
+      FfiConverterString.write(value.key, into);
+      FfiConverterBool.write(value.deleted, into);
+      FfiConverterOptionalTypePinnedObject.write(value.object, into);
+    }
+    allocationSize(value: TypeName): number {
+      return (
+        FfiConverterString.allocationSize(value.key) +
+        FfiConverterBool.allocationSize(value.deleted) +
+        FfiConverterOptionalTypePinnedObject.allocationSize(value.object)
+      );
+    }
+  }
+  return new FFIConverter();
+})();
+
+/**
  * Used to paginate through objects stored in the indexer.
  *
  * When syncing changes from an indexer, `after` should be set to the
@@ -3382,7 +3447,7 @@ export interface SdkInterface {
     cursor: ObjectsCursor | undefined,
     limit: /*u32*/ number,
     asyncOpts_?: { signal: AbortSignal }
-  ) /*throws*/ : Promise<Array<PinnedObjectInterface>>;
+  ) /*throws*/ : Promise<Array<ObjectEvent>>;
   /**
    * Pins a shared object to the indexer and returns a [PinnedObject].
    */
@@ -3749,7 +3814,7 @@ export class Sdk extends UniffiAbstractObject implements SdkInterface {
     cursor: ObjectsCursor | undefined,
     limit: /*u32*/ number,
     asyncOpts_?: { signal: AbortSignal }
-  ): Promise<Array<PinnedObjectInterface>> /*throws*/ {
+  ): Promise<Array<ObjectEvent>> /*throws*/ {
     const __stack = uniffiIsDebug ? new Error().stack : undefined;
     try {
       return await uniffiRustCallAsync(
@@ -3769,8 +3834,8 @@ export class Sdk extends UniffiAbstractObject implements SdkInterface {
           .ubrn_ffi_indexd_ffi_rust_future_complete_rust_buffer,
         /*freeFunc:*/ nativeModule()
           .ubrn_ffi_indexd_ffi_rust_future_free_rust_buffer,
-        /*liftFunc:*/ FfiConverterArrayTypePinnedObject.lift.bind(
-          FfiConverterArrayTypePinnedObject
+        /*liftFunc:*/ FfiConverterArrayTypeObjectEvent.lift.bind(
+          FfiConverterArrayTypeObjectEvent
         ),
         /*liftString:*/ FfiConverterString.lift,
         /*asyncOpts:*/ asyncOpts_,
@@ -4809,6 +4874,11 @@ const FfiConverterArrayTypeNetAddress = new FfiConverterArray(
   FfiConverterTypeNetAddress
 );
 
+// FfiConverter for Array<ObjectEvent>
+const FfiConverterArrayTypeObjectEvent = new FfiConverterArray(
+  FfiConverterTypeObjectEvent
+);
+
 // FfiConverter for Array<PinnedSector>
 const FfiConverterArrayTypePinnedSector = new FfiConverterArray(
   FfiConverterTypePinnedSector
@@ -4817,14 +4887,14 @@ const FfiConverterArrayTypePinnedSector = new FfiConverterArray(
 // FfiConverter for Array<Slab>
 const FfiConverterArrayTypeSlab = new FfiConverterArray(FfiConverterTypeSlab);
 
+// FfiConverter for PinnedObjectInterface | undefined
+const FfiConverterOptionalTypePinnedObject = new FfiConverterOptional(
+  FfiConverterTypePinnedObject
+);
+
 // FfiConverter for UploadProgressCallback | undefined
 const FfiConverterOptionalTypeUploadProgressCallback = new FfiConverterOptional(
   FfiConverterTypeUploadProgressCallback
-);
-
-// FfiConverter for Array<PinnedObjectInterface>
-const FfiConverterArrayTypePinnedObject = new FfiConverterArray(
-  FfiConverterTypePinnedObject
 );
 
 /**
@@ -5095,7 +5165,7 @@ function uniffiEnsureInitialized() {
   }
   if (
     nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_sdk_objects() !==
-    14867
+    37732
   ) {
     throw new UniffiInternalError.ApiChecksumMismatch(
       'uniffi_indexd_ffi_checksum_method_sdk_objects'
@@ -5276,6 +5346,7 @@ export default Object.freeze({
     FfiConverterTypeLogger,
     FfiConverterTypeNetAddress,
     FfiConverterTypeObjectError,
+    FfiConverterTypeObjectEvent,
     FfiConverterTypeObjectsCursor,
     FfiConverterTypePinnedObject,
     FfiConverterTypePinnedSector,

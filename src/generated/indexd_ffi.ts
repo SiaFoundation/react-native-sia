@@ -1205,12 +1205,165 @@ const FfiConverterTypeAppKeyError = (() => {
   return new FfiConverter();
 })();
 
+// Flat error type: ConnectError
+export enum ConnectError_Tags {
+  NotConnected = 'NotConnected',
+  AlreadyConnected = 'AlreadyConnected',
+  AppClient = 'AppClient',
+  Custom = 'Custom',
+}
+export const ConnectError = (() => {
+  class NotConnected extends UniffiError {
+    /**
+     * @private
+     * This field is private and should not be used.
+     */
+    readonly [uniffiTypeNameSymbol]: string = 'ConnectError';
+    /**
+     * @private
+     * This field is private and should not be used.
+     */
+    readonly [variantOrdinalSymbol] = 1;
+
+    public readonly tag = ConnectError_Tags.NotConnected;
+
+    constructor(message: string) {
+      super('ConnectError', 'NotConnected', message);
+    }
+
+    static instanceOf(e: any): e is NotConnected {
+      return instanceOf(e) && (e as any)[variantOrdinalSymbol] === 1;
+    }
+  }
+  class AlreadyConnected extends UniffiError {
+    /**
+     * @private
+     * This field is private and should not be used.
+     */
+    readonly [uniffiTypeNameSymbol]: string = 'ConnectError';
+    /**
+     * @private
+     * This field is private and should not be used.
+     */
+    readonly [variantOrdinalSymbol] = 2;
+
+    public readonly tag = ConnectError_Tags.AlreadyConnected;
+
+    constructor(message: string) {
+      super('ConnectError', 'AlreadyConnected', message);
+    }
+
+    static instanceOf(e: any): e is AlreadyConnected {
+      return instanceOf(e) && (e as any)[variantOrdinalSymbol] === 2;
+    }
+  }
+  class AppClient extends UniffiError {
+    /**
+     * @private
+     * This field is private and should not be used.
+     */
+    readonly [uniffiTypeNameSymbol]: string = 'ConnectError';
+    /**
+     * @private
+     * This field is private and should not be used.
+     */
+    readonly [variantOrdinalSymbol] = 3;
+
+    public readonly tag = ConnectError_Tags.AppClient;
+
+    constructor(message: string) {
+      super('ConnectError', 'AppClient', message);
+    }
+
+    static instanceOf(e: any): e is AppClient {
+      return instanceOf(e) && (e as any)[variantOrdinalSymbol] === 3;
+    }
+  }
+  class Custom extends UniffiError {
+    /**
+     * @private
+     * This field is private and should not be used.
+     */
+    readonly [uniffiTypeNameSymbol]: string = 'ConnectError';
+    /**
+     * @private
+     * This field is private and should not be used.
+     */
+    readonly [variantOrdinalSymbol] = 4;
+
+    public readonly tag = ConnectError_Tags.Custom;
+
+    constructor(message: string) {
+      super('ConnectError', 'Custom', message);
+    }
+
+    static instanceOf(e: any): e is Custom {
+      return instanceOf(e) && (e as any)[variantOrdinalSymbol] === 4;
+    }
+  }
+
+  // Utility function which does not rely on instanceof.
+  function instanceOf(e: any): e is ConnectError {
+    return (e as any)[uniffiTypeNameSymbol] === 'ConnectError';
+  }
+  return {
+    NotConnected,
+    AlreadyConnected,
+    AppClient,
+    Custom,
+    instanceOf,
+  };
+})();
+
+// Union type for ConnectError error type.
+
+export type ConnectError = InstanceType<
+  (typeof ConnectError)[keyof Omit<typeof ConnectError, 'instanceOf'>]
+>;
+
+const FfiConverterTypeConnectError = (() => {
+  const intConverter = FfiConverterInt32;
+  type TypeName = ConnectError;
+  class FfiConverter extends AbstractFfiConverterByteArray<TypeName> {
+    read(from: RustBuffer): TypeName {
+      switch (intConverter.read(from)) {
+        case 1:
+          return new ConnectError.NotConnected(FfiConverterString.read(from));
+
+        case 2:
+          return new ConnectError.AlreadyConnected(
+            FfiConverterString.read(from)
+          );
+
+        case 3:
+          return new ConnectError.AppClient(FfiConverterString.read(from));
+
+        case 4:
+          return new ConnectError.Custom(FfiConverterString.read(from));
+
+        default:
+          throw new UniffiInternalError.UnexpectedEnumCase();
+      }
+    }
+    write(value: TypeName, into: RustBuffer): void {
+      const obj = value as any;
+      const index = obj[variantOrdinalSymbol] as number;
+      intConverter.write(index, into);
+    }
+    allocationSize(value: TypeName): number {
+      return intConverter.allocationSize(0);
+    }
+  }
+  return new FfiConverter();
+})();
+
 // Flat error type: DownloadError
 export enum DownloadError_Tags {
   Download = 'Download',
   AppClient = 'AppClient',
   HexParseError = 'HexParseError',
   NotConnected = 'NotConnected',
+  Cancelled = 'Cancelled',
   Custom = 'Custom',
 }
 export const DownloadError = (() => {
@@ -1302,7 +1455,7 @@ export const DownloadError = (() => {
       return instanceOf(e) && (e as any)[variantOrdinalSymbol] === 4;
     }
   }
-  class Custom extends UniffiError {
+  class Cancelled extends UniffiError {
     /**
      * @private
      * This field is private and should not be used.
@@ -1314,6 +1467,28 @@ export const DownloadError = (() => {
      */
     readonly [variantOrdinalSymbol] = 5;
 
+    public readonly tag = DownloadError_Tags.Cancelled;
+
+    constructor(message: string) {
+      super('DownloadError', 'Cancelled', message);
+    }
+
+    static instanceOf(e: any): e is Cancelled {
+      return instanceOf(e) && (e as any)[variantOrdinalSymbol] === 5;
+    }
+  }
+  class Custom extends UniffiError {
+    /**
+     * @private
+     * This field is private and should not be used.
+     */
+    readonly [uniffiTypeNameSymbol]: string = 'DownloadError';
+    /**
+     * @private
+     * This field is private and should not be used.
+     */
+    readonly [variantOrdinalSymbol] = 6;
+
     public readonly tag = DownloadError_Tags.Custom;
 
     constructor(message: string) {
@@ -1321,7 +1496,7 @@ export const DownloadError = (() => {
     }
 
     static instanceOf(e: any): e is Custom {
-      return instanceOf(e) && (e as any)[variantOrdinalSymbol] === 5;
+      return instanceOf(e) && (e as any)[variantOrdinalSymbol] === 6;
     }
   }
 
@@ -1334,6 +1509,7 @@ export const DownloadError = (() => {
     AppClient,
     HexParseError,
     NotConnected,
+    Cancelled,
     Custom,
     instanceOf,
   };
@@ -1364,6 +1540,9 @@ const FfiConverterTypeDownloadError = (() => {
           return new DownloadError.NotConnected(FfiConverterString.read(from));
 
         case 5:
+          return new DownloadError.Cancelled(FfiConverterString.read(from));
+
+        case 6:
           return new DownloadError.Custom(FfiConverterString.read(from));
 
         default:
@@ -2118,7 +2297,7 @@ const FfiConverterTypeAppKey = new FfiConverterObject(
  * Language bindings should provide a higher-level implementation that wraps a stream.
  */
 export interface DownloadInterface {
-  params(): DownloadStateInterface;
+  cancel(): void;
   /**
    * Reads a chunk of data from the Sia network.
    *
@@ -2128,8 +2307,6 @@ export interface DownloadInterface {
   readChunk(asyncOpts_?: {
     signal: AbortSignal;
   }) /*throws*/ : Promise<ArrayBuffer>;
-  rem(): /*u64*/ bigint;
-  update(n: /*u64*/ bigint): void;
 }
 
 /**
@@ -2153,17 +2330,15 @@ export class Download
       uniffiTypeDownloadObjectFactory.bless(pointer);
   }
 
-  public params(): DownloadStateInterface {
-    return FfiConverterTypeDownloadState.lift(
-      uniffiCaller.rustCall(
-        /*caller:*/ (callStatus) => {
-          return nativeModule().ubrn_uniffi_indexd_ffi_fn_method_download_params(
-            uniffiTypeDownloadObjectFactory.clonePointer(this),
-            callStatus
-          );
-        },
-        /*liftString:*/ FfiConverterString.lift
-      )
+  public cancel(): void {
+    uniffiCaller.rustCall(
+      /*caller:*/ (callStatus) => {
+        nativeModule().ubrn_uniffi_indexd_ffi_fn_method_download_cancel(
+          uniffiTypeDownloadObjectFactory.clonePointer(this),
+          callStatus
+        );
+      },
+      /*liftString:*/ FfiConverterString.lift
     );
   }
 
@@ -2208,33 +2383,6 @@ export class Download
       }
       throw __error;
     }
-  }
-
-  public rem(): /*u64*/ bigint {
-    return FfiConverterUInt64.lift(
-      uniffiCaller.rustCall(
-        /*caller:*/ (callStatus) => {
-          return nativeModule().ubrn_uniffi_indexd_ffi_fn_method_download_rem(
-            uniffiTypeDownloadObjectFactory.clonePointer(this),
-            callStatus
-          );
-        },
-        /*liftString:*/ FfiConverterString.lift
-      )
-    );
-  }
-
-  public update(n: /*u64*/ bigint): void {
-    uniffiCaller.rustCall(
-      /*caller:*/ (callStatus) => {
-        nativeModule().ubrn_uniffi_indexd_ffi_fn_method_download_update(
-          uniffiTypeDownloadObjectFactory.clonePointer(this),
-          FfiConverterUInt64.lower(n),
-          callStatus
-        );
-      },
-      /*liftString:*/ FfiConverterString.lift
-    );
   }
 
   /**
@@ -2321,323 +2469,6 @@ const uniffiTypeDownloadObjectFactory: UniffiObjectFactory<DownloadInterface> =
 // FfiConverter for DownloadInterface
 const FfiConverterTypeDownload = new FfiConverterObject(
   uniffiTypeDownloadObjectFactory
-);
-
-/**
- * Downloads data from the Sia network. It does so in chunks to support large files in
- * arbitrary languages.
- *
- * Language bindings should provide a higher-level implementation that wraps a stream.
- */
-export interface DownloadSharedInterface {
-  params(): DownloadStateInterface;
-  /**
-   * Reads a chunk of data from the Sia network.
-   *
-   * # Returns
-   * A vector containing the chunk of data read. If the vector is empty, the end of the download has been reached.
-   */
-  readChunk(asyncOpts_?: {
-    signal: AbortSignal;
-  }) /*throws*/ : Promise<ArrayBuffer>;
-  rem(): /*u64*/ bigint;
-  update(n: /*u64*/ bigint): void;
-}
-
-/**
- * Downloads data from the Sia network. It does so in chunks to support large files in
- * arbitrary languages.
- *
- * Language bindings should provide a higher-level implementation that wraps a stream.
- */
-export class DownloadShared
-  extends UniffiAbstractObject
-  implements DownloadSharedInterface
-{
-  readonly [uniffiTypeNameSymbol] = 'DownloadShared';
-  readonly [destructorGuardSymbol]: UniffiRustArcPtr;
-  readonly [pointerLiteralSymbol]: UnsafeMutableRawPointer;
-  // No primary constructor declared for this class.
-  private constructor(pointer: UnsafeMutableRawPointer) {
-    super();
-    this[pointerLiteralSymbol] = pointer;
-    this[destructorGuardSymbol] =
-      uniffiTypeDownloadSharedObjectFactory.bless(pointer);
-  }
-
-  public params(): DownloadStateInterface {
-    return FfiConverterTypeDownloadState.lift(
-      uniffiCaller.rustCall(
-        /*caller:*/ (callStatus) => {
-          return nativeModule().ubrn_uniffi_indexd_ffi_fn_method_downloadshared_params(
-            uniffiTypeDownloadSharedObjectFactory.clonePointer(this),
-            callStatus
-          );
-        },
-        /*liftString:*/ FfiConverterString.lift
-      )
-    );
-  }
-
-  /**
-   * Reads a chunk of data from the Sia network.
-   *
-   * # Returns
-   * A vector containing the chunk of data read. If the vector is empty, the end of the download has been reached.
-   */
-  public async readChunk(asyncOpts_?: {
-    signal: AbortSignal;
-  }): Promise<ArrayBuffer> /*throws*/ {
-    const __stack = uniffiIsDebug ? new Error().stack : undefined;
-    try {
-      return await uniffiRustCallAsync(
-        /*rustCaller:*/ uniffiCaller,
-        /*rustFutureFunc:*/ () => {
-          return nativeModule().ubrn_uniffi_indexd_ffi_fn_method_downloadshared_read_chunk(
-            uniffiTypeDownloadSharedObjectFactory.clonePointer(this)
-          );
-        },
-        /*pollFunc:*/ nativeModule()
-          .ubrn_ffi_indexd_ffi_rust_future_poll_rust_buffer,
-        /*cancelFunc:*/ nativeModule()
-          .ubrn_ffi_indexd_ffi_rust_future_cancel_rust_buffer,
-        /*completeFunc:*/ nativeModule()
-          .ubrn_ffi_indexd_ffi_rust_future_complete_rust_buffer,
-        /*freeFunc:*/ nativeModule()
-          .ubrn_ffi_indexd_ffi_rust_future_free_rust_buffer,
-        /*liftFunc:*/ FfiConverterArrayBuffer.lift.bind(
-          FfiConverterArrayBuffer
-        ),
-        /*liftString:*/ FfiConverterString.lift,
-        /*asyncOpts:*/ asyncOpts_,
-        /*errorHandler:*/ FfiConverterTypeDownloadError.lift.bind(
-          FfiConverterTypeDownloadError
-        )
-      );
-    } catch (__error: any) {
-      if (uniffiIsDebug && __error instanceof Error) {
-        __error.stack = __stack;
-      }
-      throw __error;
-    }
-  }
-
-  public rem(): /*u64*/ bigint {
-    return FfiConverterUInt64.lift(
-      uniffiCaller.rustCall(
-        /*caller:*/ (callStatus) => {
-          return nativeModule().ubrn_uniffi_indexd_ffi_fn_method_downloadshared_rem(
-            uniffiTypeDownloadSharedObjectFactory.clonePointer(this),
-            callStatus
-          );
-        },
-        /*liftString:*/ FfiConverterString.lift
-      )
-    );
-  }
-
-  public update(n: /*u64*/ bigint): void {
-    uniffiCaller.rustCall(
-      /*caller:*/ (callStatus) => {
-        nativeModule().ubrn_uniffi_indexd_ffi_fn_method_downloadshared_update(
-          uniffiTypeDownloadSharedObjectFactory.clonePointer(this),
-          FfiConverterUInt64.lower(n),
-          callStatus
-        );
-      },
-      /*liftString:*/ FfiConverterString.lift
-    );
-  }
-
-  /**
-   * {@inheritDoc uniffi-bindgen-react-native#UniffiAbstractObject.uniffiDestroy}
-   */
-  uniffiDestroy(): void {
-    const ptr = (this as any)[destructorGuardSymbol];
-    if (ptr !== undefined) {
-      const pointer = uniffiTypeDownloadSharedObjectFactory.pointer(this);
-      uniffiTypeDownloadSharedObjectFactory.freePointer(pointer);
-      uniffiTypeDownloadSharedObjectFactory.unbless(ptr);
-      delete (this as any)[destructorGuardSymbol];
-    }
-  }
-
-  static instanceOf(obj: any): obj is DownloadShared {
-    return uniffiTypeDownloadSharedObjectFactory.isConcreteType(obj);
-  }
-}
-
-const uniffiTypeDownloadSharedObjectFactory: UniffiObjectFactory<DownloadSharedInterface> =
-  (() => {
-    return {
-      create(pointer: UnsafeMutableRawPointer): DownloadSharedInterface {
-        const instance = Object.create(DownloadShared.prototype);
-        instance[pointerLiteralSymbol] = pointer;
-        instance[destructorGuardSymbol] = this.bless(pointer);
-        instance[uniffiTypeNameSymbol] = 'DownloadShared';
-        return instance;
-      },
-
-      bless(p: UnsafeMutableRawPointer): UniffiRustArcPtr {
-        return uniffiCaller.rustCall(
-          /*caller:*/ (status) =>
-            nativeModule().ubrn_uniffi_internal_fn_method_downloadshared_ffi__bless_pointer(
-              p,
-              status
-            ),
-          /*liftString:*/ FfiConverterString.lift
-        );
-      },
-
-      unbless(ptr: UniffiRustArcPtr) {
-        ptr.markDestroyed();
-      },
-
-      pointer(obj: DownloadSharedInterface): UnsafeMutableRawPointer {
-        if ((obj as any)[destructorGuardSymbol] === undefined) {
-          throw new UniffiInternalError.UnexpectedNullPointer();
-        }
-        return (obj as any)[pointerLiteralSymbol];
-      },
-
-      clonePointer(obj: DownloadSharedInterface): UnsafeMutableRawPointer {
-        const pointer = this.pointer(obj);
-        return uniffiCaller.rustCall(
-          /*caller:*/ (callStatus) =>
-            nativeModule().ubrn_uniffi_indexd_ffi_fn_clone_downloadshared(
-              pointer,
-              callStatus
-            ),
-          /*liftString:*/ FfiConverterString.lift
-        );
-      },
-
-      freePointer(pointer: UnsafeMutableRawPointer): void {
-        uniffiCaller.rustCall(
-          /*caller:*/ (callStatus) =>
-            nativeModule().ubrn_uniffi_indexd_ffi_fn_free_downloadshared(
-              pointer,
-              callStatus
-            ),
-          /*liftString:*/ FfiConverterString.lift
-        );
-      },
-
-      isConcreteType(obj: any): obj is DownloadSharedInterface {
-        return (
-          obj[destructorGuardSymbol] &&
-          obj[uniffiTypeNameSymbol] === 'DownloadShared'
-        );
-      },
-    };
-  })();
-// FfiConverter for DownloadSharedInterface
-const FfiConverterTypeDownloadShared = new FfiConverterObject(
-  uniffiTypeDownloadSharedObjectFactory
-);
-
-export interface DownloadStateInterface {}
-
-export class DownloadState
-  extends UniffiAbstractObject
-  implements DownloadStateInterface
-{
-  readonly [uniffiTypeNameSymbol] = 'DownloadState';
-  readonly [destructorGuardSymbol]: UniffiRustArcPtr;
-  readonly [pointerLiteralSymbol]: UnsafeMutableRawPointer;
-  // No primary constructor declared for this class.
-  private constructor(pointer: UnsafeMutableRawPointer) {
-    super();
-    this[pointerLiteralSymbol] = pointer;
-    this[destructorGuardSymbol] =
-      uniffiTypeDownloadStateObjectFactory.bless(pointer);
-  }
-
-  /**
-   * {@inheritDoc uniffi-bindgen-react-native#UniffiAbstractObject.uniffiDestroy}
-   */
-  uniffiDestroy(): void {
-    const ptr = (this as any)[destructorGuardSymbol];
-    if (ptr !== undefined) {
-      const pointer = uniffiTypeDownloadStateObjectFactory.pointer(this);
-      uniffiTypeDownloadStateObjectFactory.freePointer(pointer);
-      uniffiTypeDownloadStateObjectFactory.unbless(ptr);
-      delete (this as any)[destructorGuardSymbol];
-    }
-  }
-
-  static instanceOf(obj: any): obj is DownloadState {
-    return uniffiTypeDownloadStateObjectFactory.isConcreteType(obj);
-  }
-}
-
-const uniffiTypeDownloadStateObjectFactory: UniffiObjectFactory<DownloadStateInterface> =
-  (() => {
-    return {
-      create(pointer: UnsafeMutableRawPointer): DownloadStateInterface {
-        const instance = Object.create(DownloadState.prototype);
-        instance[pointerLiteralSymbol] = pointer;
-        instance[destructorGuardSymbol] = this.bless(pointer);
-        instance[uniffiTypeNameSymbol] = 'DownloadState';
-        return instance;
-      },
-
-      bless(p: UnsafeMutableRawPointer): UniffiRustArcPtr {
-        return uniffiCaller.rustCall(
-          /*caller:*/ (status) =>
-            nativeModule().ubrn_uniffi_internal_fn_method_downloadstate_ffi__bless_pointer(
-              p,
-              status
-            ),
-          /*liftString:*/ FfiConverterString.lift
-        );
-      },
-
-      unbless(ptr: UniffiRustArcPtr) {
-        ptr.markDestroyed();
-      },
-
-      pointer(obj: DownloadStateInterface): UnsafeMutableRawPointer {
-        if ((obj as any)[destructorGuardSymbol] === undefined) {
-          throw new UniffiInternalError.UnexpectedNullPointer();
-        }
-        return (obj as any)[pointerLiteralSymbol];
-      },
-
-      clonePointer(obj: DownloadStateInterface): UnsafeMutableRawPointer {
-        const pointer = this.pointer(obj);
-        return uniffiCaller.rustCall(
-          /*caller:*/ (callStatus) =>
-            nativeModule().ubrn_uniffi_indexd_ffi_fn_clone_downloadstate(
-              pointer,
-              callStatus
-            ),
-          /*liftString:*/ FfiConverterString.lift
-        );
-      },
-
-      freePointer(pointer: UnsafeMutableRawPointer): void {
-        uniffiCaller.rustCall(
-          /*caller:*/ (callStatus) =>
-            nativeModule().ubrn_uniffi_indexd_ffi_fn_free_downloadstate(
-              pointer,
-              callStatus
-            ),
-          /*liftString:*/ FfiConverterString.lift
-        );
-      },
-
-      isConcreteType(obj: any): obj is DownloadStateInterface {
-        return (
-          obj[destructorGuardSymbol] &&
-          obj[uniffiTypeNameSymbol] === 'DownloadState'
-        );
-      },
-    };
-  })();
-// FfiConverter for DownloadStateInterface
-const FfiConverterTypeDownloadState = new FfiConverterObject(
-  uniffiTypeDownloadStateObjectFactory
 );
 
 export interface EncryptionKeyInterface {
@@ -3395,7 +3226,7 @@ export interface SdkInterface {
   /**
    * Returns true if the app key is authorized, returns false otherwise
    */
-  connect(asyncOpts_?: { signal: AbortSignal }) /*throws*/ : Promise<boolean>;
+  connected(asyncOpts_?: { signal: AbortSignal }): Promise<boolean>;
   /**
    * Deletes an object from the indexer.
    */
@@ -3411,18 +3242,20 @@ export interface SdkInterface {
    */
   download(
     object: PinnedObjectInterface,
-    options: DownloadOptions
-  ) /*throws*/ : DownloadInterface;
+    options: DownloadOptions,
+    asyncOpts_?: { signal: AbortSignal }
+  ) /*throws*/ : Promise<DownloadInterface>;
   /**
-   * Initiates a download of all data in the shared object.
+   * Initiates a download of the data referenced by the shared object, starting at `offset` and reading `length` bytes.
    *
    * # Returns
-   * A [`DownloadShared`] object that can be used to read the data in chunks
+   * A [`Download`] object that can be used to read the data in chunks
    */
   downloadShared(
     sharedObject: SharedObjectInterface,
-    options: DownloadOptions
-  ) /*throws*/ : DownloadSharedInterface;
+    options: DownloadOptions,
+    asyncOpts_?: { signal: AbortSignal }
+  ) /*throws*/ : Promise<DownloadInterface>;
   /**
    * Returns a list of all usable hosts.
    */
@@ -3600,15 +3433,15 @@ export class Sdk extends UniffiAbstractObject implements SdkInterface {
   /**
    * Returns true if the app key is authorized, returns false otherwise
    */
-  public async connect(asyncOpts_?: {
+  public async connected(asyncOpts_?: {
     signal: AbortSignal;
-  }): Promise<boolean> /*throws*/ {
+  }): Promise<boolean> {
     const __stack = uniffiIsDebug ? new Error().stack : undefined;
     try {
       return await uniffiRustCallAsync(
         /*rustCaller:*/ uniffiCaller,
         /*rustFutureFunc:*/ () => {
-          return nativeModule().ubrn_uniffi_indexd_ffi_fn_method_sdk_connect(
+          return nativeModule().ubrn_uniffi_indexd_ffi_fn_method_sdk_connected(
             uniffiTypeSdkObjectFactory.clonePointer(this)
           );
         },
@@ -3620,8 +3453,7 @@ export class Sdk extends UniffiAbstractObject implements SdkInterface {
         /*freeFunc:*/ nativeModule().ubrn_ffi_indexd_ffi_rust_future_free_i8,
         /*liftFunc:*/ FfiConverterBool.lift.bind(FfiConverterBool),
         /*liftString:*/ FfiConverterString.lift,
-        /*asyncOpts:*/ asyncOpts_,
-        /*errorHandler:*/ FfiConverterTypeError.lift.bind(FfiConverterTypeError)
+        /*asyncOpts:*/ asyncOpts_
       );
     } catch (__error: any) {
       if (uniffiIsDebug && __error instanceof Error) {
@@ -3673,54 +3505,92 @@ export class Sdk extends UniffiAbstractObject implements SdkInterface {
    * # Returns
    * A [Download] object that can be used to read the data in chunks
    */
-  public download(
+  public async download(
     object: PinnedObjectInterface,
-    options: DownloadOptions
-  ): DownloadInterface /*throws*/ {
-    return FfiConverterTypeDownload.lift(
-      uniffiCaller.rustCallWithError(
-        /*liftError:*/ FfiConverterTypeDownloadError.lift.bind(
-          FfiConverterTypeDownloadError
-        ),
-        /*caller:*/ (callStatus) => {
+    options: DownloadOptions,
+    asyncOpts_?: { signal: AbortSignal }
+  ): Promise<DownloadInterface> /*throws*/ {
+    const __stack = uniffiIsDebug ? new Error().stack : undefined;
+    try {
+      return await uniffiRustCallAsync(
+        /*rustCaller:*/ uniffiCaller,
+        /*rustFutureFunc:*/ () => {
           return nativeModule().ubrn_uniffi_indexd_ffi_fn_method_sdk_download(
             uniffiTypeSdkObjectFactory.clonePointer(this),
             FfiConverterTypePinnedObject.lower(object),
-            FfiConverterTypeDownloadOptions.lower(options),
-            callStatus
+            FfiConverterTypeDownloadOptions.lower(options)
           );
         },
-        /*liftString:*/ FfiConverterString.lift
-      )
-    );
+        /*pollFunc:*/ nativeModule()
+          .ubrn_ffi_indexd_ffi_rust_future_poll_pointer,
+        /*cancelFunc:*/ nativeModule()
+          .ubrn_ffi_indexd_ffi_rust_future_cancel_pointer,
+        /*completeFunc:*/ nativeModule()
+          .ubrn_ffi_indexd_ffi_rust_future_complete_pointer,
+        /*freeFunc:*/ nativeModule()
+          .ubrn_ffi_indexd_ffi_rust_future_free_pointer,
+        /*liftFunc:*/ FfiConverterTypeDownload.lift.bind(
+          FfiConverterTypeDownload
+        ),
+        /*liftString:*/ FfiConverterString.lift,
+        /*asyncOpts:*/ asyncOpts_,
+        /*errorHandler:*/ FfiConverterTypeDownloadError.lift.bind(
+          FfiConverterTypeDownloadError
+        )
+      );
+    } catch (__error: any) {
+      if (uniffiIsDebug && __error instanceof Error) {
+        __error.stack = __stack;
+      }
+      throw __error;
+    }
   }
 
   /**
-   * Initiates a download of all data in the shared object.
+   * Initiates a download of the data referenced by the shared object, starting at `offset` and reading `length` bytes.
    *
    * # Returns
-   * A [`DownloadShared`] object that can be used to read the data in chunks
+   * A [`Download`] object that can be used to read the data in chunks
    */
-  public downloadShared(
+  public async downloadShared(
     sharedObject: SharedObjectInterface,
-    options: DownloadOptions
-  ): DownloadSharedInterface /*throws*/ {
-    return FfiConverterTypeDownloadShared.lift(
-      uniffiCaller.rustCallWithError(
-        /*liftError:*/ FfiConverterTypeDownloadError.lift.bind(
-          FfiConverterTypeDownloadError
-        ),
-        /*caller:*/ (callStatus) => {
+    options: DownloadOptions,
+    asyncOpts_?: { signal: AbortSignal }
+  ): Promise<DownloadInterface> /*throws*/ {
+    const __stack = uniffiIsDebug ? new Error().stack : undefined;
+    try {
+      return await uniffiRustCallAsync(
+        /*rustCaller:*/ uniffiCaller,
+        /*rustFutureFunc:*/ () => {
           return nativeModule().ubrn_uniffi_indexd_ffi_fn_method_sdk_download_shared(
             uniffiTypeSdkObjectFactory.clonePointer(this),
             FfiConverterTypeSharedObject.lower(sharedObject),
-            FfiConverterTypeDownloadOptions.lower(options),
-            callStatus
+            FfiConverterTypeDownloadOptions.lower(options)
           );
         },
-        /*liftString:*/ FfiConverterString.lift
-      )
-    );
+        /*pollFunc:*/ nativeModule()
+          .ubrn_ffi_indexd_ffi_rust_future_poll_pointer,
+        /*cancelFunc:*/ nativeModule()
+          .ubrn_ffi_indexd_ffi_rust_future_cancel_pointer,
+        /*completeFunc:*/ nativeModule()
+          .ubrn_ffi_indexd_ffi_rust_future_complete_pointer,
+        /*freeFunc:*/ nativeModule()
+          .ubrn_ffi_indexd_ffi_rust_future_free_pointer,
+        /*liftFunc:*/ FfiConverterTypeDownload.lift.bind(
+          FfiConverterTypeDownload
+        ),
+        /*liftString:*/ FfiConverterString.lift,
+        /*asyncOpts:*/ asyncOpts_,
+        /*errorHandler:*/ FfiConverterTypeDownloadError.lift.bind(
+          FfiConverterTypeDownloadError
+        )
+      );
+    } catch (__error: any) {
+      if (uniffiIsDebug && __error instanceof Error) {
+        __error.stack = __stack;
+      }
+      throw __error;
+    }
   }
 
   /**
@@ -3956,7 +3826,9 @@ export class Sdk extends UniffiAbstractObject implements SdkInterface {
         ),
         /*liftString:*/ FfiConverterString.lift,
         /*asyncOpts:*/ asyncOpts_,
-        /*errorHandler:*/ FfiConverterTypeError.lift.bind(FfiConverterTypeError)
+        /*errorHandler:*/ FfiConverterTypeConnectError.lift.bind(
+          FfiConverterTypeConnectError
+        )
       );
     } catch (__error: any) {
       if (uniffiIsDebug && __error instanceof Error) {
@@ -4182,7 +4054,9 @@ export class Sdk extends UniffiAbstractObject implements SdkInterface {
         /*liftFunc:*/ FfiConverterBool.lift.bind(FfiConverterBool),
         /*liftString:*/ FfiConverterString.lift,
         /*asyncOpts:*/ asyncOpts_,
-        /*errorHandler:*/ FfiConverterTypeError.lift.bind(FfiConverterTypeError)
+        /*errorHandler:*/ FfiConverterTypeConnectError.lift.bind(
+          FfiConverterTypeConnectError
+        )
       );
     } catch (__error: any) {
       if (uniffiIsDebug && __error instanceof Error) {
@@ -4942,11 +4816,11 @@ function uniffiEnsureInitialized() {
     );
   }
   if (
-    nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_download_params() !==
-    9644
+    nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_download_cancel() !==
+    11719
   ) {
     throw new UniffiInternalError.ApiChecksumMismatch(
-      'uniffi_indexd_ffi_checksum_method_download_params'
+      'uniffi_indexd_ffi_checksum_method_download_cancel'
     );
   }
   if (
@@ -4955,54 +4829,6 @@ function uniffiEnsureInitialized() {
   ) {
     throw new UniffiInternalError.ApiChecksumMismatch(
       'uniffi_indexd_ffi_checksum_method_download_read_chunk'
-    );
-  }
-  if (
-    nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_download_rem() !==
-    14180
-  ) {
-    throw new UniffiInternalError.ApiChecksumMismatch(
-      'uniffi_indexd_ffi_checksum_method_download_rem'
-    );
-  }
-  if (
-    nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_download_update() !==
-    10109
-  ) {
-    throw new UniffiInternalError.ApiChecksumMismatch(
-      'uniffi_indexd_ffi_checksum_method_download_update'
-    );
-  }
-  if (
-    nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_downloadshared_params() !==
-    21512
-  ) {
-    throw new UniffiInternalError.ApiChecksumMismatch(
-      'uniffi_indexd_ffi_checksum_method_downloadshared_params'
-    );
-  }
-  if (
-    nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_downloadshared_read_chunk() !==
-    10026
-  ) {
-    throw new UniffiInternalError.ApiChecksumMismatch(
-      'uniffi_indexd_ffi_checksum_method_downloadshared_read_chunk'
-    );
-  }
-  if (
-    nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_downloadshared_rem() !==
-    64815
-  ) {
-    throw new UniffiInternalError.ApiChecksumMismatch(
-      'uniffi_indexd_ffi_checksum_method_downloadshared_rem'
-    );
-  }
-  if (
-    nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_downloadshared_update() !==
-    57652
-  ) {
-    throw new UniffiInternalError.ApiChecksumMismatch(
-      'uniffi_indexd_ffi_checksum_method_downloadshared_update'
     );
   }
   if (
@@ -5118,11 +4944,11 @@ function uniffiEnsureInitialized() {
     );
   }
   if (
-    nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_sdk_connect() !==
-    51960
+    nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_sdk_connected() !==
+    35905
   ) {
     throw new UniffiInternalError.ApiChecksumMismatch(
-      'uniffi_indexd_ffi_checksum_method_sdk_connect'
+      'uniffi_indexd_ffi_checksum_method_sdk_connected'
     );
   }
   if (
@@ -5135,7 +4961,7 @@ function uniffiEnsureInitialized() {
   }
   if (
     nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_sdk_download() !==
-    48047
+    58228
   ) {
     throw new UniffiInternalError.ApiChecksumMismatch(
       'uniffi_indexd_ffi_checksum_method_sdk_download'
@@ -5143,7 +4969,7 @@ function uniffiEnsureInitialized() {
   }
   if (
     nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_sdk_download_shared() !==
-    2353
+    22963
   ) {
     throw new UniffiInternalError.ApiChecksumMismatch(
       'uniffi_indexd_ffi_checksum_method_sdk_download_shared'
@@ -5189,7 +5015,7 @@ function uniffiEnsureInitialized() {
   }
   if (
     nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_sdk_request_app_connection() !==
-    4010
+    39927
   ) {
     throw new UniffiInternalError.ApiChecksumMismatch(
       'uniffi_indexd_ffi_checksum_method_sdk_request_app_connection'
@@ -5235,7 +5061,7 @@ function uniffiEnsureInitialized() {
   }
   if (
     nativeModule().ubrn_uniffi_indexd_ffi_checksum_method_sdk_wait_for_connect() !==
-    64773
+    21385
   ) {
     throw new UniffiInternalError.ApiChecksumMismatch(
       'uniffi_indexd_ffi_checksum_method_sdk_wait_for_connect'
@@ -5334,11 +5160,10 @@ export default Object.freeze({
     FfiConverterTypeAppKey,
     FfiConverterTypeAppKeyError,
     FfiConverterTypeAppMeta,
+    FfiConverterTypeConnectError,
     FfiConverterTypeDownload,
     FfiConverterTypeDownloadError,
     FfiConverterTypeDownloadOptions,
-    FfiConverterTypeDownloadShared,
-    FfiConverterTypeDownloadState,
     FfiConverterTypeEncryptionKey,
     FfiConverterTypeEncryptionKeyParseError,
     FfiConverterTypeError,

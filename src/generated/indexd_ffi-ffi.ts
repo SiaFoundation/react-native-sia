@@ -44,52 +44,11 @@ interface NativeModuleInterface {
     ptr: bigint,
     uniffi_out_err: UniffiRustCallStatus
   ): void;
-  ubrn_uniffi_indexd_ffi_fn_method_download_params(
+  ubrn_uniffi_indexd_ffi_fn_method_download_cancel(
     ptr: bigint,
     uniffi_out_err: UniffiRustCallStatus
-  ): bigint;
+  ): void;
   ubrn_uniffi_indexd_ffi_fn_method_download_read_chunk(ptr: bigint): bigint;
-  ubrn_uniffi_indexd_ffi_fn_method_download_rem(
-    ptr: bigint,
-    uniffi_out_err: UniffiRustCallStatus
-  ): bigint;
-  ubrn_uniffi_indexd_ffi_fn_method_download_update(
-    ptr: bigint,
-    n: bigint,
-    uniffi_out_err: UniffiRustCallStatus
-  ): void;
-  ubrn_uniffi_indexd_ffi_fn_clone_downloadshared(
-    ptr: bigint,
-    uniffi_out_err: UniffiRustCallStatus
-  ): bigint;
-  ubrn_uniffi_indexd_ffi_fn_free_downloadshared(
-    ptr: bigint,
-    uniffi_out_err: UniffiRustCallStatus
-  ): void;
-  ubrn_uniffi_indexd_ffi_fn_method_downloadshared_params(
-    ptr: bigint,
-    uniffi_out_err: UniffiRustCallStatus
-  ): bigint;
-  ubrn_uniffi_indexd_ffi_fn_method_downloadshared_read_chunk(
-    ptr: bigint
-  ): bigint;
-  ubrn_uniffi_indexd_ffi_fn_method_downloadshared_rem(
-    ptr: bigint,
-    uniffi_out_err: UniffiRustCallStatus
-  ): bigint;
-  ubrn_uniffi_indexd_ffi_fn_method_downloadshared_update(
-    ptr: bigint,
-    n: bigint,
-    uniffi_out_err: UniffiRustCallStatus
-  ): void;
-  ubrn_uniffi_indexd_ffi_fn_clone_downloadstate(
-    ptr: bigint,
-    uniffi_out_err: UniffiRustCallStatus
-  ): bigint;
-  ubrn_uniffi_indexd_ffi_fn_free_downloadstate(
-    ptr: bigint,
-    uniffi_out_err: UniffiRustCallStatus
-  ): void;
   ubrn_uniffi_indexd_ffi_fn_clone_encryptionkey(
     ptr: bigint,
     uniffi_out_err: UniffiRustCallStatus
@@ -198,7 +157,7 @@ interface NativeModuleInterface {
     uniffi_out_err: UniffiRustCallStatus
   ): bigint;
   ubrn_uniffi_indexd_ffi_fn_method_sdk_account(ptr: bigint): bigint;
-  ubrn_uniffi_indexd_ffi_fn_method_sdk_connect(ptr: bigint): bigint;
+  ubrn_uniffi_indexd_ffi_fn_method_sdk_connected(ptr: bigint): bigint;
   ubrn_uniffi_indexd_ffi_fn_method_sdk_delete_object(
     ptr: bigint,
     key: Uint8Array
@@ -206,14 +165,12 @@ interface NativeModuleInterface {
   ubrn_uniffi_indexd_ffi_fn_method_sdk_download(
     ptr: bigint,
     object: bigint,
-    options: Uint8Array,
-    uniffi_out_err: UniffiRustCallStatus
+    options: Uint8Array
   ): bigint;
   ubrn_uniffi_indexd_ffi_fn_method_sdk_download_shared(
     ptr: bigint,
     sharedObject: bigint,
-    options: Uint8Array,
-    uniffi_out_err: UniffiRustCallStatus
+    options: Uint8Array
   ): bigint;
   ubrn_uniffi_indexd_ffi_fn_method_sdk_hosts(ptr: bigint): bigint;
   ubrn_uniffi_indexd_ffi_fn_method_sdk_object(
@@ -470,14 +427,8 @@ interface NativeModuleInterface {
   ubrn_uniffi_indexd_ffi_checksum_func_encoded_size(): number;
   ubrn_uniffi_indexd_ffi_checksum_func_generate_recovery_phrase(): number;
   ubrn_uniffi_indexd_ffi_checksum_func_set_logger(): number;
-  ubrn_uniffi_indexd_ffi_checksum_method_download_params(): number;
+  ubrn_uniffi_indexd_ffi_checksum_method_download_cancel(): number;
   ubrn_uniffi_indexd_ffi_checksum_method_download_read_chunk(): number;
-  ubrn_uniffi_indexd_ffi_checksum_method_download_rem(): number;
-  ubrn_uniffi_indexd_ffi_checksum_method_download_update(): number;
-  ubrn_uniffi_indexd_ffi_checksum_method_downloadshared_params(): number;
-  ubrn_uniffi_indexd_ffi_checksum_method_downloadshared_read_chunk(): number;
-  ubrn_uniffi_indexd_ffi_checksum_method_downloadshared_rem(): number;
-  ubrn_uniffi_indexd_ffi_checksum_method_downloadshared_update(): number;
   ubrn_uniffi_indexd_ffi_checksum_method_encryptionkey_export(): number;
   ubrn_uniffi_indexd_ffi_checksum_method_logger_info(): number;
   ubrn_uniffi_indexd_ffi_checksum_method_logger_warn(): number;
@@ -492,7 +443,7 @@ interface NativeModuleInterface {
   ubrn_uniffi_indexd_ffi_checksum_method_pinnedobject_update_metadata(): number;
   ubrn_uniffi_indexd_ffi_checksum_method_pinnedobject_updated_at(): number;
   ubrn_uniffi_indexd_ffi_checksum_method_sdk_account(): number;
-  ubrn_uniffi_indexd_ffi_checksum_method_sdk_connect(): number;
+  ubrn_uniffi_indexd_ffi_checksum_method_sdk_connected(): number;
   ubrn_uniffi_indexd_ffi_checksum_method_sdk_delete_object(): number;
   ubrn_uniffi_indexd_ffi_checksum_method_sdk_download(): number;
   ubrn_uniffi_indexd_ffi_checksum_method_sdk_download_shared(): number;
@@ -524,14 +475,6 @@ interface NativeModuleInterface {
     uniffi_out_err: UniffiRustCallStatus
   ): UniffiRustArcPtr;
   ubrn_uniffi_internal_fn_method_download_ffi__bless_pointer(
-    pointer: bigint,
-    uniffi_out_err: UniffiRustCallStatus
-  ): UniffiRustArcPtr;
-  ubrn_uniffi_internal_fn_method_downloadshared_ffi__bless_pointer(
-    pointer: bigint,
-    uniffi_out_err: UniffiRustCallStatus
-  ): UniffiRustArcPtr;
-  ubrn_uniffi_internal_fn_method_downloadstate_ffi__bless_pointer(
     pointer: bigint,
     uniffi_out_err: UniffiRustCallStatus
   ): UniffiRustArcPtr;

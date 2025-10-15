@@ -1,5 +1,5 @@
 ---
 rust:
   repo: https://github.com/SiaFoundation/sia-sdk-rs
-  branch: master
+  branch: nate/define-runtime
   manifestPath: indexd_ffi/Cargo.toml

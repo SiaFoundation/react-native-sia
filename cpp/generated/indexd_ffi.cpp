@@ -194,53 +194,12 @@ extern "C" {
         void * ptr, 
         RustCallStatus *uniffi_out_err
     );
-    void * uniffi_indexd_ffi_fn_method_download_params(
+    void uniffi_indexd_ffi_fn_method_download_cancel(
         void * ptr, 
         RustCallStatus *uniffi_out_err
     );
     /*handle*/ uint64_t uniffi_indexd_ffi_fn_method_download_read_chunk(
         void * ptr
-    );
-    uint64_t uniffi_indexd_ffi_fn_method_download_rem(
-        void * ptr, 
-        RustCallStatus *uniffi_out_err
-    );
-    void uniffi_indexd_ffi_fn_method_download_update(
-        void * ptr, 
-        uint64_t n, 
-        RustCallStatus *uniffi_out_err
-    );
-    void * uniffi_indexd_ffi_fn_clone_downloadshared(
-        void * ptr, 
-        RustCallStatus *uniffi_out_err
-    );
-    void uniffi_indexd_ffi_fn_free_downloadshared(
-        void * ptr, 
-        RustCallStatus *uniffi_out_err
-    );
-    void * uniffi_indexd_ffi_fn_method_downloadshared_params(
-        void * ptr, 
-        RustCallStatus *uniffi_out_err
-    );
-    /*handle*/ uint64_t uniffi_indexd_ffi_fn_method_downloadshared_read_chunk(
-        void * ptr
-    );
-    uint64_t uniffi_indexd_ffi_fn_method_downloadshared_rem(
-        void * ptr, 
-        RustCallStatus *uniffi_out_err
-    );
-    void uniffi_indexd_ffi_fn_method_downloadshared_update(
-        void * ptr, 
-        uint64_t n, 
-        RustCallStatus *uniffi_out_err
-    );
-    void * uniffi_indexd_ffi_fn_clone_downloadstate(
-        void * ptr, 
-        RustCallStatus *uniffi_out_err
-    );
-    void uniffi_indexd_ffi_fn_free_downloadstate(
-        void * ptr, 
-        RustCallStatus *uniffi_out_err
     );
     void * uniffi_indexd_ffi_fn_clone_encryptionkey(
         void * ptr, 
@@ -352,24 +311,22 @@ extern "C" {
     /*handle*/ uint64_t uniffi_indexd_ffi_fn_method_sdk_account(
         void * ptr
     );
-    /*handle*/ uint64_t uniffi_indexd_ffi_fn_method_sdk_connect(
+    /*handle*/ uint64_t uniffi_indexd_ffi_fn_method_sdk_connected(
         void * ptr
     );
     /*handle*/ uint64_t uniffi_indexd_ffi_fn_method_sdk_delete_object(
         void * ptr, 
         RustBuffer key
     );
-    void * uniffi_indexd_ffi_fn_method_sdk_download(
+    /*handle*/ uint64_t uniffi_indexd_ffi_fn_method_sdk_download(
         void * ptr, 
         void * object, 
-        RustBuffer options, 
-        RustCallStatus *uniffi_out_err
+        RustBuffer options
     );
-    void * uniffi_indexd_ffi_fn_method_sdk_download_shared(
+    /*handle*/ uint64_t uniffi_indexd_ffi_fn_method_sdk_download_shared(
         void * ptr, 
         void * shared_object, 
-        RustBuffer options, 
-        RustCallStatus *uniffi_out_err
+        RustBuffer options
     );
     /*handle*/ uint64_t uniffi_indexd_ffi_fn_method_sdk_hosts(
         void * ptr
@@ -703,21 +660,9 @@ extern "C" {
     );
     uint16_t uniffi_indexd_ffi_checksum_func_set_logger(
     );
-    uint16_t uniffi_indexd_ffi_checksum_method_download_params(
+    uint16_t uniffi_indexd_ffi_checksum_method_download_cancel(
     );
     uint16_t uniffi_indexd_ffi_checksum_method_download_read_chunk(
-    );
-    uint16_t uniffi_indexd_ffi_checksum_method_download_rem(
-    );
-    uint16_t uniffi_indexd_ffi_checksum_method_download_update(
-    );
-    uint16_t uniffi_indexd_ffi_checksum_method_downloadshared_params(
-    );
-    uint16_t uniffi_indexd_ffi_checksum_method_downloadshared_read_chunk(
-    );
-    uint16_t uniffi_indexd_ffi_checksum_method_downloadshared_rem(
-    );
-    uint16_t uniffi_indexd_ffi_checksum_method_downloadshared_update(
     );
     uint16_t uniffi_indexd_ffi_checksum_method_encryptionkey_export(
     );
@@ -747,7 +692,7 @@ extern "C" {
     );
     uint16_t uniffi_indexd_ffi_checksum_method_sdk_account(
     );
-    uint16_t uniffi_indexd_ffi_checksum_method_sdk_connect(
+    uint16_t uniffi_indexd_ffi_checksum_method_sdk_connected(
     );
     uint16_t uniffi_indexd_ffi_checksum_method_sdk_delete_object(
     );
@@ -3343,12 +3288,12 @@ NativeIndexdFfi::NativeIndexdFfi(
             return this->cpp_uniffi_indexd_ffi_fn_free_download(rt, thisVal, args, count);
         }
     );
-    props["ubrn_uniffi_indexd_ffi_fn_method_download_params"] = jsi::Function::createFromHostFunction(
+    props["ubrn_uniffi_indexd_ffi_fn_method_download_cancel"] = jsi::Function::createFromHostFunction(
         rt,
-        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_fn_method_download_params"),
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_fn_method_download_cancel"),
         1,
         [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
-            return this->cpp_uniffi_indexd_ffi_fn_method_download_params(rt, thisVal, args, count);
+            return this->cpp_uniffi_indexd_ffi_fn_method_download_cancel(rt, thisVal, args, count);
         }
     );
     props["ubrn_uniffi_indexd_ffi_fn_method_download_read_chunk"] = jsi::Function::createFromHostFunction(
@@ -3357,86 +3302,6 @@ NativeIndexdFfi::NativeIndexdFfi(
         1,
         [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
             return this->cpp_uniffi_indexd_ffi_fn_method_download_read_chunk(rt, thisVal, args, count);
-        }
-    );
-    props["ubrn_uniffi_indexd_ffi_fn_method_download_rem"] = jsi::Function::createFromHostFunction(
-        rt,
-        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_fn_method_download_rem"),
-        1,
-        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
-            return this->cpp_uniffi_indexd_ffi_fn_method_download_rem(rt, thisVal, args, count);
-        }
-    );
-    props["ubrn_uniffi_indexd_ffi_fn_method_download_update"] = jsi::Function::createFromHostFunction(
-        rt,
-        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_fn_method_download_update"),
-        2,
-        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
-            return this->cpp_uniffi_indexd_ffi_fn_method_download_update(rt, thisVal, args, count);
-        }
-    );
-    props["ubrn_uniffi_indexd_ffi_fn_clone_downloadshared"] = jsi::Function::createFromHostFunction(
-        rt,
-        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_fn_clone_downloadshared"),
-        1,
-        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
-            return this->cpp_uniffi_indexd_ffi_fn_clone_downloadshared(rt, thisVal, args, count);
-        }
-    );
-    props["ubrn_uniffi_indexd_ffi_fn_free_downloadshared"] = jsi::Function::createFromHostFunction(
-        rt,
-        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_fn_free_downloadshared"),
-        1,
-        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
-            return this->cpp_uniffi_indexd_ffi_fn_free_downloadshared(rt, thisVal, args, count);
-        }
-    );
-    props["ubrn_uniffi_indexd_ffi_fn_method_downloadshared_params"] = jsi::Function::createFromHostFunction(
-        rt,
-        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_fn_method_downloadshared_params"),
-        1,
-        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
-            return this->cpp_uniffi_indexd_ffi_fn_method_downloadshared_params(rt, thisVal, args, count);
-        }
-    );
-    props["ubrn_uniffi_indexd_ffi_fn_method_downloadshared_read_chunk"] = jsi::Function::createFromHostFunction(
-        rt,
-        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_fn_method_downloadshared_read_chunk"),
-        1,
-        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
-            return this->cpp_uniffi_indexd_ffi_fn_method_downloadshared_read_chunk(rt, thisVal, args, count);
-        }
-    );
-    props["ubrn_uniffi_indexd_ffi_fn_method_downloadshared_rem"] = jsi::Function::createFromHostFunction(
-        rt,
-        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_fn_method_downloadshared_rem"),
-        1,
-        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
-            return this->cpp_uniffi_indexd_ffi_fn_method_downloadshared_rem(rt, thisVal, args, count);
-        }
-    );
-    props["ubrn_uniffi_indexd_ffi_fn_method_downloadshared_update"] = jsi::Function::createFromHostFunction(
-        rt,
-        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_fn_method_downloadshared_update"),
-        2,
-        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
-            return this->cpp_uniffi_indexd_ffi_fn_method_downloadshared_update(rt, thisVal, args, count);
-        }
-    );
-    props["ubrn_uniffi_indexd_ffi_fn_clone_downloadstate"] = jsi::Function::createFromHostFunction(
-        rt,
-        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_fn_clone_downloadstate"),
-        1,
-        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
-            return this->cpp_uniffi_indexd_ffi_fn_clone_downloadstate(rt, thisVal, args, count);
-        }
-    );
-    props["ubrn_uniffi_indexd_ffi_fn_free_downloadstate"] = jsi::Function::createFromHostFunction(
-        rt,
-        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_fn_free_downloadstate"),
-        1,
-        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
-            return this->cpp_uniffi_indexd_ffi_fn_free_downloadstate(rt, thisVal, args, count);
         }
     );
     props["ubrn_uniffi_indexd_ffi_fn_clone_encryptionkey"] = jsi::Function::createFromHostFunction(
@@ -3647,12 +3512,12 @@ NativeIndexdFfi::NativeIndexdFfi(
             return this->cpp_uniffi_indexd_ffi_fn_method_sdk_account(rt, thisVal, args, count);
         }
     );
-    props["ubrn_uniffi_indexd_ffi_fn_method_sdk_connect"] = jsi::Function::createFromHostFunction(
+    props["ubrn_uniffi_indexd_ffi_fn_method_sdk_connected"] = jsi::Function::createFromHostFunction(
         rt,
-        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_fn_method_sdk_connect"),
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_fn_method_sdk_connected"),
         1,
         [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
-            return this->cpp_uniffi_indexd_ffi_fn_method_sdk_connect(rt, thisVal, args, count);
+            return this->cpp_uniffi_indexd_ffi_fn_method_sdk_connected(rt, thisVal, args, count);
         }
     );
     props["ubrn_uniffi_indexd_ffi_fn_method_sdk_delete_object"] = jsi::Function::createFromHostFunction(
@@ -4343,12 +4208,12 @@ NativeIndexdFfi::NativeIndexdFfi(
             return this->cpp_uniffi_indexd_ffi_checksum_func_set_logger(rt, thisVal, args, count);
         }
     );
-    props["ubrn_uniffi_indexd_ffi_checksum_method_download_params"] = jsi::Function::createFromHostFunction(
+    props["ubrn_uniffi_indexd_ffi_checksum_method_download_cancel"] = jsi::Function::createFromHostFunction(
         rt,
-        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_checksum_method_download_params"),
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_checksum_method_download_cancel"),
         0,
         [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
-            return this->cpp_uniffi_indexd_ffi_checksum_method_download_params(rt, thisVal, args, count);
+            return this->cpp_uniffi_indexd_ffi_checksum_method_download_cancel(rt, thisVal, args, count);
         }
     );
     props["ubrn_uniffi_indexd_ffi_checksum_method_download_read_chunk"] = jsi::Function::createFromHostFunction(
@@ -4357,54 +4222,6 @@ NativeIndexdFfi::NativeIndexdFfi(
         0,
         [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
             return this->cpp_uniffi_indexd_ffi_checksum_method_download_read_chunk(rt, thisVal, args, count);
-        }
-    );
-    props["ubrn_uniffi_indexd_ffi_checksum_method_download_rem"] = jsi::Function::createFromHostFunction(
-        rt,
-        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_checksum_method_download_rem"),
-        0,
-        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
-            return this->cpp_uniffi_indexd_ffi_checksum_method_download_rem(rt, thisVal, args, count);
-        }
-    );
-    props["ubrn_uniffi_indexd_ffi_checksum_method_download_update"] = jsi::Function::createFromHostFunction(
-        rt,
-        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_checksum_method_download_update"),
-        0,
-        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
-            return this->cpp_uniffi_indexd_ffi_checksum_method_download_update(rt, thisVal, args, count);
-        }
-    );
-    props["ubrn_uniffi_indexd_ffi_checksum_method_downloadshared_params"] = jsi::Function::createFromHostFunction(
-        rt,
-        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_checksum_method_downloadshared_params"),
-        0,
-        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
-            return this->cpp_uniffi_indexd_ffi_checksum_method_downloadshared_params(rt, thisVal, args, count);
-        }
-    );
-    props["ubrn_uniffi_indexd_ffi_checksum_method_downloadshared_read_chunk"] = jsi::Function::createFromHostFunction(
-        rt,
-        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_checksum_method_downloadshared_read_chunk"),
-        0,
-        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
-            return this->cpp_uniffi_indexd_ffi_checksum_method_downloadshared_read_chunk(rt, thisVal, args, count);
-        }
-    );
-    props["ubrn_uniffi_indexd_ffi_checksum_method_downloadshared_rem"] = jsi::Function::createFromHostFunction(
-        rt,
-        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_checksum_method_downloadshared_rem"),
-        0,
-        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
-            return this->cpp_uniffi_indexd_ffi_checksum_method_downloadshared_rem(rt, thisVal, args, count);
-        }
-    );
-    props["ubrn_uniffi_indexd_ffi_checksum_method_downloadshared_update"] = jsi::Function::createFromHostFunction(
-        rt,
-        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_checksum_method_downloadshared_update"),
-        0,
-        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
-            return this->cpp_uniffi_indexd_ffi_checksum_method_downloadshared_update(rt, thisVal, args, count);
         }
     );
     props["ubrn_uniffi_indexd_ffi_checksum_method_encryptionkey_export"] = jsi::Function::createFromHostFunction(
@@ -4519,12 +4336,12 @@ NativeIndexdFfi::NativeIndexdFfi(
             return this->cpp_uniffi_indexd_ffi_checksum_method_sdk_account(rt, thisVal, args, count);
         }
     );
-    props["ubrn_uniffi_indexd_ffi_checksum_method_sdk_connect"] = jsi::Function::createFromHostFunction(
+    props["ubrn_uniffi_indexd_ffi_checksum_method_sdk_connected"] = jsi::Function::createFromHostFunction(
         rt,
-        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_checksum_method_sdk_connect"),
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_indexd_ffi_checksum_method_sdk_connected"),
         0,
         [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
-            return this->cpp_uniffi_indexd_ffi_checksum_method_sdk_connect(rt, thisVal, args, count);
+            return this->cpp_uniffi_indexd_ffi_checksum_method_sdk_connected(rt, thisVal, args, count);
         }
     );
     props["ubrn_uniffi_indexd_ffi_checksum_method_sdk_delete_object"] = jsi::Function::createFromHostFunction(
@@ -4751,22 +4568,6 @@ NativeIndexdFfi::NativeIndexdFfi(
             return this->cpp_uniffi_internal_fn_method_download_ffi__bless_pointer(rt, thisVal, args, count);
         }
     );
-    props["ubrn_uniffi_internal_fn_method_downloadshared_ffi__bless_pointer"] = jsi::Function::createFromHostFunction(
-        rt,
-        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_internal_fn_method_downloadshared_ffi__bless_pointer"),
-        1,
-        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
-            return this->cpp_uniffi_internal_fn_method_downloadshared_ffi__bless_pointer(rt, thisVal, args, count);
-        }
-    );
-    props["ubrn_uniffi_internal_fn_method_downloadstate_ffi__bless_pointer"] = jsi::Function::createFromHostFunction(
-        rt,
-        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_internal_fn_method_downloadstate_ffi__bless_pointer"),
-        1,
-        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
-            return this->cpp_uniffi_internal_fn_method_downloadstate_ffi__bless_pointer(rt, thisVal, args, count);
-        }
-    );
     props["ubrn_uniffi_internal_fn_method_encryptionkey_ffi__bless_pointer"] = jsi::Function::createFromHostFunction(
         rt,
         jsi::PropNameID::forAscii(rt, "ubrn_uniffi_internal_fn_method_encryptionkey_ffi__bless_pointer"),
@@ -4905,26 +4706,6 @@ jsi::Value NativeIndexdFfi::cpp_uniffi_internal_fn_func_ffi__arraybuffer_to_stri
     auto ptrObj = std::make_shared<uniffi_jsi::DestructibleObject>(pointer, destructor);
     auto obj = jsi::Object::createFromHostObject(rt, ptrObj);
     return jsi::Value(rt, obj);
-}jsi::Value NativeIndexdFfi::cpp_uniffi_internal_fn_method_downloadshared_ffi__bless_pointer(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
-    auto pointer = uniffi_jsi::Bridging<uint64_t>::fromJs(rt, callInvoker, args[0]);
-    auto static destructor = [](uint64_t p) {
-        auto pointer = reinterpret_cast<void *>(static_cast<uintptr_t>(p));
-        RustCallStatus status = {0};
-        uniffi_indexd_ffi_fn_free_downloadshared(pointer, &status);
-    };
-    auto ptrObj = std::make_shared<uniffi_jsi::DestructibleObject>(pointer, destructor);
-    auto obj = jsi::Object::createFromHostObject(rt, ptrObj);
-    return jsi::Value(rt, obj);
-}jsi::Value NativeIndexdFfi::cpp_uniffi_internal_fn_method_downloadstate_ffi__bless_pointer(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
-    auto pointer = uniffi_jsi::Bridging<uint64_t>::fromJs(rt, callInvoker, args[0]);
-    auto static destructor = [](uint64_t p) {
-        auto pointer = reinterpret_cast<void *>(static_cast<uintptr_t>(p));
-        RustCallStatus status = {0};
-        uniffi_indexd_ffi_fn_free_downloadstate(pointer, &status);
-    };
-    auto ptrObj = std::make_shared<uniffi_jsi::DestructibleObject>(pointer, destructor);
-    auto obj = jsi::Object::createFromHostObject(rt, ptrObj);
-    return jsi::Value(rt, obj);
 }jsi::Value NativeIndexdFfi::cpp_uniffi_internal_fn_method_encryptionkey_ffi__bless_pointer(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
     auto pointer = uniffi_jsi::Bridging<uint64_t>::fromJs(rt, callInvoker, args[0]);
     auto static destructor = [](uint64_t p) {
@@ -5048,15 +4829,15 @@ jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_fn_free_download(jsi::Runtime&
         
         return jsi::Value::undefined();
 }
-jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_fn_method_download_params(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_fn_method_download_cancel(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
         RustCallStatus status = uniffi::indexd_ffi::Bridging<RustCallStatus>::rustSuccess(rt);
-        auto value = uniffi_indexd_ffi_fn_method_download_params(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), 
+        uniffi_indexd_ffi_fn_method_download_cancel(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), 
             &status
         );
         uniffi::indexd_ffi::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status, args[count - 1]);
 
         
-        return uniffi_jsi::Bridging<void *>::toJs(rt, callInvoker, value);
+        return jsi::Value::undefined();
 }
 jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_fn_method_download_read_chunk(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
         auto value = uniffi_indexd_ffi_fn_method_download_read_chunk(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0])
@@ -5064,103 +4845,6 @@ jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_fn_method_download_read_chunk(
 
         
         return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker, value);
-}
-jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_fn_method_download_rem(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
-        RustCallStatus status = uniffi::indexd_ffi::Bridging<RustCallStatus>::rustSuccess(rt);
-        auto value = uniffi_indexd_ffi_fn_method_download_rem(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), 
-            &status
-        );
-        uniffi::indexd_ffi::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status, args[count - 1]);
-
-        
-        return uniffi_jsi::Bridging<uint64_t>::toJs(rt, callInvoker, value);
-}
-jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_fn_method_download_update(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
-        RustCallStatus status = uniffi::indexd_ffi::Bridging<RustCallStatus>::rustSuccess(rt);
-        uniffi_indexd_ffi_fn_method_download_update(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), uniffi_jsi::Bridging<uint64_t>::fromJs(rt, callInvoker, args[1]), 
-            &status
-        );
-        uniffi::indexd_ffi::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status, args[count - 1]);
-
-        
-        return jsi::Value::undefined();
-}
-jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_fn_clone_downloadshared(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
-        RustCallStatus status = uniffi::indexd_ffi::Bridging<RustCallStatus>::rustSuccess(rt);
-        auto value = uniffi_indexd_ffi_fn_clone_downloadshared(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), 
-            &status
-        );
-        uniffi::indexd_ffi::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status, args[count - 1]);
-
-        
-        return uniffi_jsi::Bridging<void *>::toJs(rt, callInvoker, value);
-}
-jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_fn_free_downloadshared(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
-        RustCallStatus status = uniffi::indexd_ffi::Bridging<RustCallStatus>::rustSuccess(rt);
-        uniffi_indexd_ffi_fn_free_downloadshared(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), 
-            &status
-        );
-        uniffi::indexd_ffi::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status, args[count - 1]);
-
-        
-        return jsi::Value::undefined();
-}
-jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_fn_method_downloadshared_params(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
-        RustCallStatus status = uniffi::indexd_ffi::Bridging<RustCallStatus>::rustSuccess(rt);
-        auto value = uniffi_indexd_ffi_fn_method_downloadshared_params(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), 
-            &status
-        );
-        uniffi::indexd_ffi::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status, args[count - 1]);
-
-        
-        return uniffi_jsi::Bridging<void *>::toJs(rt, callInvoker, value);
-}
-jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_fn_method_downloadshared_read_chunk(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
-        auto value = uniffi_indexd_ffi_fn_method_downloadshared_read_chunk(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0])
-        );
-
-        
-        return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker, value);
-}
-jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_fn_method_downloadshared_rem(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
-        RustCallStatus status = uniffi::indexd_ffi::Bridging<RustCallStatus>::rustSuccess(rt);
-        auto value = uniffi_indexd_ffi_fn_method_downloadshared_rem(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), 
-            &status
-        );
-        uniffi::indexd_ffi::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status, args[count - 1]);
-
-        
-        return uniffi_jsi::Bridging<uint64_t>::toJs(rt, callInvoker, value);
-}
-jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_fn_method_downloadshared_update(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
-        RustCallStatus status = uniffi::indexd_ffi::Bridging<RustCallStatus>::rustSuccess(rt);
-        uniffi_indexd_ffi_fn_method_downloadshared_update(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), uniffi_jsi::Bridging<uint64_t>::fromJs(rt, callInvoker, args[1]), 
-            &status
-        );
-        uniffi::indexd_ffi::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status, args[count - 1]);
-
-        
-        return jsi::Value::undefined();
-}
-jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_fn_clone_downloadstate(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
-        RustCallStatus status = uniffi::indexd_ffi::Bridging<RustCallStatus>::rustSuccess(rt);
-        auto value = uniffi_indexd_ffi_fn_clone_downloadstate(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), 
-            &status
-        );
-        uniffi::indexd_ffi::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status, args[count - 1]);
-
-        
-        return uniffi_jsi::Bridging<void *>::toJs(rt, callInvoker, value);
-}
-jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_fn_free_downloadstate(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
-        RustCallStatus status = uniffi::indexd_ffi::Bridging<RustCallStatus>::rustSuccess(rt);
-        uniffi_indexd_ffi_fn_free_downloadstate(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), 
-            &status
-        );
-        uniffi::indexd_ffi::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status, args[count - 1]);
-
-        
-        return jsi::Value::undefined();
 }
 jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_fn_clone_encryptionkey(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
         RustCallStatus status = uniffi::indexd_ffi::Bridging<RustCallStatus>::rustSuccess(rt);
@@ -5426,8 +5110,8 @@ jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_fn_method_sdk_account(jsi::Run
         
         return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker, value);
 }
-jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_fn_method_sdk_connect(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
-        auto value = uniffi_indexd_ffi_fn_method_sdk_connect(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0])
+jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_fn_method_sdk_connected(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        auto value = uniffi_indexd_ffi_fn_method_sdk_connected(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0])
         );
 
         
@@ -5441,24 +5125,18 @@ jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_fn_method_sdk_delete_object(js
         return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker, value);
 }
 jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_fn_method_sdk_download(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
-        RustCallStatus status = uniffi::indexd_ffi::Bridging<RustCallStatus>::rustSuccess(rt);
-        auto value = uniffi_indexd_ffi_fn_method_sdk_download(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[1]), uniffi::indexd_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker, args[2]), 
-            &status
+        auto value = uniffi_indexd_ffi_fn_method_sdk_download(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[1]), uniffi::indexd_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker, args[2])
         );
-        uniffi::indexd_ffi::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status, args[count - 1]);
 
         
-        return uniffi_jsi::Bridging<void *>::toJs(rt, callInvoker, value);
+        return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker, value);
 }
 jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_fn_method_sdk_download_shared(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
-        RustCallStatus status = uniffi::indexd_ffi::Bridging<RustCallStatus>::rustSuccess(rt);
-        auto value = uniffi_indexd_ffi_fn_method_sdk_download_shared(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[1]), uniffi::indexd_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker, args[2]), 
-            &status
+        auto value = uniffi_indexd_ffi_fn_method_sdk_download_shared(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[1]), uniffi::indexd_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker, args[2])
         );
-        uniffi::indexd_ffi::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status, args[count - 1]);
 
         
-        return uniffi_jsi::Bridging<void *>::toJs(rt, callInvoker, value);
+        return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker, value);
 }
 jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_fn_method_sdk_hosts(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
         auto value = uniffi_indexd_ffi_fn_method_sdk_hosts(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0])
@@ -6131,8 +5809,8 @@ jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_checksum_func_set_logger(jsi::
         
         return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
-jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_checksum_method_download_params(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
-        auto value = uniffi_indexd_ffi_checksum_method_download_params(
+jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_checksum_method_download_cancel(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        auto value = uniffi_indexd_ffi_checksum_method_download_cancel(
         );
 
         
@@ -6140,48 +5818,6 @@ jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_checksum_method_download_param
 }
 jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_checksum_method_download_read_chunk(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
         auto value = uniffi_indexd_ffi_checksum_method_download_read_chunk(
-        );
-
-        
-        return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
-}
-jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_checksum_method_download_rem(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
-        auto value = uniffi_indexd_ffi_checksum_method_download_rem(
-        );
-
-        
-        return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
-}
-jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_checksum_method_download_update(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
-        auto value = uniffi_indexd_ffi_checksum_method_download_update(
-        );
-
-        
-        return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
-}
-jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_checksum_method_downloadshared_params(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
-        auto value = uniffi_indexd_ffi_checksum_method_downloadshared_params(
-        );
-
-        
-        return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
-}
-jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_checksum_method_downloadshared_read_chunk(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
-        auto value = uniffi_indexd_ffi_checksum_method_downloadshared_read_chunk(
-        );
-
-        
-        return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
-}
-jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_checksum_method_downloadshared_rem(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
-        auto value = uniffi_indexd_ffi_checksum_method_downloadshared_rem(
-        );
-
-        
-        return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
-}
-jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_checksum_method_downloadshared_update(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
-        auto value = uniffi_indexd_ffi_checksum_method_downloadshared_update(
         );
 
         
@@ -6285,8 +5921,8 @@ jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_checksum_method_sdk_account(js
         
         return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
-jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_checksum_method_sdk_connect(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
-        auto value = uniffi_indexd_ffi_checksum_method_sdk_connect(
+jsi::Value NativeIndexdFfi::cpp_uniffi_indexd_ffi_checksum_method_sdk_connected(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        auto value = uniffi_indexd_ffi_checksum_method_sdk_connected(
         );
 
         

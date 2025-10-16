@@ -1210,6 +1210,7 @@ export enum ConnectError_Tags {
   NotConnected = 'NotConnected',
   AlreadyConnected = 'AlreadyConnected',
   AppClient = 'AppClient',
+  JoinError = 'JoinError',
   Custom = 'Custom',
 }
 export const ConnectError = (() => {
@@ -1279,7 +1280,7 @@ export const ConnectError = (() => {
       return instanceOf(e) && (e as any)[variantOrdinalSymbol] === 3;
     }
   }
-  class Custom extends UniffiError {
+  class JoinError extends UniffiError {
     /**
      * @private
      * This field is private and should not be used.
@@ -1291,6 +1292,28 @@ export const ConnectError = (() => {
      */
     readonly [variantOrdinalSymbol] = 4;
 
+    public readonly tag = ConnectError_Tags.JoinError;
+
+    constructor(message: string) {
+      super('ConnectError', 'JoinError', message);
+    }
+
+    static instanceOf(e: any): e is JoinError {
+      return instanceOf(e) && (e as any)[variantOrdinalSymbol] === 4;
+    }
+  }
+  class Custom extends UniffiError {
+    /**
+     * @private
+     * This field is private and should not be used.
+     */
+    readonly [uniffiTypeNameSymbol]: string = 'ConnectError';
+    /**
+     * @private
+     * This field is private and should not be used.
+     */
+    readonly [variantOrdinalSymbol] = 5;
+
     public readonly tag = ConnectError_Tags.Custom;
 
     constructor(message: string) {
@@ -1298,7 +1321,7 @@ export const ConnectError = (() => {
     }
 
     static instanceOf(e: any): e is Custom {
-      return instanceOf(e) && (e as any)[variantOrdinalSymbol] === 4;
+      return instanceOf(e) && (e as any)[variantOrdinalSymbol] === 5;
     }
   }
 
@@ -1310,6 +1333,7 @@ export const ConnectError = (() => {
     NotConnected,
     AlreadyConnected,
     AppClient,
+    JoinError,
     Custom,
     instanceOf,
   };
@@ -1339,6 +1363,9 @@ const FfiConverterTypeConnectError = (() => {
           return new ConnectError.AppClient(FfiConverterString.read(from));
 
         case 4:
+          return new ConnectError.JoinError(FfiConverterString.read(from));
+
+        case 5:
           return new ConnectError.Custom(FfiConverterString.read(from));
 
         default:
@@ -1364,6 +1391,7 @@ export enum DownloadError_Tags {
   HexParseError = 'HexParseError',
   NotConnected = 'NotConnected',
   Cancelled = 'Cancelled',
+  JoinError = 'JoinError',
   Custom = 'Custom',
 }
 export const DownloadError = (() => {
@@ -1477,7 +1505,7 @@ export const DownloadError = (() => {
       return instanceOf(e) && (e as any)[variantOrdinalSymbol] === 5;
     }
   }
-  class Custom extends UniffiError {
+  class JoinError extends UniffiError {
     /**
      * @private
      * This field is private and should not be used.
@@ -1489,6 +1517,28 @@ export const DownloadError = (() => {
      */
     readonly [variantOrdinalSymbol] = 6;
 
+    public readonly tag = DownloadError_Tags.JoinError;
+
+    constructor(message: string) {
+      super('DownloadError', 'JoinError', message);
+    }
+
+    static instanceOf(e: any): e is JoinError {
+      return instanceOf(e) && (e as any)[variantOrdinalSymbol] === 6;
+    }
+  }
+  class Custom extends UniffiError {
+    /**
+     * @private
+     * This field is private and should not be used.
+     */
+    readonly [uniffiTypeNameSymbol]: string = 'DownloadError';
+    /**
+     * @private
+     * This field is private and should not be used.
+     */
+    readonly [variantOrdinalSymbol] = 7;
+
     public readonly tag = DownloadError_Tags.Custom;
 
     constructor(message: string) {
@@ -1496,7 +1546,7 @@ export const DownloadError = (() => {
     }
 
     static instanceOf(e: any): e is Custom {
-      return instanceOf(e) && (e as any)[variantOrdinalSymbol] === 6;
+      return instanceOf(e) && (e as any)[variantOrdinalSymbol] === 7;
     }
   }
 
@@ -1510,6 +1560,7 @@ export const DownloadError = (() => {
     HexParseError,
     NotConnected,
     Cancelled,
+    JoinError,
     Custom,
     instanceOf,
   };
@@ -1543,6 +1594,9 @@ const FfiConverterTypeDownloadError = (() => {
           return new DownloadError.Cancelled(FfiConverterString.read(from));
 
         case 6:
+          return new DownloadError.JoinError(FfiConverterString.read(from));
+
+        case 7:
           return new DownloadError.Custom(FfiConverterString.read(from));
 
         default:
@@ -1672,6 +1726,7 @@ export enum Exception_Tags {
   HexParseError = 'HexParseError',
   NotConnected = 'NotConnected',
   SealedObject = 'SealedObject',
+  JoinError = 'JoinError',
   Custom = 'Custom',
 }
 export const Exception = (() => {
@@ -1807,7 +1862,7 @@ export const Exception = (() => {
       return instanceOf(e) && (e as any)[variantOrdinalSymbol] === 6;
     }
   }
-  class Custom extends UniffiError {
+  class JoinError extends UniffiError {
     /**
      * @private
      * This field is private and should not be used.
@@ -1819,6 +1874,28 @@ export const Exception = (() => {
      */
     readonly [variantOrdinalSymbol] = 7;
 
+    public readonly tag = Exception_Tags.JoinError;
+
+    constructor(message: string) {
+      super('Exception', 'JoinError', message);
+    }
+
+    static instanceOf(e: any): e is JoinError {
+      return instanceOf(e) && (e as any)[variantOrdinalSymbol] === 7;
+    }
+  }
+  class Custom extends UniffiError {
+    /**
+     * @private
+     * This field is private and should not be used.
+     */
+    readonly [uniffiTypeNameSymbol]: string = 'Exception';
+    /**
+     * @private
+     * This field is private and should not be used.
+     */
+    readonly [variantOrdinalSymbol] = 8;
+
     public readonly tag = Exception_Tags.Custom;
 
     constructor(message: string) {
@@ -1826,7 +1903,7 @@ export const Exception = (() => {
     }
 
     static instanceOf(e: any): e is Custom {
-      return instanceOf(e) && (e as any)[variantOrdinalSymbol] === 7;
+      return instanceOf(e) && (e as any)[variantOrdinalSymbol] === 8;
     }
   }
 
@@ -1841,6 +1918,7 @@ export const Exception = (() => {
     HexParseError,
     NotConnected,
     SealedObject,
+    JoinError,
     Custom,
     instanceOf,
   };
@@ -1877,6 +1955,9 @@ const FfiConverterTypeError = (() => {
           return new Exception.SealedObject(FfiConverterString.read(from));
 
         case 7:
+          return new Exception.JoinError(FfiConverterString.read(from));
+
+        case 8:
           return new Exception.Custom(FfiConverterString.read(from));
 
         default:
@@ -1997,6 +2078,7 @@ export enum UploadError_Tags {
   Upload = 'Upload',
   Crypto = 'Crypto',
   NotConnected = 'NotConnected',
+  JoinError = 'JoinError',
   Custom = 'Custom',
 }
 export const UploadError = (() => {
@@ -2088,7 +2170,7 @@ export const UploadError = (() => {
       return instanceOf(e) && (e as any)[variantOrdinalSymbol] === 4;
     }
   }
-  class Custom extends UniffiError {
+  class JoinError extends UniffiError {
     /**
      * @private
      * This field is private and should not be used.
@@ -2100,6 +2182,28 @@ export const UploadError = (() => {
      */
     readonly [variantOrdinalSymbol] = 5;
 
+    public readonly tag = UploadError_Tags.JoinError;
+
+    constructor(message: string) {
+      super('UploadError', 'JoinError', message);
+    }
+
+    static instanceOf(e: any): e is JoinError {
+      return instanceOf(e) && (e as any)[variantOrdinalSymbol] === 5;
+    }
+  }
+  class Custom extends UniffiError {
+    /**
+     * @private
+     * This field is private and should not be used.
+     */
+    readonly [uniffiTypeNameSymbol]: string = 'UploadError';
+    /**
+     * @private
+     * This field is private and should not be used.
+     */
+    readonly [variantOrdinalSymbol] = 6;
+
     public readonly tag = UploadError_Tags.Custom;
 
     constructor(message: string) {
@@ -2107,7 +2211,7 @@ export const UploadError = (() => {
     }
 
     static instanceOf(e: any): e is Custom {
-      return instanceOf(e) && (e as any)[variantOrdinalSymbol] === 5;
+      return instanceOf(e) && (e as any)[variantOrdinalSymbol] === 6;
     }
   }
 
@@ -2120,6 +2224,7 @@ export const UploadError = (() => {
     Upload,
     Crypto,
     NotConnected,
+    JoinError,
     Custom,
     instanceOf,
   };
@@ -2150,6 +2255,9 @@ const FfiConverterTypeUploadError = (() => {
           return new UploadError.NotConnected(FfiConverterString.read(from));
 
         case 5:
+          return new UploadError.JoinError(FfiConverterString.read(from));
+
+        case 6:
           return new UploadError.Custom(FfiConverterString.read(from));
 
         default:

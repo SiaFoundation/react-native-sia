@@ -493,6 +493,7 @@ const FfiConverterTypeNetAddress = (() => {
 export type ObjectEvent = {
   key: string;
   deleted: boolean;
+  updatedAt: UniffiTimestamp;
   object: PinnedObjectInterface | undefined;
 };
 
@@ -533,18 +534,21 @@ const FfiConverterTypeObjectEvent = (() => {
       return {
         key: FfiConverterString.read(from),
         deleted: FfiConverterBool.read(from),
+        updatedAt: FfiConverterTimestamp.read(from),
         object: FfiConverterOptionalTypePinnedObject.read(from),
       };
     }
     write(value: TypeName, into: RustBuffer): void {
       FfiConverterString.write(value.key, into);
       FfiConverterBool.write(value.deleted, into);
+      FfiConverterTimestamp.write(value.updatedAt, into);
       FfiConverterOptionalTypePinnedObject.write(value.object, into);
     }
     allocationSize(value: TypeName): number {
       return (
         FfiConverterString.allocationSize(value.key) +
         FfiConverterBool.allocationSize(value.deleted) +
+        FfiConverterTimestamp.allocationSize(value.updatedAt) +
         FfiConverterOptionalTypePinnedObject.allocationSize(value.object)
       );
     }

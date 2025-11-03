@@ -31,6 +31,11 @@ jobs:
           version: yarn version
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Install Java
+        uses: actions/setup-java@v5.0.0
+        with:
+          distribution: 'zulu'
+          java-version: '17'
       - name: Use appropriate Xcode version
         if: steps.changesets.outputs.hasChangesets == 'false'
         uses: maxim-lobanov/setup-xcode@v1
@@ -42,14 +47,16 @@ jobs:
           if [ -f "$HOME/.netrc" ]; then
             chmod 600 "$HOME/.netrc"
           fi
-      - name: Install Rust toolchain (nightly + iOS targets)
+      - name: Install Rust toolchain (nightly + iOS + Android targets)
         if: steps.changesets.outputs.hasChangesets == 'false'
         uses: dtolnay/rust-toolchain@nightly
         with:
-          targets: aarch64-apple-ios,aarch64-apple-ios-sim
-      - name: Install bindgen CLI
+          targets: aarch64-apple-ios,aarch64-apple-ios-sim,aarch64-linux-android,armv7-linux-androideabi,i686-linux-android,x86_64-linux-android
+      - name: Install Dependencies
         if: steps.changesets.outputs.hasChangesets == 'false'
-        run: cargo install --force --locked bindgen-cli
+        run: |
+          brew install clang-format
+          cargo install --force --locked bindgen-cli cargo-ndk@^3
       - name: Configure bindgen for iOS SDK
         if: steps.changesets.outputs.hasChangesets == 'false'
         run: |
@@ -65,10 +72,12 @@ jobs:
         run: yarn ubrn:checkout
       - name: Build iOS
         if: steps.changesets.outputs.hasChangesets == 'false'
-        run: yarn ubrn:ios
-      # - name: Build Android
-      #   if: steps.changesets.outputs.hasChangesets == 'false'
-      #   run: yarn ubrn:android
+        run: yarn ubrn:ios --release
+      - name: Build Android
+        if: steps.changesets.outputs.hasChangesets == 'false'
+        run: |
+          yarn ubrn:android --release
+          cp patch/android_cpp-adapter.cpp android/cpp-adapter.cpp # Fix uniffi-bindgen-react-native generated file
       # - name: Build Web
       #   if: steps.changesets.outputs.hasChangesets == 'false'
       #   run: yarn ubrn:ios && yarn ubrn:android

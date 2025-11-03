@@ -72,11 +72,11 @@ jobs:
         run: yarn ubrn:checkout
       - name: Build iOS
         if: steps.changesets.outputs.hasChangesets == 'false'
-        run: yarn ubrn:ios --release
+        run: yarn ubrn:ios
       - name: Build Android
         if: steps.changesets.outputs.hasChangesets == 'false'
         run: |
-          yarn ubrn:android --release
+          yarn ubrn:android
           cp patch/android_cpp-adapter.cpp android/cpp-adapter.cpp # Fix uniffi-bindgen-react-native generated file
       # - name: Build Web
       #   if: steps.changesets.outputs.hasChangesets == 'false'

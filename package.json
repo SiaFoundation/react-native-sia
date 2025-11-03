@@ -13,8 +13,8 @@
     "./package.json": "./package.json"
   },
   "scripts": {
-    "ubrn:ios": "RUSTUP_TOOLCHAIN=nightly ubrn build ios --and-generate && (cd example/ios && pod install)",
-    "ubrn:android": "ubrn build android --and-generate",
+    "ubrn:ios": "RUSTUP_TOOLCHAIN=nightly ubrn build ios --release --and-generate && (cd example/ios && pod install)",
+    "ubrn:android": "ubrn build android --and-generate --release",
     "ubrn:web": "ubrn build web",
     "ubrn:checkout": "ubrn checkout",
     "ubrn:clean": "yarn dlx rimraf --glob cpp android/CMakeLists.txt android/src/main/java 'android/*.cpp' ios 'src/Native*' 'src/index.*ts*' src/generated SiaFramework.xcframework",

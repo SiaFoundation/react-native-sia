@@ -11,9 +11,6 @@ permissions:
   id-token: write # Required for OIDC: https://docs.npmjs.com/trusted-publishers
   contents: read # Required for actions/checkout
 
-env:
-  NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-
 jobs:
   release:
     runs-on: macos-latest
@@ -96,4 +93,3 @@ jobs:
           publish: yarn release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

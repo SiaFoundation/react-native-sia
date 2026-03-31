@@ -2,4 +2,4 @@
 rust:
   repo: https://github.com/SiaFoundation/sia-sdk-rs
   branch: master
-  manifestPath: indexd_ffi/Cargo.toml
+  manifestPath: sia_storage_ffi/Cargo.toml

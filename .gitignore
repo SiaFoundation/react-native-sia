@@ -88,6 +88,15 @@ nitrogen/
 # From uniffi-bindgen-react-native
 rust_modules/
 *.a
+cpp/
+ios/
+android/CMakeLists.txt
+android/src/main/java/
+android/*.cpp
+src/Native*
+src/index.*ts*
+src/generated/
+SiaFramework.xcframework/
 
 # Environment variables
 .env

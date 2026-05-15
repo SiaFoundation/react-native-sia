@@ -30,6 +30,7 @@ export default defineConfig([
       'src/**/*',
       '.yarn/',
       'eslint.config.mjs',
+      'rust_modules/',
     ],
   },
 ]);

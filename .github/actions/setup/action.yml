@@ -42,6 +42,11 @@ runs:
         toolchain: stable
         targets: aarch64-linux-android,armv7-linux-androideabi,x86_64-linux-android,i686-linux-android
 
+    - name: Install cargo-ndk
+      if: runner.os == 'Linux'
+      run: cargo install cargo-ndk --locked
+      shell: bash
+
     - name: Install Rust toolchain (iOS targets)
       if: runner.os == 'macOS'
       uses: dtolnay/rust-toolchain@5b842231ba77f5c045dba54ac5560fed2db780e2 # nightly

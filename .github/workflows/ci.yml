@@ -20,6 +20,11 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup
 
+      - name: Generate Sia bindings
+        run: |
+          yarn ubrn:checkout
+          yarn ubrn generate jsi turbo-module --native-bindings
+
       - name: Lint files
         run: yarn lint
 
@@ -35,6 +40,11 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup
 
+      - name: Generate Sia bindings
+        run: |
+          yarn ubrn:checkout
+          yarn ubrn generate jsi turbo-module --native-bindings
+
       - name: Run unit tests
         run: yarn test --maxWorkers=2 --coverage
 
@@ -46,6 +56,11 @@ jobs:
 
       - name: Setup
         uses: ./.github/actions/setup
+
+      - name: Generate Sia bindings
+        run: |
+          yarn ubrn:checkout
+          yarn ubrn generate jsi turbo-module --native-bindings
 
       - name: Build package
         run: yarn prepare
@@ -78,6 +93,12 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('example/android/gradle/wrapper/gradle-wrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
+
+      - name: Checkout SDK
+        run: yarn ubrn:checkout
+
+      - name: Build Android
+        run: yarn ubrn:android
 
       - name: Build example for Android
         env:
@@ -113,11 +134,6 @@ jobs:
           bundle install
           bundle exec pod repo update --verbose
           bundle exec pod install --project-directory=ios
-
-      - name: Install Rust toolchain (nightly + iOS targets)
-        uses: dtolnay/rust-toolchain@5b842231ba77f5c045dba54ac5560fed2db780e2 # nightly
-        with:
-          targets: aarch64-apple-ios,aarch64-apple-ios-sim
 
       - name: Checkout SDK
         run: yarn ubrn:checkout

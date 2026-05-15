@@ -34,3 +34,17 @@ runs:
           **/node_modules
           .yarn/install-state.gz
         key: ${{ steps.yarn-cache.outputs.cache-primary-key }}
+
+    - name: Install Rust toolchain (Android targets)
+      if: runner.os == 'Linux'
+      uses: dtolnay/rust-toolchain@5b842231ba77f5c045dba54ac5560fed2db780e2 # nightly
+      with:
+        toolchain: stable
+        targets: aarch64-linux-android,armv7-linux-androideabi,x86_64-linux-android,i686-linux-android
+
+    - name: Install Rust toolchain (iOS targets)
+      if: runner.os == 'macOS'
+      uses: dtolnay/rust-toolchain@5b842231ba77f5c045dba54ac5560fed2db780e2 # nightly
+      with:
+        toolchain: nightly
+        targets: aarch64-apple-ios,aarch64-apple-ios-sim

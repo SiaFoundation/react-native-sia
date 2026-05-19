@@ -1,0 +1,54 @@
+name: Generate Bindings
+description: Generate uniffi-bindgen-react-native bindings (TypeScript, C++, Android JNI) for PR CI. Builds only the arm64-v8a slice because the example app's gradle build pins reactNativeArchitectures=arm64-v8a; the release workflow does the full multi-ABI build.
+
+runs:
+  using: composite
+  steps:
+    - name: Install Rust toolchain (nightly + arm64 Android)
+      uses: dtolnay/rust-toolchain@5b842231ba77f5c045dba54ac5560fed2db780e2 # nightly
+      with:
+        targets: aarch64-linux-android
+
+    - name: Rust cache
+      uses: Swatinem/rust-cache@98c8021b550208e191a6a3145459bfc9fb29c4c0 # v2.8.0
+      with:
+        workspaces: rust_modules
+
+    - name: Cache cargo binaries
+      uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+      with:
+        path: |
+          ~/.cargo/bin/bindgen
+          ~/.cargo/bin/cargo-ndk
+        key: ${{ runner.os }}-cargo-bin-bindgen-cargo-ndk-v3
+
+    - name: Install native tooling
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y clang-format
+        [ -x "$HOME/.cargo/bin/bindgen" ] || cargo install --force --locked bindgen-cli
+        [ -x "$HOME/.cargo/bin/cargo-ndk" ] || cargo install --force --locked cargo-ndk@^3
+      shell: bash
+
+    - name: Checkout SDK
+      run: yarn ubrn:checkout
+      shell: bash
+
+    - name: Build Android arm64-v8a (generates bindings)
+      run: |
+        npx ubrn build android --and-generate --release --targets arm64-v8a
+        cp patch/android_cpp-adapter.cpp android/cpp-adapter.cpp
+      shell: bash
+
+    - name: Strip debug info from android rust archive
+      # Matches what release-main.yml does before publish, so the example
+      # build in PR CI links against the same artifact shape consumers see.
+      run: |
+        set -euo pipefail
+        LLVM_STRIP=$(find "$ANDROID_NDK_HOME/toolchains/llvm/prebuilt" -name llvm-strip 2>/dev/null | head -1)
+        if [ -z "$LLVM_STRIP" ]; then
+          echo "::error::Could not find llvm-strip in NDK at $ANDROID_NDK_HOME"
+          exit 1
+        fi
+        find android/src/main/jniLibs -name 'libsia_storage_ffi.a' -print -exec "$LLVM_STRIP" --strip-debug {} \;
+      shell: bash

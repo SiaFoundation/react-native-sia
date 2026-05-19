@@ -52,12 +52,26 @@ jobs:
         if: steps.changesets.outputs.hasChangesets == 'false'
         uses: dtolnay/rust-toolchain@5b842231ba77f5c045dba54ac5560fed2db780e2 # nightly
         with:
-          targets: aarch64-apple-ios,aarch64-apple-ios-sim,aarch64-linux-android,armv7-linux-androideabi,i686-linux-android,x86_64-linux-android
+          targets: aarch64-apple-ios,aarch64-apple-ios-sim,aarch64-linux-android,x86_64-linux-android
+      - name: Rust cache
+        if: steps.changesets.outputs.hasChangesets == 'false'
+        uses: Swatinem/rust-cache@98c8021b550208e191a6a3145459bfc9fb29c4c0 # v2.8.0
+        with:
+          workspaces: rust_modules
+      - name: Cache cargo binaries
+        if: steps.changesets.outputs.hasChangesets == 'false'
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: |
+            ~/.cargo/bin/bindgen
+            ~/.cargo/bin/cargo-ndk
+          key: ${{ runner.os }}-cargo-bin-bindgen-cargo-ndk-v3
       - name: Install Dependencies
         if: steps.changesets.outputs.hasChangesets == 'false'
         run: |
           brew install clang-format
-          cargo install --force --locked bindgen-cli cargo-ndk@^3
+          [ -x "$HOME/.cargo/bin/bindgen" ] || cargo install --force --locked bindgen-cli
+          [ -x "$HOME/.cargo/bin/cargo-ndk" ] || cargo install --force --locked cargo-ndk@^3
       - name: Configure bindgen for iOS SDK
         if: steps.changesets.outputs.hasChangesets == 'false'
         run: |
@@ -82,9 +96,39 @@ jobs:
       # - name: Build Web
       #   if: steps.changesets.outputs.hasChangesets == 'false'
       #   run: yarn ubrn:ios && yarn ubrn:android
+      - name: Strip debug info from rust archives
+        if: steps.changesets.outputs.hasChangesets == 'false'
+        # --strip-debug / -S removes DWARF only; the symbol table stays so
+        # native crash stacks still have function names. Drops ~38 MB.
+        run: |
+          set -euo pipefail
+          LLVM_STRIP=$(find "$ANDROID_NDK_HOME/toolchains/llvm/prebuilt" -name llvm-strip 2>/dev/null | head -1)
+          if [ -z "$LLVM_STRIP" ]; then
+            echo "::error::Could not find llvm-strip in NDK at $ANDROID_NDK_HOME"
+            exit 1
+          fi
+          echo "Using $LLVM_STRIP"
+          find android/src/main/jniLibs -name 'libsia_storage_ffi.a' -print -exec "$LLVM_STRIP" --strip-debug {} \;
+          find SiaFramework.xcframework -name 'libsia_storage_ffi.a' -print -exec xcrun strip -S {} \;
       - name: Prepare
         if: steps.changesets.outputs.hasChangesets == 'false'
         run: yarn prepare
+      - name: Guard package size
+        if: steps.changesets.outputs.hasChangesets == 'false'
+        # npm has a 100 MB hard cap on tarballs. Fail fast if we're heading
+        # back over.
+        run: |
+          set -euo pipefail
+          OUT=$(npm pack --dry-run --json 2>/dev/null)
+          UNPACKED=$(echo "$OUT" | jq '.[0].unpackedSize')
+          TARBALL=$(echo "$OUT" | jq '.[0].size')
+          UNPACKED_MB=$((UNPACKED / 1024 / 1024))
+          TARBALL_MB=$((TARBALL / 1024 / 1024))
+          echo "::notice::npm package: ${TARBALL_MB} MB tarball / ${UNPACKED_MB} MB unpacked"
+          if [ "$TARBALL_MB" -gt 95 ]; then
+            echo "::error::Tarball ${TARBALL_MB} MB exceeds 95 MB (npm hard cap is 100 MB)"
+            exit 1
+          fi
       - name: Publish to NPM and create GitHub releases
         id: changesets_release
         if: steps.changesets.outputs.hasChangesets == 'false'

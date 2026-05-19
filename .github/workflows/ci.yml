@@ -20,6 +20,9 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup
 
+      - name: Generate bindings
+        uses: ./.github/actions/generate-bindings
+
       - name: Lint files
         run: yarn lint
 
@@ -47,6 +50,9 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup
 
+      - name: Generate bindings
+        uses: ./.github/actions/generate-bindings
+
       - name: Build package
         run: yarn prepare
 
@@ -58,6 +64,9 @@ jobs:
 
       - name: Setup
         uses: ./.github/actions/setup
+
+      - name: Generate bindings
+        uses: ./.github/actions/generate-bindings
 
       - name: Install JDK
         uses: actions/setup-java@c5195efecf7bdfc987ee8bae7a71cb8b11521c00 # v4.7.1
@@ -107,24 +116,76 @@ jobs:
             chmod 600 "$HOME/.netrc"
           fi
 
+      - name: Cache CocoaPods
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: |
+            example/ios/Pods
+            ~/Library/Caches/CocoaPods
+            ~/.cocoapods/repos
+          key: ${{ runner.os }}-pods-${{ hashFiles('example/ios/Podfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pods-
+
       - name: Install cocoapods
         run: |
           cd example
           bundle install
-          bundle exec pod repo update --verbose
-          bundle exec pod install --project-directory=ios
+          bundle exec pod install --project-directory=ios --repo-update
 
-      - name: Install Rust toolchain (nightly + iOS targets)
+      - name: Install Rust toolchain (nightly + iOS simulator target)
         uses: dtolnay/rust-toolchain@5b842231ba77f5c045dba54ac5560fed2db780e2 # nightly
         with:
-          targets: aarch64-apple-ios,aarch64-apple-ios-sim
+          targets: aarch64-apple-ios-sim
+
+      - name: Rust cache
+        uses: Swatinem/rust-cache@98c8021b550208e191a6a3145459bfc9fb29c4c0 # v2.8.0
+        with:
+          workspaces: rust_modules
 
       - name: Checkout SDK
         run: yarn ubrn:checkout
 
-      - name: Build iOS
-        run: yarn ubrn:ios
+      - name: Build iOS arm64 simulator only
+        run: |
+          RUSTUP_TOOLCHAIN=nightly npx ubrn build ios --release --and-generate --targets aarch64-apple-ios-sim
+          cd example/ios && bundle exec pod install
+
+      - name: Strip debug info from ios rust archive
+        # Matches what release-main.yml does before publish, so the example
+        # xcodebuild step links against the same artifact shape consumers see.
+        run: find SiaFramework.xcframework -name 'libsia_storage_ffi.a' -print -exec xcrun strip -S {} \;
+
+      - name: Install iOS platform for selected Xcode
+        # Apple's download endpoint flakes occasionally with
+        # "Unable to connect to simulator"; retry a few times.
+        run: |
+          for i in 1 2 3; do
+            if xcodebuild -downloadPlatform iOS; then
+              exit 0
+            fi
+            echo "::warning::iOS platform download failed (attempt $i), retrying in 30s"
+            sleep 30
+          done
+          echo "::error::iOS platform download failed after 3 attempts"
+          exit 1
 
       - name: Build example for iOS
         run: |
-          yarn build:ios
+          cd example/ios
+          set -o pipefail
+          # ubrn build ios only produces aarch64-apple-ios-sim; restrict
+          # xcodebuild to arm64 so the linker doesn't look for an x86_64 slice.
+          xcodebuild \
+            -workspace SiaExample.xcworkspace \
+            -configuration Debug \
+            -scheme SiaExample \
+            -destination 'generic/platform=iOS Simulator' \
+            -skipPackagePluginValidation \
+            ARCHS=arm64 \
+            ONLY_ACTIVE_ARCH=YES \
+            EXCLUDED_ARCHS=x86_64 \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            COMPILER_INDEX_STORE_ENABLE=NO \
+            build

@@ -147,6 +147,11 @@ jobs:
         run: yarn ubrn:checkout
 
       - name: Build iOS arm64 simulator only
+        env:
+          # Match release-main.yml: lto=off + no bitcode embedding to keep
+          # the rust .a archives small. See the comment there.
+          CARGO_PROFILE_RELEASE_LTO: 'off'
+          RUSTFLAGS: -C embed-bitcode=no
         run: |
           RUSTUP_TOOLCHAIN=nightly npx ubrn build ios --release --and-generate --targets aarch64-apple-ios-sim
           cd example/ios && bundle exec pod install

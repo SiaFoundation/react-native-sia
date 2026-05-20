@@ -85,11 +85,24 @@ jobs:
       - name: Checkout SDK
         if: steps.changesets.outputs.hasChangesets == 'false'
         run: yarn ubrn:checkout
+      # Disable LTO + LLVM bitcode embedding in the rust staticlibs we ship.
+      # Upstream's [profile.release] sets lto = "thin", which forces rustc to
+      # bundle LLVM bitcode into the .a archives. Xcode/NDK don't use that
+      # bitcode at link time (App Store bitcode submission was removed in
+      # Xcode 14), so it's pure dead weight in the npm tarball.
+      # Measured locally: shrinks the unstripped .a by 49% on Android arm64
+      # and 60% on iOS sim, no consumer-side behavior change.
       - name: Build iOS
         if: steps.changesets.outputs.hasChangesets == 'false'
+        env:
+          CARGO_PROFILE_RELEASE_LTO: 'off'
+          RUSTFLAGS: -C embed-bitcode=no
         run: yarn ubrn:ios
       - name: Build Android
         if: steps.changesets.outputs.hasChangesets == 'false'
+        env:
+          CARGO_PROFILE_RELEASE_LTO: 'off'
+          RUSTFLAGS: -C embed-bitcode=no
         run: |
           yarn ubrn:android
           cp patch/android_cpp-adapter.cpp android/cpp-adapter.cpp # Fix uniffi-bindgen-react-native generated file

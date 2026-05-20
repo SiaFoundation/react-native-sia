@@ -35,6 +35,11 @@ runs:
       shell: bash
 
     - name: Build Android arm64-v8a (generates bindings)
+      env:
+        # Match release-main.yml: lto=off + no bitcode embedding to keep
+        # the rust .a archives small. See the comment there.
+        CARGO_PROFILE_RELEASE_LTO: 'off'
+        RUSTFLAGS: -C embed-bitcode=no
       run: |
         npx ubrn build android --and-generate --release --targets arm64-v8a
         cp patch/android_cpp-adapter.cpp android/cpp-adapter.cpp

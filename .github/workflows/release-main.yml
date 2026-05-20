@@ -119,7 +119,11 @@ jobs:
         # back over.
         run: |
           set -euo pipefail
-          OUT=$(npm pack --dry-run --json 2>/dev/null)
+          # --ignore-scripts skips the `prepare` lifecycle (bob build) which
+          # would otherwise write `ℹ [typescript] ...` lines onto stdout and
+          # break the JSON parse below. `yarn prepare` already ran in the
+          # previous step, so lib/ is up to date.
+          OUT=$(npm pack --dry-run --json --ignore-scripts 2>/dev/null)
           UNPACKED=$(echo "$OUT" | jq '.[0].unpackedSize')
           TARBALL=$(echo "$OUT" | jq '.[0].size')
           UNPACKED_MB=$((UNPACKED / 1024 / 1024))

@@ -34,7 +34,7 @@ jobs:
           # PAT (not GITHUB_TOKEN) so the release PR it opens triggers CI —
           # PRs created by GITHUB_TOKEN don't fire other workflows, which would
           # leave the release PR stuck on required status checks.
-          GITHUB_TOKEN: ${{ secrets.PAT_REPOSITORY_DISPATCH }}
+          GITHUB_TOKEN: ${{ secrets.RELEASE_PAT }}
       - name: Install Java
         uses: actions/setup-java@dded0888837ed1f317902acf8a20df0ad188d165 # v5.0.0
         with:

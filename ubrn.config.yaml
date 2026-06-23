@@ -5,8 +5,10 @@ rust:
   # a newer sia_storage_ffi release ships.
   branch: sia_storage_ffi/v0.8.1
   manifestPath: sia_storage_ffi/Cargo.toml
-# 32-bit ABIs (armeabi-v7a, x86) are excluded — Play Store has required
-# 64-bit since 2019 and 64-bit-only since 2024. They would add ~141 MB
-# to the npm tarball for zero real-device coverage.
+# armeabi-v7a (32-bit ARM) ships because some 64-bit-capable phones run a
+# 32-bit Android userspace and load only 32-bit libs (e.g. Samsung Galaxy
+# J6 / Exynos 7870). Without this ABI those devices can't load the native
+# lib and react-native-sia throws on startup — a blank white screen.
+# x86 stays excluded: it's emulator-only, and 64-bit emulators cover dev.
 android:
-  targets: [arm64-v8a, x86_64]
+  targets: [arm64-v8a, armeabi-v7a, x86_64]

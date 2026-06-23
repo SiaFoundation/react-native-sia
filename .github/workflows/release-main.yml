@@ -1,66 +1,55 @@
-name: Update Release PR or Release Versions and Publish
+# Build the native artifacts (from the sia-sdk-rs tag pinned in ubrn.config.yaml)
+# and publish to npm. Triggered when knope-release.yml publishes a GitHub release.
+# Checkout resolves to the release tag's commit, which carries the bumped version.
+name: Release
 
 on:
-  push:
-    branches:
-      - main
+  release:
+    types: [published]
+  # Escape hatch to re-run a failed publish. Note: this checks out the default
+  # branch HEAD, not the last release tag, so only use it when main is at the
+  # version you intend to publish.
+  workflow_dispatch:
 
-concurrency: commits-to-main
+# Serialize publishes — never let a workflow_dispatch rerun race a
+# release:published build (duplicate npm publish / artifact contention).
+concurrency: release-main
 
 permissions:
-  id-token: write # Required for OIDC: https://docs.npmjs.com/trusted-publishers
-  contents: write # Required for checkout and pushing release tags
-  pull-requests: write # Required for changesets to open the release PR (an explicit permissions block replaces the org default, which would otherwise grant this)
+  id-token: write # OIDC for npm trusted publishing: https://docs.npmjs.com/trusted-publishers
+  contents: read
 
 jobs:
-  release:
+  publish:
     runs-on: macos-latest
     steps:
-      - name: Checkout all commits
+      - name: Checkout
         uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
-        with:
-          fetch-depth: 0
       - name: Setup
         uses: ./.github/actions/setup
-      # If there are changesets, then we are in PR prep mode and will
-      # update the release pull request. Note that if there are no changesets
-      # this step will be skipped because no publish script is specified.
-      - name: Update release pull request
-        id: changesets
-        uses: changesets/action@63a615b9cd06ba9a3e6d13796c7fbcb080a60a0b # v1
-        with:
-          commit: 'chore: release packages'
-          version: yarn version
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Install Java
         uses: actions/setup-java@dded0888837ed1f317902acf8a20df0ad188d165 # v5.0.0
         with:
           distribution: 'zulu'
           java-version: '17'
       - name: Use appropriate Xcode version
-        if: steps.changesets.outputs.hasChangesets == 'false'
         uses: maxim-lobanov/setup-xcode@ed7a3b1fda3918c0306d1b724322adc0b8cc0a90 # v1
         with:
           xcode-version: '16.2'
       - name: Fix netrc permissions for CocoaPods
-        if: steps.changesets.outputs.hasChangesets == 'false'
         run: |
           if [ -f "$HOME/.netrc" ]; then
             chmod 600 "$HOME/.netrc"
           fi
       - name: Install Rust toolchain (nightly + iOS + Android targets)
-        if: steps.changesets.outputs.hasChangesets == 'false'
         uses: dtolnay/rust-toolchain@5b842231ba77f5c045dba54ac5560fed2db780e2 # nightly
         with:
           targets: aarch64-apple-ios,aarch64-apple-ios-sim,aarch64-linux-android,x86_64-linux-android
       - name: Rust cache
-        if: steps.changesets.outputs.hasChangesets == 'false'
         uses: Swatinem/rust-cache@98c8021b550208e191a6a3145459bfc9fb29c4c0 # v2.8.0
         with:
           workspaces: rust_modules
       - name: Cache cargo binaries
-        if: steps.changesets.outputs.hasChangesets == 'false'
         uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         with:
           path: |
@@ -68,23 +57,17 @@ jobs:
             ~/.cargo/bin/cargo-ndk
           key: ${{ runner.os }}-cargo-bin-bindgen-cargo-ndk-v3
       - name: Install Dependencies
-        if: steps.changesets.outputs.hasChangesets == 'false'
         run: |
           brew install clang-format
           [ -x "$HOME/.cargo/bin/bindgen" ] || cargo install --force --locked bindgen-cli
           [ -x "$HOME/.cargo/bin/cargo-ndk" ] || cargo install --force --locked cargo-ndk@^3
       - name: Configure bindgen for iOS SDK
-        if: steps.changesets.outputs.hasChangesets == 'false'
         run: |
           SDKROOT=$(xcrun --sdk iphoneos --show-sdk-path)
           echo "SDKROOT=$SDKROOT" >> $GITHUB_ENV
           echo "BINDGEN_EXTRA_CLANG_ARGS=-isysroot $SDKROOT" >> $GITHUB_ENV
           echo "LIBCLANG_PATH=$(xcode-select -p)/Toolchains/XcodeDefault.xctoolchain/usr/lib" >> $GITHUB_ENV
-      # If no changesets were detected in the PR prep step then we are in
-      # release/publish mode. Build artifacts and then check for and publish
-      # any new versions to NPM.
       - name: Checkout SDK
-        if: steps.changesets.outputs.hasChangesets == 'false'
         run: yarn ubrn:checkout
       # Disable LTO + LLVM bitcode embedding in the rust staticlibs we ship.
       # Upstream's [profile.release] sets lto = "thin", which forces rustc to
@@ -94,24 +77,18 @@ jobs:
       # Measured locally: shrinks the unstripped .a by 49% on Android arm64
       # and 60% on iOS sim, no consumer-side behavior change.
       - name: Build iOS
-        if: steps.changesets.outputs.hasChangesets == 'false'
         env:
           CARGO_PROFILE_RELEASE_LTO: 'off'
           RUSTFLAGS: -C embed-bitcode=no
         run: yarn ubrn:ios
       - name: Build Android
-        if: steps.changesets.outputs.hasChangesets == 'false'
         env:
           CARGO_PROFILE_RELEASE_LTO: 'off'
           RUSTFLAGS: -C embed-bitcode=no
         run: |
           yarn ubrn:android
           cp patch/android_cpp-adapter.cpp android/cpp-adapter.cpp # Fix uniffi-bindgen-react-native generated file
-      # - name: Build Web
-      #   if: steps.changesets.outputs.hasChangesets == 'false'
-      #   run: yarn ubrn:ios && yarn ubrn:android
       - name: Strip debug info from rust archives
-        if: steps.changesets.outputs.hasChangesets == 'false'
         # --strip-debug / -S removes DWARF only; the symbol table stays so
         # native crash stacks still have function names. Drops ~38 MB.
         run: |
@@ -125,10 +102,8 @@ jobs:
           find android/src/main/jniLibs -name 'libsia_storage_ffi.a' -print -exec "$LLVM_STRIP" --strip-debug {} \;
           find SiaFramework.xcframework -name 'libsia_storage_ffi.a' -print -exec xcrun strip -S {} \;
       - name: Prepare
-        if: steps.changesets.outputs.hasChangesets == 'false'
         run: yarn prepare
       - name: Guard package size
-        if: steps.changesets.outputs.hasChangesets == 'false'
         # npm has a 100 MB hard cap on tarballs. Fail fast if we're heading
         # back over.
         run: |
@@ -147,11 +122,11 @@ jobs:
             echo "::error::Tarball ${TARBALL_MB} MB exceeds 95 MB (npm hard cap is 100 MB)"
             exit 1
           fi
-      - name: Publish to NPM and create GitHub releases
-        id: changesets_release
-        if: steps.changesets.outputs.hasChangesets == 'false'
-        uses: changesets/action@63a615b9cd06ba9a3e6d13796c7fbcb080a60a0b # v1
-        with:
-          publish: yarn release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Publish to npm
+        # Trusted publishing via OIDC (id-token above) — no npm token, but it
+        # needs npm >= 11.5.1, so upgrade first (pinned to a major for
+        # reproducibility). --ignore-scripts: lib/ was already built by the
+        # Prepare step; re-running prepare is redundant.
+        run: |
+          npm install -g npm@11
+          npm publish --access public --ignore-scripts

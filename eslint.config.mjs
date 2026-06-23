@@ -28,6 +28,7 @@ export default defineConfig([
       'node_modules/',
       'lib/',
       'src/**/*',
+      'scripts/',
       '.yarn/',
       'rust_modules/',
       'cpp/',

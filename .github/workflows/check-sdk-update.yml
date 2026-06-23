@@ -1,0 +1,89 @@
+# Daily check for new sia-sdk-rs releases. We track the `sia_storage_ffi/v*`
+# crate tags (the crate this package builds, per ubrn.config.yaml). If a newer
+# release exists than the tag currently pinned in ubrn.config.yaml, this repins
+# it, writes a stub .changeset/sdk-update.md linking to the upstream release
+# notes, and pushes to main — which triggers prepare-release.yml to open the
+# release PR. Mirrors the sibling repos (sia-storage-js, create-sia-app).
+#
+# Idempotent: stable changeset filename, current-vs-latest comparison, so
+# re-running with no upstream change is a no-op.
+#
+# Pushes with RELEASE_PAT, not GITHUB_TOKEN: a push authenticated with
+# GITHUB_TOKEN neither triggers other workflows nor bypasses the branch ruleset.
+# RELEASE_PAT is owned by an admin (a ruleset bypass actor), so its push lands on
+# main and triggers prepare-release.yml + ci.yml.
+name: Check SDK Update
+
+on:
+  schedule:
+    - cron: '0 9 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: check-sdk-update
+  cancel-in-progress: true
+
+jobs:
+  check-and-bump:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
+        with:
+          token: ${{ secrets.RELEASE_PAT }}
+
+      - name: Check for a newer sia_storage_ffi release and bump
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          # Tag currently pinned in ubrn.config.yaml (e.g. sia_storage_ffi/v0.8.1,
+          # or "master" before the first pin). `|| true` so a missing branch line
+          # doesn't trip pipefail before we can emit a clear error.
+          current=$(grep -E '^[[:space:]]*branch:' ubrn.config.yaml | head -1 \
+            | sed -E 's/^[[:space:]]*branch:[[:space:]]*//; s/[[:space:]]*$//' || true)
+          if [ -z "$current" ]; then
+            echo "::error::No 'branch:' found in ubrn.config.yaml"
+            exit 1
+          fi
+          echo "current pin: $current"
+
+          # Latest non-prerelease sia_storage_ffi tag. Streaming tag names (a
+          # newline list, not a JSON array) is safe across --paginate pages.
+          latest=$(gh api repos/SiaFoundation/sia-sdk-rs/releases --paginate \
+            --jq '.[] | select(.prerelease == false) | .tag_name' \
+            | grep '^sia_storage_ffi/v' | head -1 || true)
+          if [ -z "$latest" ]; then
+            echo "::error::No sia_storage_ffi releases found upstream"
+            exit 1
+          fi
+          echo "latest release: $latest"
+
+          if [ "$current" = "$latest" ]; then
+            echo "Already up to date."
+            exit 0
+          fi
+
+          # Repin ubrn.config.yaml (| delimiter so the tag's slash is literal).
+          sed -i -E "s|^([[:space:]]*branch:[[:space:]]*).*|\1${latest}|" ubrn.config.yaml
+
+          ver=${latest##*/}
+          mkdir -p .changeset
+          {
+            echo '---'
+            echo 'default: patch'
+            echo '---'
+            echo
+            echo "#### Update Sia SDK to ${ver}"
+            echo
+            echo "See the [sia-sdk-rs release notes](https://github.com/SiaFoundation/sia-sdk-rs/releases/tag/${latest})."
+          } > .changeset/sdk-update.md
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add ubrn.config.yaml .changeset/sdk-update.md
+          git commit -m "chore: update SDK to ${ver}"
+          git push

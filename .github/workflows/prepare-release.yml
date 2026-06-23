@@ -1,0 +1,57 @@
+# On every push to main, roll any pending .changeset/*.md files into a release
+# PR (bumps package.json, regenerates CHANGELOG.md). Merging that PR triggers
+# knope-release.yml. Skipped on knope's own "chore: release" commit to avoid a
+# loop.
+name: Prepare Release
+
+on:
+  push:
+    branches: [main]
+
+concurrency: prepare-release
+
+permissions:
+  contents: write # push the `release` branch
+  pull-requests: write # open/update the release PR
+
+jobs:
+  prepare-release:
+    if: "!contains(github.event.head_commit.message, 'chore: release')"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version-file: .nvmrc
+
+      - uses: knope-dev/action@19617851f9f13ab2f27a05989c55efb18aca3675 # v2.1.2
+        with:
+          version: 0.22.2
+
+      # knope prepare-release errors when there's nothing to release, which is
+      # the normal case for most pushes. Gate on change-file presence instead of
+      # swallowing all errors with continue-on-error — so a genuine knope/git
+      # failure still fails the run. (ignore_conventional_commits means change
+      # files are the only thing that drives a release.)
+      - name: Check for pending changes
+        id: changes
+        run: |
+          if ls .changeset/*.md >/dev/null 2>&1; then
+            echo "pending=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "pending=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - if: steps.changes.outputs.pending == 'true'
+        run: knope prepare-release --verbose
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

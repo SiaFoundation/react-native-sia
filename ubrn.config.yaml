@@ -1,7 +1,9 @@
 ---
 rust:
   repo: https://github.com/SiaFoundation/sia-sdk-rs
-  branch: master
+  # Pinned to a release tag (not master). check-sdk-update.yml bumps this when
+  # a newer sia_storage_ffi release ships.
+  branch: sia_storage_ffi/v0.8.1
   manifestPath: sia_storage_ffi/Cargo.toml
 # 32-bit ABIs (armeabi-v7a, x86) are excluded — Play Store has required
 # 64-bit since 2019 and 64-bit-only since 2024. They would add ~141 MB

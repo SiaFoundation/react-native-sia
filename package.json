@@ -23,15 +23,12 @@
     "typecheck": "tsc -p tsconfig.build.json",
     "lint": "eslint -c eslint.config.mjs",
     "clean": "del-cli android/build example/android/build example/android/app/build example/ios/build lib",
-    "prepare": "bob build",
-    "version": "changeset version && yarn install",
-    "release": "changeset publish"
+    "prepare": "bob build"
   },
   "dependencies": {
     "uniffi-bindgen-react-native": "0.31.0-2"
   },
   "devDependencies": {
-    "@changesets/cli": "^2.27.7",
     "@eslint/compat": "^1.2.7",
     "@eslint/eslintrc": "^3.3.0",
     "@eslint/js": "^9.22.0",

@@ -97,7 +97,7 @@ jobs:
   build-ios:
     runs-on: macos-latest
     env:
-      XCODE_VERSION: 16.2
+      XCODE_VERSION: '26'
     steps:
       - name: Checkout
         uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
@@ -108,7 +108,7 @@ jobs:
       - name: Use appropriate Xcode version
         uses: maxim-lobanov/setup-xcode@ed7a3b1fda3918c0306d1b724322adc0b8cc0a90 # v1
         with:
-          xcode-version: '16.2'
+          xcode-version: ${{ env.XCODE_VERSION }}
 
       - name: Fix netrc permissions for CocoaPods
         run: |

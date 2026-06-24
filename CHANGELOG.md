@@ -1,5 +1,17 @@
 # react-native-sia
 
+## 0.15.1 (2026-06-24)
+
+### Fixes
+
+#### Fixed a white screen on launch on some 32-bit Android devices
+
+Restored the 32-bit ARM (armeabi-v7a) build that was dropped in 0.14.0.
+
+#### Update Sia SDK to v0.9.0
+
+See the [sia-sdk-rs release notes](https://github.com/SiaFoundation/sia-sdk-rs/releases/tag/sia_storage_ffi/v0.9.0).
+
 ## 0.15.0
 
 ### Minor Changes

@@ -97,7 +97,10 @@ jobs:
   build-ios:
     runs-on: macos-latest
     env:
-      XCODE_VERSION: '26'
+      # Pinned to a minor, not bare '26': clang in Xcode 26.4+ rejects fmt
+      # 11.0.2's consteval FMT_STRING uses, and react-native 0.81 pins
+      # fmt = 11.0.2 through RCT-Folly. Unpin once RN ships fmt >= 11.1.
+      XCODE_VERSION: '26.3'
     steps:
       - name: Checkout
         uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5

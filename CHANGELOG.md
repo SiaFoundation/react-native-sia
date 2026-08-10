@@ -1,5 +1,13 @@
 # react-native-sia
 
+## 0.15.2 (2026-08-10)
+
+### Fixes
+
+#### Update Sia SDK to v0.10.0
+
+See the [sia-sdk-rs release notes](https://github.com/SiaFoundation/sia-sdk-rs/releases/tag/sia_storage_ffi/v0.10.0).
+
 ## 0.15.1 (2026-06-24)
 
 ### Fixes

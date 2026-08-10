@@ -3,7 +3,7 @@ rust:
   repo: https://github.com/SiaFoundation/sia-sdk-rs
   # Pinned to a release tag (not master). check-sdk-update.yml bumps this when
   # a newer sia_storage_ffi release ships.
-  branch: sia_storage_ffi/v0.9.0
+  branch: sia_storage_ffi/v0.10.0
   manifestPath: sia_storage_ffi/Cargo.toml
 # armeabi-v7a (32-bit ARM) ships because some 64-bit-capable phones run a
 # 32-bit Android userspace and load only 32-bit libs (e.g. Samsung Galaxy

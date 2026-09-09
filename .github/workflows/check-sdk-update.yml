@@ -7,11 +7,6 @@
 #
 # Idempotent: stable changeset filename, current-vs-latest comparison, so
 # re-running with no upstream change is a no-op.
-#
-# Pushes with RELEASE_PAT, not GITHUB_TOKEN: a push authenticated with
-# GITHUB_TOKEN neither triggers other workflows nor bypasses the branch ruleset.
-# RELEASE_PAT is owned by an admin (a ruleset bypass actor), so its push lands on
-# main and triggers prepare-release.yml + ci.yml.
 name: Check SDK Update
 
 on:
@@ -19,8 +14,10 @@ on:
     - cron: '0 9 * * *'
   workflow_dispatch:
 
+# The default token only reads sia-sdk-rs's public releases. The bump to main is
+# pushed with the app token minted below.
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: check-sdk-update
@@ -30,9 +27,22 @@ jobs:
   check-and-bump:
     runs-on: ubuntu-latest
     steps:
+      # An app token, not GITHUB_TOKEN: a push made with the workflow token
+      # triggers no workflows, so the bump would sit on main with no CI run and
+      # no release PR behind it. The app also has to be a ruleset bypass actor
+      # for a direct push to main to be accepted at all.
+      - name: Mint bot token
+        id: bot-token
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        with:
+          client-id: ${{ secrets.SIA_CI_BOT_APP_ID }}
+          private-key: ${{ secrets.SIA_CI_BOT_PRIVATE_KEY }}
+          permission-contents: write
+
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          token: ${{ secrets.RELEASE_PAT }}
+          # The final step pushes using the credentials checkout saves here.
+          token: ${{ steps.bot-token.outputs.token }}
 
       - name: Check for a newer sia_storage_ffi release and bump
         env:

@@ -10,19 +10,37 @@ on:
 
 concurrency: prepare-release
 
+# The default token does nothing here. The branch push and the pull request both
+# go through the app token minted below.
 permissions:
-  contents: write # push the `release` branch
-  pull-requests: write # open/update the release PR
+  contents: read
 
 jobs:
   prepare-release:
     if: "!contains(github.event.head_commit.message, 'chore: release')"
     runs-on: ubuntu-latest
     steps:
+      # An app token, not GITHUB_TOKEN: both prior release PRs were opened by
+      # the workflow token and their CI run sat awaiting manual approval, so
+      # someone had to re-run it by hand before the PR could merge.
+      - name: Mint bot token
+        id: bot-token
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        with:
+          client-id: ${{ secrets.SIA_CI_BOT_APP_ID }}
+          private-key: ${{ secrets.SIA_CI_BOT_PRIVATE_KEY }}
+          # Contents to force-push `release`, pull requests for
+          # create-release-pr.mjs. Without the second the branch push succeeds
+          # and the PR create fails.
+          permission-contents: write
+          permission-pull-requests: write
+
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
+          # knope force-pushes `release` later in the run, using the credentials
+          # checkout saves here.
+          token: ${{ steps.bot-token.outputs.token }}
 
       - name: Configure Git
         run: |
@@ -54,4 +72,6 @@ jobs:
       - if: steps.changes.outputs.pending == 'true'
         run: knope prepare-release --verbose
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Read both by knope's own API calls and by the `gh` that
+          # create-release-pr.mjs shells out to.
+          GITHUB_TOKEN: ${{ steps.bot-token.outputs.token }}

@@ -21,6 +21,7 @@
     "example": "yarn workspace react-native-sia-example",
     "test": "jest",
     "typecheck": "tsc -p tsconfig.build.json",
+    "test:package": "node scripts/check-package.mjs",
     "lint": "eslint -c eslint.config.mjs",
     "clean": "del-cli android/build example/android/build example/android/app/build example/ios/build lib",
     "prepare": "bob build"

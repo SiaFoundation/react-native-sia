@@ -106,6 +106,8 @@ jobs:
           find SiaFramework.xcframework -name 'libsia_storage_ffi.a' -print -exec xcrun strip -S {} \;
       - name: Prepare
         run: yarn prepare
+      - name: Check the published package
+        run: yarn test:package
       - name: Guard package size
         # npm has a 100 MB hard cap on tarballs. Fail fast if we're heading
         # back over.

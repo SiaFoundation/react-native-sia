@@ -1,0 +1,80 @@
+# Dependabot version updates. Each ecosystem groups everything into one weekly
+# PR, so a routine sweep is a single review instead of a dozen.
+#
+# Three parts of the tree are deliberately uncovered. Gradle: the example app's
+# classpath entries carry no version and its `ext` block holds SDK and tool
+# versions rather than coordinates, leaving only the Android Gradle Plugin
+# literal in android/build.gradle, a uniffi-bindgen-react-native output.
+# CocoaPods: Dependabot doesn't support it, and example/ios/Podfile.lock tracks
+# the npm packages those pods come from. The Rust SDK: it lives in sia-sdk-rs,
+# ubrn.config.yaml pins it by release tag, and check-sdk-update.yml repins it
+# daily.
+
+version: 2
+updates:
+  - package-ecosystem: 'npm'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+    commit-message:
+      prefix: 'chore'
+      prefix-development: 'chore'
+    groups:
+      dependencies:
+        patterns:
+          - '*'
+    ignore:
+      # A React Native minor is a native-template migration. The example app's
+      # Xcode project and example/ios/Podfile.lock carry the RN version
+      # (React-Core is pinned to 0.81.0 there), and Dependabot writes only
+      # package.json and yarn.lock, so the build would break. Patches stay open
+      # so 0.81.x and 19.1.x fixes still land, including the alert-driven
+      # security updates, which are subject to these same rules.
+      - dependency-name: 'react-native'
+        update-types:
+          - 'version-update:semver-major'
+          - 'version-update:semver-minor'
+      - dependency-name: 'react'
+        update-types:
+          - 'version-update:semver-major'
+          - 'version-update:semver-minor'
+      - dependency-name: '@react-native/*'
+        update-types:
+          - 'version-update:semver-major'
+          - 'version-update:semver-minor'
+      - dependency-name: '@react-native-community/*'
+        update-types:
+          - 'version-update:semver-major'
+          - 'version-update:semver-minor'
+
+  - package-ecosystem: 'github-actions'
+    # '/' means .github/workflows. The composite actions under .github/actions/
+    # pin action SHAs of their own, so name their directories too.
+    directories:
+      - '/'
+      - '/.github/actions/*'
+    schedule:
+      interval: 'weekly'
+    commit-message:
+      prefix: 'ci'
+    groups:
+      actions:
+        patterns:
+          - '*'
+    ignore:
+      # dtolnay/rust-toolchain picks the toolchain by ref, and the SHA pinned
+      # here is the tip of its `nightly` branch, which the ubrn iOS and Android
+      # builds require. Dependabot would move it to the `v1` tag, a different
+      # commit that expects a `toolchain:` input none of these workflows pass.
+      - dependency-name: 'dtolnay/rust-toolchain'
+
+  - package-ecosystem: 'bundler'
+    directory: '/example'
+    schedule:
+      interval: 'weekly'
+    commit-message:
+      prefix: 'chore'
+    groups:
+      dependencies:
+        patterns:
+          - '*'

@@ -122,16 +122,22 @@ jobs:
             chmod 600 "$HOME/.netrc"
           fi
 
-      - name: Cache CocoaPods
+      # Only CocoaPods' download caches are restored, never example/ios/Pods.
+      # release-main.yml installs into an empty Pods directory, where CocoaPods
+      # reads react-native's hermes-engine podspec from node_modules and exits 1
+      # if Podfile.lock holds another version. With a restored Pods directory it
+      # reuses the copy of that podspec saved there and passes, which is how a
+      # react-native bump that left Podfile.lock behind went green here and then
+      # failed the 0.15.3 publish.
+      - name: Cache CocoaPods downloads
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: |
-            example/ios/Pods
             ~/Library/Caches/CocoaPods
             ~/.cocoapods/repos
-          key: ${{ runner.os }}-pods-${{ hashFiles('example/ios/Podfile.lock') }}
+          key: ${{ runner.os }}-pod-downloads-${{ hashFiles('example/ios/Podfile.lock') }}
           restore-keys: |
-            ${{ runner.os }}-pods-
+            ${{ runner.os }}-pod-downloads-
 
       - name: Install cocoapods
         run: |

@@ -1,5 +1,13 @@
 # react-native-sia
 
+## 0.15.4 (2026-10-16)
+
+### Fixes
+
+#### Fix Android builds on Android Gradle Plugin 9
+
+The package now ships the consumer ProGuard file its `build.gradle` names. Android Gradle Plugin 9 failed any app build that included the library because the file was missing.
+
 ## 0.15.3 (2026-09-16)
 
 ### Fixes

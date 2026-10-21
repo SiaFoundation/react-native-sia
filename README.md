@@ -130,7 +130,7 @@ const dl = sdk.download(shared, {})
 | `initSia()` | Initialize. Call once before anything else. |
 | `generateRecoveryPhrase()` | New 12-word BIP-39 phrase. |
 | `validateRecoveryPhrase(phrase)` | Throws on invalid. |
-| `encodedSize(size, dataShards, parityShards)` | Encoded size after erasure coding. |
+| `encodedSize(size, dataShards, parityShards)` | Encoded size after erasure coding. Throws when `dataShards` is zero. |
 | `setLogger(logger, level)` | Receive SDK logs (`'trace' \| 'debug' \| 'info' \| 'warn' \| 'error'`). |
 
 ### `Builder`
@@ -161,8 +161,7 @@ Returned from `Builder.register()` or `Builder.connected()`.
 | `objectEvents(cursor, limit)` | Paginated object change feed. |
 | `shareObject(object, validUntil)` / `sharedObject(url)` | Create / consume share URLs. |
 | `hosts()` | List usable hosts. |
-| `slab(id)` | Slab metadata. |
-| `pruneSlabs()` | Unpin slabs no longer referenced by any object. |
+| `pruneSlabs(before)` | Unpin slabs no longer referenced by any object and pinned before `before` (a `Date`). Pass `undefined` to let the indexer choose the cutoff. |
 | `account()` | Account info. |
 
 ### `AppKey`

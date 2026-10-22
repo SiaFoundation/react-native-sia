@@ -89,7 +89,7 @@ nitrogen/
 rust_modules/
 *.a
 cpp/
-ios/
+/ios/
 android/CMakeLists.txt
 android/src/main/java/
 android/*.cpp

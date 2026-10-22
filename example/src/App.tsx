@@ -7,13 +7,14 @@ import {
   Text,
   View,
 } from 'react-native';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import {
   AppKey,
   Builder,
   PinnedObject,
   generateRecoveryPhrase,
   type Reader,
-  type Sdk,
+  type SdkLike,
 } from 'react-native-sia';
 
 const INDEXER_URL = 'https://sia.storage';
@@ -48,7 +49,7 @@ function bufferReader(data: ArrayBuffer, chunkSize = 256 * 1024): Reader {
 
 export default function App() {
   const [logs, setLogs] = useState<string[]>([]);
-  const [sdk, setSdk] = useState<Sdk | null>(null);
+  const [sdk, setSdk] = useState<SdkLike | null>(null);
   const [busy, setBusy] = useState(false);
   const lastObjectId = useRef<string | null>(null);
 
@@ -144,28 +145,30 @@ export default function App() {
   }, [sdk, log]);
 
   return (
-    <View style={styles.root}>
-      <Text style={styles.title}>react-native-sia</Text>
-      <View style={styles.row}>
-        <Button label="Connect" onPress={connect} disabled={busy || !!sdk} />
-        <Button label="Upload" onPress={upload} disabled={busy || !sdk} />
-        <Button
-          label="Download"
-          onPress={download}
-          disabled={busy || !sdk || !lastObjectId.current}
-        />
-      </View>
-      <ScrollView
-        style={styles.logs}
-        contentContainerStyle={styles.logsContent}
-      >
-        {logs.map((line, i) => (
-          <Text key={i} style={styles.logLine}>
-            {line}
-          </Text>
-        ))}
-      </ScrollView>
-    </View>
+    <SafeAreaProvider>
+      <SafeAreaView style={styles.root}>
+        <Text style={styles.title}>react-native-sia</Text>
+        <View style={styles.row}>
+          <Button label="Connect" onPress={connect} disabled={busy || !!sdk} />
+          <Button label="Upload" onPress={upload} disabled={busy || !sdk} />
+          <Button
+            label="Download"
+            onPress={download}
+            disabled={busy || !sdk || !lastObjectId.current}
+          />
+        </View>
+        <ScrollView
+          style={styles.logs}
+          contentContainerStyle={styles.logsContent}
+        >
+          {logs.map((line, i) => (
+            <Text key={i} style={styles.logLine}>
+              {line}
+            </Text>
+          ))}
+        </ScrollView>
+      </SafeAreaView>
+    </SafeAreaProvider>
   );
 }
 

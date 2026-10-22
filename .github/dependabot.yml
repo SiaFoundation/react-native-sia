@@ -27,7 +27,7 @@ updates:
       # A React Native minor is a native-template migration. The example app's
       # Xcode project and example/ios/Podfile.lock carry the RN version, and
       # Dependabot writes only package.json and yarn.lock, so the build would
-      # break. Patches stay open so 0.81.x and 19.1.x fixes still land,
+      # break. Patches stay open so 0.88.x and 19.3.x fixes still land,
       # including the alert-driven security updates, which are subject to these
       # same rules. A react-native patch still leaves Podfile.lock behind, and
       # the iOS job in ci.yml fails on that PR until someone runs

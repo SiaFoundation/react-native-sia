@@ -164,6 +164,8 @@ jobs:
           # the rust .a archives small. See the comment there.
           CARGO_PROFILE_RELEASE_LTO: 'off'
           RUSTFLAGS: -C embed-bitcode=no
+          # Same minimum iOS as the release build. See the comment there.
+          IPHONEOS_DEPLOYMENT_TARGET: '15.1'
         run: |
           RUSTUP_TOOLCHAIN=nightly npx ubrn build ios --release --and-generate --targets aarch64-apple-ios-sim
           cd example/ios && bundle exec pod install

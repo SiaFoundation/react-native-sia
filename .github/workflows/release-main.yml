@@ -79,10 +79,18 @@ jobs:
       # Xcode 14), so it's pure dead weight in the npm tarball.
       # Measured locally: shrinks the unstripped .a by 49% on Android arm64
       # and 60% on iOS sim, no consumer-side behavior change.
+      # IPHONEOS_DEPLOYMENT_TARGET gives rustc and the C code that crates such
+      # as zstd-sys compile one shared minimum iOS. Without it rustc links the
+      # device target for iOS 10 while the C objects are built for the SDK's
+      # own version, and the link fails on ___chkstk_darwin, a symbol the iOS
+      # 10 libSystem does not provide. The simulator target never hit this
+      # because rustc's default for it is already iOS 14. 15.1 is React
+      # Native's min_ios_version_supported.
       - name: Build iOS
         env:
           CARGO_PROFILE_RELEASE_LTO: 'off'
           RUSTFLAGS: -C embed-bitcode=no
+          IPHONEOS_DEPLOYMENT_TARGET: '15.1'
         run: yarn ubrn:ios
       - name: Build Android
         env:

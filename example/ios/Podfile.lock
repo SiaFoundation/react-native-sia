@@ -2004,7 +2004,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - Sia (0.16.0):
+  - Sia (0.16.1):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2026,11 +2026,11 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
-    - uniffi-bindgen-react-native (= 0.31.0-2)
+    - uniffi-bindgen-react-native (= 0.31.0-5)
     - Yoga
   - SocketRocket (0.7.1):
     - ReactNativeDependencies
-  - uniffi-bindgen-react-native (0.31.0-2):
+  - uniffi-bindgen-react-native (0.31.0-5):
     - React-Core
   - Yoga (0.0.0):
     - React-Core-prebuilt
@@ -2415,9 +2415,9 @@ SPEC CHECKSUMS:
   RNCClipboard: efcb0fcabe40529a32cb0c75fcef4f9c73052c2e
   RNScreens: 3d3d94d97ee39a20fa35de959c32e356439991c7
   RNSVG: c35beed3dcf6fd14b50ca1fc0d4214a17ec5334d
-  Sia: 830277b69ab3650b06267cedfa11451250d596ec
+  Sia: 728718a1c8068c6df5e7fdd1af0222a6db285582
   SocketRocket: 37aec555668fb852ec12e3c0de59a86ca58f0871
-  uniffi-bindgen-react-native: 205a15613d97a49fe17d5bda57f7fa46a7bbafd0
+  uniffi-bindgen-react-native: 598913d7e1654cc6f58d58afcbe40f4b682b7169
   Yoga: d1c536142c5ff8ec8cd856ab2a7c227a1d875c8e
 
 PODFILE CHECKSUM: fc2806110cdb35224422f5d0b4dd27e642d97041

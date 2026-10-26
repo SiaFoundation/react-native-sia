@@ -1,6 +1,6 @@
-import { useCallback, useState } from 'react';
-import { Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { useCallback, useState } from 'react'
+import { Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context'
 import {
   AppKey,
   Builder,
@@ -8,9 +8,9 @@ import {
   generateRecoveryPhrase,
   type Reader,
   type SdkLike,
-} from 'react-native-sia';
+} from 'react-native-sia'
 
-const INDEXER_URL = 'https://sia.storage';
+const INDEXER_URL = 'https://sia.storage'
 
 const APP_META = {
   // A 32-byte identifier unique to your app. Not secret, but should be stable.
@@ -20,118 +20,118 @@ const APP_META = {
   serviceUrl: 'https://example.sia.tech',
   callbackUrl: 'siaexample://callback',
   logoUrl: undefined,
-};
+}
 
 // In a real app, store this in the Keychain / Keystore (e.g. via
 // react-native-keychain or expo-secure-store). For this example we keep
 // it in module scope so the demo can reconnect during a single session.
-let savedAppKey: ArrayBuffer | null = null;
+let savedAppKey: ArrayBuffer | null = null
 
 function bufferReader(data: ArrayBuffer, chunkSize = 256 * 1024): Reader {
-  let offset = 0;
+  let offset = 0
   return {
     async read() {
-      if (offset >= data.byteLength) return new ArrayBuffer(0);
-      const end = Math.min(offset + chunkSize, data.byteLength);
-      const chunk = data.slice(offset, end);
-      offset = end;
-      return chunk;
+      if (offset >= data.byteLength) return new ArrayBuffer(0)
+      const end = Math.min(offset + chunkSize, data.byteLength)
+      const chunk = data.slice(offset, end)
+      offset = end
+      return chunk
     },
-  };
+  }
 }
 
 export default function App() {
-  const [logs, setLogs] = useState<string[]>([]);
-  const [sdk, setSdk] = useState<SdkLike | null>(null);
-  const [busy, setBusy] = useState(false);
-  const [lastObjectId, setLastObjectId] = useState<string | null>(null);
+  const [logs, setLogs] = useState<string[]>([])
+  const [sdk, setSdk] = useState<SdkLike | null>(null)
+  const [busy, setBusy] = useState(false)
+  const [lastObjectId, setLastObjectId] = useState<string | null>(null)
 
   const log = useCallback((msg: string) => {
-    setLogs((prev) => [...prev, msg]);
-  }, []);
+    setLogs((prev) => [...prev, msg])
+  }, [])
 
   const connect = useCallback(async () => {
-    setBusy(true);
+    setBusy(true)
     try {
-      const builder = new Builder(INDEXER_URL, APP_META);
+      const builder = new Builder(INDEXER_URL, APP_META)
 
       if (savedAppKey) {
-        log('Reconnecting with saved AppKey…');
-        const existing = await builder.connected(new AppKey(savedAppKey));
+        log('Reconnecting with saved AppKey…')
+        const existing = await builder.connected(new AppKey(savedAppKey))
         if (existing) {
-          setSdk(existing);
-          log('Connected.');
-          return;
+          setSdk(existing)
+          log('Connected.')
+          return
         }
-        log('Saved AppKey not authorized; starting fresh approval flow.');
+        log('Saved AppKey not authorized; starting fresh approval flow.')
       }
 
-      const phrase = generateRecoveryPhrase();
-      log(`Recovery phrase: ${phrase}`);
+      const phrase = generateRecoveryPhrase()
+      log(`Recovery phrase: ${phrase}`)
 
-      await builder.requestConnection();
-      const url = builder.responseUrl();
-      log(`Open in browser to approve: ${url}`);
-      await Linking.openURL(url);
+      await builder.requestConnection()
+      const url = builder.responseUrl()
+      log(`Open in browser to approve: ${url}`)
+      await Linking.openURL(url)
 
-      await builder.waitForApproval();
-      const next = await builder.register(phrase);
+      await builder.waitForApproval()
+      const next = await builder.register(phrase)
 
-      savedAppKey = next.appKey().export_();
-      setSdk(next);
-      log('Registered and connected.');
+      savedAppKey = next.appKey().export_()
+      setSdk(next)
+      log('Registered and connected.')
     } catch (e) {
-      log(`Connect failed: ${(e as Error).message}`);
+      log(`Connect failed: ${(e as Error).message}`)
     } finally {
-      setBusy(false);
+      setBusy(false)
     }
-  }, [log]);
+  }, [log])
 
   const upload = useCallback(async () => {
-    if (!sdk) return;
-    setBusy(true);
+    if (!sdk) return
+    setBusy(true)
     try {
       const data = new TextEncoder().encode(
         `hello from react-native-sia at ${new Date().toISOString()}`,
-      ).buffer as ArrayBuffer;
-      log(`Uploading ${data.byteLength} bytes…`);
-      const object = await sdk.upload(new PinnedObject(), bufferReader(data), {});
-      await sdk.pinObject(object);
-      setLastObjectId(object.id());
-      log(`Pinned: ${object.id()}`);
+      ).buffer as ArrayBuffer
+      log(`Uploading ${data.byteLength} bytes…`)
+      const object = await sdk.upload(new PinnedObject(), bufferReader(data), {})
+      await sdk.pinObject(object)
+      setLastObjectId(object.id())
+      log(`Pinned: ${object.id()}`)
     } catch (e) {
-      log(`Upload failed: ${(e as Error).message}`);
+      log(`Upload failed: ${(e as Error).message}`)
     } finally {
-      setBusy(false);
+      setBusy(false)
     }
-  }, [sdk, log]);
+  }, [sdk, log])
 
   const download = useCallback(async () => {
-    if (!sdk || !lastObjectId) return;
-    setBusy(true);
+    if (!sdk || !lastObjectId) return
+    setBusy(true)
     try {
-      const object = await sdk.object(lastObjectId);
-      const dl = sdk.download(object, {});
-      const chunks: ArrayBuffer[] = [];
+      const object = await sdk.object(lastObjectId)
+      const dl = sdk.download(object, {})
+      const chunks: ArrayBuffer[] = []
       while (true) {
-        const chunk = await dl.read();
-        if (chunk.byteLength === 0) break;
-        chunks.push(chunk);
+        const chunk = await dl.read()
+        if (chunk.byteLength === 0) break
+        chunks.push(chunk)
       }
-      const total = chunks.reduce((n, c) => n + c.byteLength, 0);
-      const buf = new Uint8Array(total);
-      let offset = 0;
+      const total = chunks.reduce((n, c) => n + c.byteLength, 0)
+      const buf = new Uint8Array(total)
+      let offset = 0
       for (const c of chunks) {
-        buf.set(new Uint8Array(c), offset);
-        offset += c.byteLength;
+        buf.set(new Uint8Array(c), offset)
+        offset += c.byteLength
       }
-      log(`Downloaded: ${new TextDecoder().decode(buf)}`);
+      log(`Downloaded: ${new TextDecoder().decode(buf)}`)
     } catch (e) {
-      log(`Download failed: ${(e as Error).message}`);
+      log(`Download failed: ${(e as Error).message}`)
     } finally {
-      setBusy(false);
+      setBusy(false)
     }
-  }, [sdk, lastObjectId, log]);
+  }, [sdk, lastObjectId, log])
 
   return (
     <SafeAreaProvider>
@@ -151,7 +151,7 @@ export default function App() {
         </ScrollView>
       </SafeAreaView>
     </SafeAreaProvider>
-  );
+  )
 }
 
 function Button({
@@ -159,9 +159,9 @@ function Button({
   onPress,
   disabled,
 }: {
-  label: string;
-  onPress: () => void;
-  disabled?: boolean;
+  label: string
+  onPress: () => void
+  disabled?: boolean
 }) {
   return (
     <Pressable
@@ -175,7 +175,7 @@ function Button({
     >
       <Text style={styles.buttonText}>{label}</Text>
     </Pressable>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
@@ -199,4 +199,4 @@ const styles = StyleSheet.create({
   },
   logsContent: { padding: 10 },
   logLine: { fontFamily: 'Menlo', fontSize: 11, color: '#24292f' },
-});
+})

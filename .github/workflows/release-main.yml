@@ -95,7 +95,6 @@ jobs:
           RUSTFLAGS: -C embed-bitcode=no
         run: |
           yarn ubrn:android
-          cp patch/android_cpp-adapter.cpp android/cpp-adapter.cpp # Fix uniffi-bindgen-react-native generated file
       - name: Strip debug info from rust archives
         # --strip-debug / -S removes DWARF only; the symbol table stays so
         # native crash stacks still have function names. Drops ~38 MB.

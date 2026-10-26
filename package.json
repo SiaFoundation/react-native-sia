@@ -17,37 +17,33 @@
     "ubrn:android": "ubrn build android --and-generate --release",
     "ubrn:web": "ubrn build web",
     "ubrn:checkout": "ubrn checkout",
-    "ubrn:clean": "yarn dlx rimraf --glob cpp android/CMakeLists.txt android/src/main/java 'android/*.cpp' ios 'src/Native*' 'src/index.*ts*' src/generated SiaFramework.xcframework",
+    "ubrn:clean": "del-cli cpp android/CMakeLists.txt android/src/main/java 'android/*.cpp' ios 'src/Native*' 'src/index.*ts*' src/generated SiaFramework.xcframework",
     "example": "yarn workspace react-native-sia-example",
     "test": "jest",
     "typecheck": "tsc -p tsconfig.build.json",
     "test:package": "node scripts/check-package.mjs",
-    "lint": "eslint -c eslint.config.mjs",
+    "lint": "oxlint . && oxfmt --check --ignore-path .gitignore --ignore-path .oxfmtignore .",
     "clean": "del-cli android/build example/android/build example/android/app/build example/ios/build lib",
-    "prepare": "bob build"
+    "prepare": "bob build",
+    "lint:fix": "oxlint --fix . && oxfmt --ignore-path .gitignore --ignore-path .oxfmtignore ."
   },
   "dependencies": {
-    "uniffi-bindgen-react-native": "0.31.0-2"
+    "@ubjs/core": "^0.31.0-5",
+    "uniffi-bindgen-react-native": "0.31.0-5"
   },
   "devDependencies": {
-    "@eslint/compat": "^1.2.7",
-    "@eslint/eslintrc": "^3.3.0",
-    "@eslint/js": "^9.22.0",
     "@react-native/babel-preset": "0.88.0",
-    "@react-native/eslint-config": "0.88.0",
     "@react-native/jest-preset": "0.88.0",
     "@types/jest": "^30.0.0",
     "@types/react": "^19.3.0",
     "del-cli": "^7.0.0",
-    "eslint": "^9.22.0",
-    "eslint-config-prettier": "^10.1.1",
-    "eslint-plugin-prettier": "^5.2.3",
     "jest": "^30.5.1",
-    "prettier": "^3.0.3",
+    "oxfmt": "^0.74.0",
+    "oxlint": "^1.89.0",
     "react": "19.3.0",
     "react-native": "0.88.0",
     "react-native-builder-bob": "^0.43.0",
-    "typescript": "^5.8.3"
+    "typescript": "^7.0.2"
   },
   "peerDependencies": {
     "react": "*",
@@ -61,7 +57,6 @@
     "cpp",
     "SiaFramework.xcframework/**",
     "*.podspec",
-    "react-native.config.js",
     "!rust",
     "!ios/build",
     "!android/build",
@@ -106,13 +101,6 @@
       "<rootDir>/example/node_modules",
       "<rootDir>/lib/"
     ]
-  },
-  "prettier": {
-    "quoteProps": "consistent",
-    "singleQuote": true,
-    "tabWidth": 2,
-    "trailingComma": "es5",
-    "useTabs": false
   },
   "react-native-builder-bob": {
     "source": "src",

@@ -1,0 +1,14 @@
+# oxfmt owns JavaScript and TypeScript here, nothing else. Prose and workflow
+# files reflow badly and the churn buries the real change in a diff.
+*.md
+*.yml
+*.yaml
+
+# Xcode owns these and rewrites them with its own spacing on every build.
+example/ios/**/*.xcassets/**
+
+# Knope rewrites this on release and scripts/format-package.mjs normalizes it
+# afterwards. oxfmt also reorders its keys, which fights both.
+package.json
+example/package.json
+.watchmanconfig

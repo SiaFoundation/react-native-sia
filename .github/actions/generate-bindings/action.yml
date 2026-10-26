@@ -42,7 +42,6 @@ runs:
         RUSTFLAGS: -C embed-bitcode=no
       run: |
         npx ubrn build android --and-generate --release --targets arm64-v8a
-        cp patch/android_cpp-adapter.cpp android/cpp-adapter.cpp
       shell: bash
 
     - name: Strip debug info from android rust archive

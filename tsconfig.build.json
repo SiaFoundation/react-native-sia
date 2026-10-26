@@ -5,5 +5,5 @@
     "noUnusedParameters": false
   },
   "include": ["src/**/*"],
-  "exclude": ["example", "lib"]
+  "exclude": ["example", "lib", "src/__tests__"]
 }

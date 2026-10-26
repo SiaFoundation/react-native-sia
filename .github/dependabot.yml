@@ -7,8 +7,8 @@
 # literal in android/build.gradle, a uniffi-bindgen-react-native output.
 # CocoaPods: Dependabot doesn't support it, and example/ios/Podfile.lock tracks
 # the npm packages those pods come from. The Rust SDK: it lives in sia-sdk-rs,
-# ubrn.config.yaml pins it by release tag, and check-sdk-update.yml repins it
-# daily.
+# ubrn.config.yaml pins it by release tag, and sia-sdk-rs opens a pull request
+# here on each release.
 
 version: 2
 updates:

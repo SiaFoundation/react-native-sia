@@ -21,7 +21,7 @@ command = "git switch -c release"
 [[workflows.steps]]
 type = "PrepareRelease"
 # We don't use conventional commits to drive versioning — only the explicit
-# .changeset/*.md files (which check-sdk-update.yml and humans write).
+# .changeset/*.md files, which humans and the SDK update agent write.
 ignore_conventional_commits = true
 
 [[workflows.steps]]

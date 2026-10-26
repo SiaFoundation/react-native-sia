@@ -49,6 +49,17 @@ updates:
         update-types:
           - 'version-update:semver-major'
           - 'version-update:semver-minor'
+      # React Native needs Babel 7 at every version it ships: the babel-preset
+      # on 0.88 still asks for @babel/core ^7.25.2.
+      - dependency-name: '@babel/core'
+        update-types:
+          - 'version-update:semver-major'
+      - dependency-name: '@babel/preset-env'
+        update-types:
+          - 'version-update:semver-major'
+      - dependency-name: '@babel/runtime'
+        update-types:
+          - 'version-update:semver-major'
 
   - package-ecosystem: 'github-actions'
     # '/' means .github/workflows. The composite actions under .github/actions/

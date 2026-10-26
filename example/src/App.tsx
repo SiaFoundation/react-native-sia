@@ -1,12 +1,5 @@
-import { useCallback, useRef, useState } from 'react';
-import {
-  Linking,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { useCallback, useState } from 'react';
+import { Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import {
   AppKey,
@@ -51,7 +44,7 @@ export default function App() {
   const [logs, setLogs] = useState<string[]>([]);
   const [sdk, setSdk] = useState<SdkLike | null>(null);
   const [busy, setBusy] = useState(false);
-  const lastObjectId = useRef<string | null>(null);
+  const [lastObjectId, setLastObjectId] = useState<string | null>(null);
 
   const log = useCallback((msg: string) => {
     setLogs((prev) => [...prev, msg]);
@@ -99,16 +92,12 @@ export default function App() {
     setBusy(true);
     try {
       const data = new TextEncoder().encode(
-        `hello from react-native-sia at ${new Date().toISOString()}`
+        `hello from react-native-sia at ${new Date().toISOString()}`,
       ).buffer as ArrayBuffer;
       log(`Uploading ${data.byteLength} bytes…`);
-      const object = await sdk.upload(
-        new PinnedObject(),
-        bufferReader(data),
-        {}
-      );
+      const object = await sdk.upload(new PinnedObject(), bufferReader(data), {});
       await sdk.pinObject(object);
-      lastObjectId.current = object.id();
+      setLastObjectId(object.id());
       log(`Pinned: ${object.id()}`);
     } catch (e) {
       log(`Upload failed: ${(e as Error).message}`);
@@ -118,10 +107,10 @@ export default function App() {
   }, [sdk, log]);
 
   const download = useCallback(async () => {
-    if (!sdk || !lastObjectId.current) return;
+    if (!sdk || !lastObjectId) return;
     setBusy(true);
     try {
-      const object = await sdk.object(lastObjectId.current);
+      const object = await sdk.object(lastObjectId);
       const dl = sdk.download(object, {});
       const chunks: ArrayBuffer[] = [];
       while (true) {
@@ -142,7 +131,7 @@ export default function App() {
     } finally {
       setBusy(false);
     }
-  }, [sdk, log]);
+  }, [sdk, lastObjectId, log]);
 
   return (
     <SafeAreaProvider>
@@ -151,16 +140,9 @@ export default function App() {
         <View style={styles.row}>
           <Button label="Connect" onPress={connect} disabled={busy || !!sdk} />
           <Button label="Upload" onPress={upload} disabled={busy || !sdk} />
-          <Button
-            label="Download"
-            onPress={download}
-            disabled={busy || !sdk || !lastObjectId.current}
-          />
+          <Button label="Download" onPress={download} disabled={busy || !sdk || !lastObjectId} />
         </View>
-        <ScrollView
-          style={styles.logs}
-          contentContainerStyle={styles.logsContent}
-        >
+        <ScrollView style={styles.logs} contentContainerStyle={styles.logsContent}>
           {logs.map((line, i) => (
             <Text key={i} style={styles.logLine}>
               {line}

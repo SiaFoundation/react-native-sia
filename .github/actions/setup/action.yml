@@ -18,10 +18,10 @@ runs:
           .yarn/install-state.gz
         # No restore-keys on purpose. A partial restore hands us a
         # node_modules built from an older lockfile, and `yarn install` links
-        # over that tree in place without restoring the executable bit on
-        # .bin shims. ubrn spawns node_modules/.bin/prettier to format the
-        # generated TypeScript, so the bindings step then dies EACCES. An
-        # exact miss restores nothing and installs clean, which is correct.
+        # over that tree in place without restoring the executable bit on the
+        # .bin shims. Anything that then spawns one dies EACCES, which cost
+        # four CI rounds to find. An exact miss restores nothing and installs
+        # clean, which is correct.
         key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}-${{ hashFiles('**/package.json', '!node_modules/**') }}
 
     - name: Install dependencies

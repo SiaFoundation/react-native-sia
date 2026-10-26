@@ -3,42 +3,42 @@
 // the latest CHANGELOG.md entry. Called by knope (see knope.toml) after it
 // pushes the `release` branch. Relies on GITHUB_TOKEN being in the environment
 // for gh.
-import { execSync } from 'node:child_process';
-import { readFileSync, unlinkSync, writeFileSync } from 'node:fs';
-import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { execSync } from 'node:child_process'
+import { readFileSync, unlinkSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
 
-const lines = readFileSync('CHANGELOG.md', 'utf-8').split('\n');
-const start = lines.findIndex((l) => l.startsWith('## '));
+const lines = readFileSync('CHANGELOG.md', 'utf-8').split('\n')
+const start = lines.findIndex((l) => l.startsWith('## '))
 if (start === -1) {
-  console.log('No changelog entry; skipping PR.');
-  process.exit(0);
+  console.log('No changelog entry; skipping PR.')
+  process.exit(0)
 }
-const end = lines.findIndex((l, i) => i > start && l.startsWith('## '));
+const end = lines.findIndex((l, i) => i > start && l.startsWith('## '))
 const version = lines[start]
   .replace(/^## /, '')
   .replace(/\s*\(.*\)/, '')
-  .trim();
+  .trim()
 const body = lines
   .slice(start + 1, end === -1 ? undefined : end)
   .join('\n')
-  .trim();
+  .trim()
 
-const title = `chore: release ${version}`;
-const file = join(tmpdir(), 'release-pr-body.md');
-writeFileSync(file, body || '_No changelog body._');
+const title = `chore: release ${version}`
+const file = join(tmpdir(), 'release-pr-body.md')
+writeFileSync(file, body || '_No changelog body._')
 try {
   try {
     execSync(`gh pr create --base main --title "${title}" --body-file "${file}"`, {
       stdio: 'inherit',
-    });
+    })
   } catch {
     execSync(`gh pr edit release --title "${title}" --body-file "${file}"`, {
       stdio: 'inherit',
-    });
+    })
   }
 } finally {
   try {
-    unlinkSync(file);
+    unlinkSync(file)
   } catch {}
 }

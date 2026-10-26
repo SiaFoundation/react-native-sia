@@ -4,6 +4,10 @@
 *.yml
 *.yaml
 
+# Yarn's own release and plugins are vendored verbatim and are not ours to
+# reformat. .gitignore un-ignores them so they ship, so name them here.
+.yarn/
+
 # Xcode owns these and rewrites them with its own spacing on every build.
 example/ios/**/*.xcassets/**
 

@@ -29,20 +29,20 @@
   },
   "dependencies": {
     "@ubjs/core": "^0.31.0-5",
-    "uniffi-bindgen-react-native": "0.31.0-5"
+    "uniffi-bindgen-react-native": "0.31.0-6"
   },
   "devDependencies": {
     "@react-native/babel-preset": "0.88.0",
     "@react-native/jest-preset": "0.88.0",
     "@types/jest": "^30.0.0",
     "@types/react": "^19.3.0",
-    "del-cli": "^7.0.0",
+    "del-cli": "^8.0.1",
     "jest": "^30.5.1",
     "oxfmt": "^0.74.0",
     "oxlint": "^1.89.0",
-    "react": "19.3.0",
+    "react": "19.3.1",
     "react-native": "0.88.0",
-    "react-native-builder-bob": "^0.43.0",
+    "react-native-builder-bob": "^0.44.1",
     "typescript": "^7.0.2"
   },
   "peerDependencies": {

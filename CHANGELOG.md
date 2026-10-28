@@ -1,5 +1,19 @@
 # react-native-sia
 
+## 0.16.2 (2026-10-28)
+
+### Fixes
+
+#### Modernize the build toolchain
+
+Declarations are now emitted by TypeScript 7, and the bindings generator moves
+to 0.31.0-5, which puts its TypeScript runtime in `@ubjs/core`. That package is
+a dependency now and installs alongside this one.
+
+#### Update Sia SDK to 0.13.3
+
+See the [sia-sdk-rs release notes](https://github.com/SiaFoundation/sia-sdk-rs/releases/tag/sia_storage_ffi/v0.13.3).
+
 ## 0.16.1 (2026-10-23)
 
 ### Fixes
